@@ -6,6 +6,7 @@
   <title>Cowork OS — Home</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #0d0d0f;
@@ -15,6 +16,8 @@
       max-width: 1100px;
       margin: 0 auto;
     }
+
+    /* ── Header ── */
     .header {
       display: flex;
       align-items: flex-end;
@@ -23,80 +26,282 @@
       padding-bottom: 24px;
       border-bottom: 1px solid #1c1c24;
     }
-    .header h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.6px; color: #fff; }
-    .header p { margin-top: 5px; font-size: 13px; color: #555; }
-    .header-date { font-size: 12px; color: #444; padding-bottom: 2px; }
+    .header h1 {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.6px;
+      color: #fff;
+    }
+    .header p {
+      margin-top: 5px;
+      font-size: 13px;
+      color: #555;
+    }
+    .header-date {
+      font-size: 12px;
+      color: #444;
+      padding-bottom: 2px;
+    }
+
+    /* ── Section label ── */
     .section-label {
-      font-size: 10.5px; font-weight: 700; letter-spacing: 1.4px;
-      text-transform: uppercase; color: #3a3a52;
-      margin-bottom: 12px; margin-top: 36px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: #3a3a52;
+      margin-bottom: 12px;
+      margin-top: 36px;
     }
     .section-label:first-of-type { margin-top: 0; }
+
+    /* ── Active projects — large cards ── */
     .active-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 12px;
     }
+
     .active-card {
-      background: #10101a; border: 1px solid #26264a; border-radius: 12px;
-      padding: 20px 22px 18px; text-decoration: none; color: inherit;
-      display: flex; flex-direction: column; gap: 6px;
+      background: #10101a;
+      border: 1px solid #26264a;
+      border-radius: 12px;
+      padding: 20px 22px 18px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
       transition: border-color 0.15s, background 0.15s, transform 0.1s;
     }
-    .active-card:hover { border-color: #4a4a99; background: #13131f; transform: translateY(-1px); }
+    .active-card:hover {
+      border-color: #4a4a99;
+      background: #13131f;
+      transform: translateY(-1px);
+    }
     .active-card:active { transform: translateY(0); }
+
     .active-card-icon { font-size: 20px; }
-    .active-card-label { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #5566cc; margin-top: 2px; }
-    .active-card-title { font-size: 15px; font-weight: 650; color: #dde; line-height: 1.3; }
-    .active-card-desc { font-size: 12px; color: #666; line-height: 1.5; margin-top: 2px; }
-    .active-card-footer { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
-    .dot-active { width: 6px; height: 6px; border-radius: 50%; background: #44cc88; flex-shrink: 0; }
-    .dot-watch { width: 6px; height: 6px; border-radius: 50%; background: #ddaa44; flex-shrink: 0; }
-    .active-card-status { font-size: 11px; color: #556; }
-    .workspace-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .active-card-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #5566cc;
+      margin-top: 2px;
+    }
+    .active-card-title {
+      font-size: 15px;
+      font-weight: 650;
+      color: #dde;
+      line-height: 1.3;
+    }
+    .active-card-desc {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.5;
+      margin-top: 2px;
+    }
+    .active-card-footer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .dot-active {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #44cc88;
+      flex-shrink: 0;
+    }
+    .dot-watch {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ddaa44;
+      flex-shrink: 0;
+    }
+    .active-card-status {
+      font-size: 11px;
+      color: #556;
+    }
+
+    /* ── Workspace map — two columns ── */
+    .workspace-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
     @media (max-width: 700px) {
       .workspace-cols { grid-template-columns: 1fr; }
       .active-grid { grid-template-columns: 1fr; }
-      .dash-grid { grid-template-columns: 1fr; }
     }
-    .workspace-col-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #2a2a3a; margin-bottom: 10px; }
-    .folder-list { display: flex; flex-direction: column; gap: 4px; }
+
+    .workspace-col-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #2a2a3a;
+      margin-bottom: 10px;
+    }
+
+    /* ── Folder rows ── */
+    .folder-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
     .folder-row {
-      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-      background: #0f0f14; border: 1px solid #181820; border-radius: 8px;
-      text-decoration: none; color: inherit;
-      transition: border-color 0.12s, background 0.12s; cursor: default;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: #0f0f14;
+      border: 1px solid #181820;
+      border-radius: 8px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.12s, background 0.12s;
+      cursor: default;
     }
-    .folder-row.link { cursor: pointer; }
-    .folder-row.link:hover { border-color: #2a2a44; background: #111118; }
+    .folder-row.link {
+      cursor: pointer;
+    }
+    .folder-row.link:hover {
+      border-color: #2a2a44;
+      background: #111118;
+    }
+
     .folder-row-icon { font-size: 14px; flex-shrink: 0; }
     .folder-row-body { flex: 1; min-width: 0; }
-    .folder-row-name { font-size: 13px; font-weight: 500; color: #bbb; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .folder-row-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: #bbb;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .folder-row.link .folder-row-name { color: #ccd; }
-    .folder-row-sub { font-size: 11px; color: #444; margin-top: 1px; }
-    .badge { flex-shrink: 0; display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: 0.4px; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; }
-    .badge-blue { background: #151d38; color: #5577ee; border: 1px solid #222a50; }
-    .badge-gray { background: #141418; color: #444; border: 1px solid #1e1e24; }
-    .badge-green { background: #0c1e14; color: #44bb77; border: 1px solid #183028; }
-    .badge-amber { background: #201808; color: #cc9933; border: 1px solid #302010; }
-    .folder-sub { padding-left: 14px; }
-    .folder-sub .folder-row { border-color: #141418; background: #0c0c11; }
-    .folder-sub .folder-row.link:hover { border-color: #22223a; }
+    .folder-row-sub {
+      font-size: 11px;
+      color: #444;
+      margin-top: 1px;
+    }
+
+    .badge {
+      flex-shrink: 0;
+      display: inline-block;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .badge-blue   { background: #151d38; color: #5577ee; border: 1px solid #222a50; }
+    .badge-gray   { background: #141418; color: #444; border: 1px solid #1e1e24; }
+    .badge-green  { background: #0c1e14; color: #44bb77; border: 1px solid #183028; }
+    .badge-amber  { background: #201808; color: #cc9933; border: 1px solid #302010; }
+
+    /* ── Sub-folder indent ── */
+    .folder-sub {
+      padding-left: 14px;
+    }
+    .folder-sub .folder-row {
+      border-color: #141418;
+      background: #0c0c11;
+    }
+    .folder-sub .folder-row.link:hover {
+      border-color: #22223a;
+    }
     .folder-sub .folder-row-name { font-size: 12px; color: #999; }
     .folder-sub .folder-row.link .folder-row-name { color: #aab; }
-    hr { border: none; border-top: 1px solid #141420; margin: 10px 0 0; }
-    .file-indent { padding-left: 26px; display: flex; flex-direction: column; gap: 3px; margin-top: 3px; }
+
+    hr {
+      border: none;
+      border-top: 1px solid #141420;
+      margin: 10px 0 0;
+    }
+
+    /* ── College Apps individual files ── */
+    .file-indent {
+      padding-left: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-top: 3px;
+    }
     .file-row {
-      display: flex; align-items: center; gap: 8px; padding: 7px 12px;
-      background: #0a0a0f; border: 1px solid #131318; border-radius: 6px;
-      text-decoration: none; color: inherit; transition: border-color 0.12s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      background: #0a0a0f;
+      border: 1px solid #131318;
+      border-radius: 6px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.12s;
     }
     .file-row:hover { border-color: #1e1e30; }
     .file-row-name { font-size: 11.5px; color: #777; }
-    .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-bottom: 8px; }
-    .dash-group { background: #0f0f14; border: 1px solid #181820; border-radius: 10px; padding: 14px 16px 10px; display: flex; flex-direction: column; gap: 2px; }
-    .dash-group-label { font-size: 9.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #3a3a52; margin-bottom: 8px; }
-    .dash-row { display: flex; align-items: center; gap: 7px; padding: 5px 6px; border-radius: 6px; text-decoration: none; color: inherit; transition: background 0.12s; }
+
+    /* ── Task list ── */
+    .task-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+    .task-group-label { font-size: 9.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #3a3a52; margin: 4px 0 6px 2px; }
+    .task-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 8px;
+      background: #0f0f14; border: 1px solid #181820;
+    }
+    .task-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .task-row.high .task-dot { background: #cc4444; }
+    .task-row.med .task-dot { background: #cc9933; }
+    .task-body { flex: 1; min-width: 0; }
+    .task-title { font-size: 12.5px; color: #ccd; font-weight: 500; }
+    .task-meta { font-size: 11px; color: #444; margin-top: 2px; }
+    .task-badge { flex-shrink: 0; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+    .task-badge.high { background: #2a0f0f; color: #cc4444; border: 1px solid #3a1414; }
+    .task-badge.med  { background: #201808; color: #cc9933; border: 1px solid #302010; }
+
+    /* ── Published Dashboards grid ── */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+    .dash-group {
+      background: #0f0f14;
+      border: 1px solid #181820;
+      border-radius: 10px;
+      padding: 14px 16px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .dash-group-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #3a3a52;
+      margin-bottom: 8px;
+    }
+    .dash-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 6px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.12s;
+    }
     .dash-row:hover { background: #13131e; }
     .dash-icon { font-size: 12px; flex-shrink: 0; }
     .dash-name { font-size: 11.5px; color: #889; line-height: 1.3; }
@@ -104,6 +309,8 @@
   </style>
 </head>
 <body>
+
+  <!-- ── Header ── -->
   <div class="header">
     <div>
       <h1>Cowork OS</h1>
@@ -112,45 +319,137 @@
     <div class="header-date">March 2026</div>
   </div>
 
+  <!-- ── Open Tasks ── -->
+  <div class="section-label">Open Tasks</div>
+  <div class="task-list">
+
+    <div class="task-group-label">This Week</div>
+    <div class="task-row high">
+      <span class="task-dot"></span>
+      <div class="task-body">
+        <div class="task-title">Mac mini setup — run terminal commands for nightly HOME.html push</div>
+        <div class="task-meta">Cowork OS</div>
+      </div>
+      <span class="task-badge high">High</span>
+    </div>
+    <div class="task-row high">
+      <span class="task-dot"></span>
+      <div class="task-body">
+        <div class="task-title">All-In social graph feed — decide Lobstr.io vs PhantomBuster and start build</div>
+        <div class="task-meta">Signal</div>
+      </div>
+      <span class="task-badge high">High</span>
+    </div>
+    <div class="task-row high">
+      <span class="task-dot"></span>
+      <div class="task-body">
+        <div class="task-title">Call TPC Craig Ranch — verify A2 membership tier pricing</div>
+        <div class="task-meta">Dallas Move</div>
+      </div>
+      <span class="task-badge high">High</span>
+    </div>
+
+    <div class="task-group-label" style="margin-top:14px;">Upcoming</div>
+    <div class="task-row med">
+      <span class="task-dot"></span>
+      <div class="task-body">
+        <div class="task-title">Signal full ingest — run after YouTube IP block clears (VPN first)</div>
+        <div class="task-meta">Signal</div>
+      </div>
+      <span class="task-badge med">Med</span>
+    </div>
+    <div class="task-row med">
+      <span class="task-dot"></span>
+      <div class="task-body">
+        <div class="task-title">CIO application — next steps on Renesas opportunity</div>
+        <div class="task-meta">Career</div>
+      </div>
+      <span class="task-badge med">Med</span>
+    </div>
+    <div class="task-row med">
+      <span class="task-dot"></span>
+      <div class="task-body">
+        <div class="task-title">SAL sales role — next steps</div>
+        <div class="task-meta">Career</div>
+      </div>
+      <span class="task-badge med">Med</span>
+    </div>
+
+  </div>
+
+  <!-- ── Active Projects ── -->
   <div class="section-label">Active Projects</div>
   <div class="active-grid">
-    <a class="active-card" href="https://c-kawashima.github.io/cv-resume/" target="_blank">
+
+    <a class="active-card" href="Professional/Career/CIO/CIO_Dashboard.html">
       <div class="active-card-icon">🏢</div>
       <div class="active-card-label">Career · CIO</div>
       <div class="active-card-title">Renesas CIO Application</div>
       <div class="active-card-desc">Vision deck, companion report, interactive HTML, full research library.</div>
-      <div class="active-card-footer"><div class="dot-active"></div><div class="active-card-status">Project Files Dashboard</div></div>
+      <div class="active-card-footer">
+        <div class="dot-active"></div>
+        <div class="active-card-status">Project Files Dashboard</div>
+      </div>
     </a>
-    <a class="active-card" href="#">
+
+    <a class="active-card" href="Professional/Career/SAL/INDEX.md">
+      <div class="active-card-icon">💼</div>
+      <div class="active-card-label">Career · SAL</div>
+      <div class="active-card-title">Sales Role</div>
+      <div class="active-card-desc">Active opportunity — research and materials in progress.</div>
+      <div class="active-card-footer">
+        <div class="dot-active"></div>
+        <div class="active-card-status">Index</div>
+      </div>
+    </a>
+
+    <a class="active-card" href="Personal/Projects/Housing%20%26%20Moving/Dallas%2C%20TX/dallas_relocation_v1.html">
       <div class="active-card-icon">🏠</div>
       <div class="active-card-label">Personal · Housing</div>
       <div class="active-card-title">Dallas Move</div>
-      <div class="active-card-desc">Relocation analysis complete. Craig Ranch + TPC recommendation.</div>
-      <div class="active-card-footer"><div class="dot-active"></div><div class="active-card-status">Analysis complete — v1</div></div>
+      <div class="active-card-desc">Relocation analysis complete. 5 scenarios, 13 sections, 10 research briefs. Recommendation: Craig Ranch + TPC.</div>
+      <div class="active-card-footer">
+        <div class="dot-active"></div>
+        <div class="active-card-status">Analysis complete — v1</div>
+      </div>
     </a>
-    <a class="active-card" href="#">
+
+    <a class="active-card" href="Personal/Projects/College%20Apps/INDEX.md">
       <div class="active-card-icon">🎓</div>
       <div class="active-card-label">Personal · College Apps</div>
       <div class="active-card-title">College Applications</div>
       <div class="active-card-desc">School selection, essays, gap year planning, financial aid.</div>
-      <div class="active-card-footer"><div class="dot-watch"></div><div class="active-card-status">In progress</div></div>
+      <div class="active-card-footer">
+        <div class="dot-watch"></div>
+        <div class="active-card-status">In progress</div>
+      </div>
     </a>
-    <a class="active-card" href="https://cksignal.vercel.app" target="_blank">
+
+    <a class="active-card" href="Projects/Signal/index.html">
       <div class="active-card-icon">📡</div>
       <div class="active-card-label">Projects · Signal</div>
       <div class="active-card-title">Signal — YouTube Intelligence Hub</div>
-      <div class="active-card-desc">AI-powered dashboard for All-In, TWIS, Anthropic, Alex Finn, ARK Invest.</div>
-      <div class="active-card-footer"><div class="dot-active"></div><div class="active-card-status">Live · cksignal.vercel.app</div></div>
+      <div class="active-card-desc">AI-powered dashboard for All-In, TWIS, Anthropic, Alex Finn, ARK Invest. Chat across all channels.</div>
+      <div class="active-card-footer">
+        <div class="dot-active"></div>
+        <div class="active-card-status">Live · cksignal.vercel.app</div>
+      </div>
     </a>
+
     <a class="active-card" href="https://c-kawashima.github.io/cv-resume/" target="_blank">
       <div class="active-card-icon">🗂️</div>
       <div class="active-card-label">Published · CV Dashboards</div>
       <div class="active-card-title">Interactive CV &amp; Dashboards</div>
       <div class="active-card-desc">20 published dashboards — Finance, SDV, OSAT, Carbon Neutral, Anduril, and more.</div>
-      <div class="active-card-footer"><div class="dot-active"></div><div class="active-card-status">Live · github.io/cv-resume</div></div>
+      <div class="active-card-footer">
+        <div class="dot-active"></div>
+        <div class="active-card-status">Live · github.io/cv-resume</div>
+      </div>
     </a>
+
   </div>
 
+  <!-- ── Published Dashboards ── -->
   <div class="section-label">Published Dashboards</div>
   <div style="margin-bottom: 14px; font-size: 11px; color: #444;">
     Live at <a href="https://c-kawashima.github.io/cv-resume/" target="_blank" style="color: #5566cc; text-decoration: none;">c-kawashima.github.io/cv-resume</a>
@@ -193,6 +492,44 @@
       <div class="dash-group-label">Other</div>
       <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/1_1_Buffer_Interview.html" target="_blank"><span class="dash-icon">🎯</span><span class="dash-name">Buffer Interview Prep</span></a>
       <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/6_1_Anduril_with_Accronym.html" target="_blank"><span class="dash-icon">🛡️</span><span class="dash-name">Anduril</span></a>
+    </div>
+  </div>
+
+  <!-- ── Workspace Map ── -->
+  <div class="section-label">Workspace Map</div>
+  <div class="workspace-cols">
+    <div>
+      <div class="workspace-col-label">Professional</div>
+      <div class="folder-list">
+        <div class="folder-row"><span class="folder-row-icon">💼</span><div class="folder-row-body"><div class="folder-row-name">Career</div></div></div>
+        <div class="folder-sub"><div class="folder-list">
+          <a class="folder-row link" href="Professional/Career/CIO/CIO_Dashboard.html"><span class="folder-row-icon">🏢</span><div class="folder-row-body"><div class="folder-row-name">CIO — Project Files</div><div class="folder-row-sub">Renesas application</div></div><span class="badge badge-blue">Dashboard</span></a>
+          <a class="folder-row link" href="Professional/Career/SAL/INDEX.md"><span class="folder-row-icon">📈</span><div class="folder-row-body"><div class="folder-row-name">SAL — Sales Role</div><div class="folder-row-sub">Active opportunity</div></div><span class="badge badge-gray">Index</span></a>
+        </div></div>
+        <hr />
+        <a class="folder-row link" href="Professional/Research%20%26%20Analysis/INDEX.md"><span class="folder-row-icon">🔬</span><div class="folder-row-body"><div class="folder-row-name">Research &amp; Analysis</div><div class="folder-row-sub">Professional deep-dives, market research</div></div></a>
+        <a class="folder-row link" href="Professional/Thought%20Leadership/INDEX.md"><span class="folder-row-icon">🎙️</span><div class="folder-row-body"><div class="folder-row-name">Thought Leadership</div><div class="folder-row-sub">Podcast synthesis, content, decks</div></div></a>
+        <a class="folder-row link" href="Professional/Work%20%F0%9F%87%AF%F0%9F%87%B5/INDEX.md"><span class="folder-row-icon">🇯🇵</span><div class="folder-row-body"><div class="folder-row-name">Work Japan</div><div class="folder-row-sub">Japan projects, stakeholders, decisions</div></div></a>
+      </div>
+    </div>
+    <div>
+      <div class="workspace-col-label">Personal</div>
+      <div class="folder-list">
+        <div class="folder-row"><span class="folder-row-icon">📁</span><div class="folder-row-body"><div class="folder-row-name">Projects</div></div></div>
+        <div class="folder-sub"><div class="folder-list">
+          <a class="folder-row link" href="Personal/Projects/Housing%20%26%20Moving/INDEX.md"><span class="folder-row-icon">🏠</span><div class="folder-row-body"><div class="folder-row-name">Housing &amp; Moving</div><div class="folder-row-sub">Dallas relocation</div></div><span class="badge badge-green">Done</span></a>
+          <a class="folder-row link" href="Personal/Projects/Taxes/INDEX.md"><span class="folder-row-icon">🧾</span><div class="folder-row-body"><div class="folder-row-name">Taxes</div><div class="folder-row-sub">Tax research, planning</div></div></a>
+          <a class="folder-row link" href="Personal/Projects/Kids/INDEX.md"><span class="folder-row-icon">👨‍👧‍👦</span><div class="folder-row-body"><div class="folder-row-name">Kids</div><div class="folder-row-sub">School, activities, parenting decisions</div></div></a>
+          <a class="folder-row link" href="Personal/Projects/College%20Apps/INDEX.md"><span class="folder-row-icon">🎓</span><div class="folder-row-body"><div class="folder-row-name">College Apps</div><div class="folder-row-sub">Essays, schools, gap year</div></div><span class="badge badge-amber">Active</span></a>
+          <a class="folder-row link" href="Projects/Signal/index.html"><span class="folder-row-icon">📡</span><div class="folder-row-body"><div class="folder-row-name">Signal</div><div class="folder-row-sub">YouTube intelligence hub</div></div><span class="badge badge-green">Live</span></a>
+        </div></div>
+        <hr />
+        <a class="folder-row link" href="Personal/Research%20%26%20Analysis/INDEX.md"><span class="folder-row-icon">🔬</span><div class="folder-row-body"><div class="folder-row-name">Research &amp; Analysis</div><div class="folder-row-sub">Personal deep-dives, decisions</div></div></a>
+        <a class="folder-row link" href="Personal/Thought%20Leadership/INDEX.md"><span class="folder-row-icon">🎙️</span><div class="folder-row-body"><div class="folder-row-name">Thought Leadership</div><div class="folder-row-sub">Personal content synthesis</div></div></a>
+        <a class="folder-row link" href="Personal/Sports/INDEX.md"><span class="folder-row-icon">🏆</span><div class="folder-row-body"><div class="folder-row-name">Sports</div><div class="folder-row-sub">Analysis, stats, research</div></div></a>
+        <a class="folder-row link" href="Personal/Technology/INDEX.md"><span class="folder-row-icon">💻</span><div class="folder-row-body"><div class="folder-row-name">Technology</div><div class="folder-row-sub">Tech research, tool evals, trend analysis</div></div></a>
+        <a class="folder-row link" href="Personal/Curiosity/INDEX.md"><span class="folder-row-icon">🐇</span><div class="folder-row-body"><div class="folder-row-name">Curiosity</div><div class="folder-row-sub">Rabbit holes, open questions</div></div></a>
+      </div>
     </div>
   </div>
 
