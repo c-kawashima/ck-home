@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Japan Golf Master Calendar 2026</title>
+<style>
+  :root {
+    --green:   #27ae60;
+    --blue:    #2980b9;
+    --orange:  #e67e22;
+    --purple:  #8e44ad;
+    --gold:    #d4ac0d;
+    --teal:    #16a085;
+    --pink:    #e91e8c;
+    --dark:    #1a1a2e;
+    --darker:  #12122a;
+    --card:    #1e2040;
+    --border:  #2e3060;
+    --text:    #eaf0fb;
+    --muted:   #8899aa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--darker); color: var(--text); font-family: "Segoe UI", Arial, sans-serif; font-size: 14px; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* HEADER */
+  .header { background: var(--dark); padding: 18px 32px; border-bottom: 3px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .header h1 { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
+  .header .back-btn { background: var(--border); color: var(--text); padding: 7px 16px; border-radius: 6px; font-size: 13px; text-decoration: none; }
+  .header .back-btn:hover { background: #3e3f70; }
+  .subtitle { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+  /* LEGEND */
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 14px 32px; background: var(--dark); border-bottom: 1px solid var(--border); }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+  /* TABS */
+  .tabs { display: flex; flex-wrap: wrap; gap: 0; background: var(--dark); border-bottom: 2px solid var(--border); padding: 0 24px; }
+  .tab { padding: 12px 18px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all .2s; white-space: nowrap; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--text); border-bottom-color: var(--blue); }
+
+  /* SECTION */
+  .section { display: none; padding: 24px 32px; }
+  .section.active { display: block; }
+
+  /* SECTION HEADER */
+  .sec-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .sec-header .bar { width: 6px; height: 32px; border-radius: 3px; flex-shrink: 0; }
+  .sec-header h2 { font-size: 18px; font-weight: 700; }
+  .sec-header .meta { font-size: 12px; color: var(--muted); }
+
+  /* CLUB GRID */
+  .club-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 32px; }
+  .club-card { background: var(--card); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .club-card-header { padding: 14px 18px; display: flex; align-items: center; gap: 10px; }
+  .club-badge { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .club-card-header h3 { font-size: 15px; font-weight: 700; }
+  .club-card-header .loc { font-size: 11px; color: var(--muted); margin-left: auto; }
+  .club-card-body { padding: 14px 18px; }
+  .info-row { display: flex; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+  .info-label { color: var(--muted); min-width: 80px; }
+  .info-val { color: var(--text); }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 28px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: var(--dark); padding: 10px 14px; text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; white-space: nowrap; border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,.04); }
+  tbody td { padding: 10px 14px; font-size: 13px; vertical-align: top; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .tag-green   { background: rgba(39,174,96,.2);  color: #2ecc71; }
+  .tag-blue    { background: rgba(41,128,185,.2); color: #5dade2; }
+  .tag-orange  { background: rgba(230,126,34,.2); color: #e67e22; }
+  .tag-purple  { background: rgba(142,68,173,.2); color: #bb8fce; }
+  .tag-gold    { background: rgba(212,172,13,.2); color: #f1c40f; }
+  .tag-teal    { background: rgba(22,160,133,.2); color: #1abc9c; }
+  .tag-pink    { background: rgba(233,30,140,.2); color: #f48fb1; }
+  .tag-gray    { background: rgba(100,100,100,.2); color: #aaa; }
+  .note { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .highlight { background: rgba(255,235,59,.06); }
+  .dist-table td:nth-child(2), .dist-table td:nth-child(3), .dist-table td:nth-child(4) { font-family: monospace; font-size: 12px; }
+
+  /* ALERT */
+  .alert { background: rgba(230,126,34,.1); border: 1px solid rgba(230,126,34,.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; display: flex; gap: 10px; align-items: flex-start; }
+  .alert-icon { font-size: 16px; flex-shrink: 0; }
+
+  /* MASTER */
+  .month-header { background: rgba(30,32,64,.8); padding: 8px 14px; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
+
+  /* KANAGAWA REC */
+  .rec-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+  .rec-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .rec-card p { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 10px; }
+  .rec-card .rec-reason { background: rgba(142,68,173,.1); border-left: 3px solid var(--purple); padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 13px; margin-top: 10px; }
+
+  /* FOOTER */
+  .footer { padding: 20px 32px; font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 20px; }
+  .data-gap { background: rgba(200,160,0,.1); border: 1px solid rgba(200,160,0,.3); border-radius: 6px; padding: 10px 14px; font-size: 12px; margin-bottom: 8px; }
+
+  @media (max-width: 600px) {
+    .header { padding: 14px 16px; flex-direction: column; align-items: flex-start; gap: 8px; }
+    .section { padding: 16px; }
+    .legend { padding: 10px 16px; }
+    .tabs { padding: 0 8px; }
+    .tab { padding: 10px 12px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>⛳ Japan Golf Master Calendar 2026</h1>
+    <div class="subtitle">Country Clubs · Junior Tournaments · Long Drive &nbsp;|&nbsp; April – December 2026</div>
+  </div>
+  <a href="../HOME.html" class="back-btn">← Home</a>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="dot" style="background:#27ae60"></div> Madaraokogen CC</div>
+  <div class="legend-item"><div class="dot" style="background:#2980b9"></div> Nagano Kokusai CC</div>
+  <div class="legend-item"><div class="dot" style="background:#e67e22"></div> Asagiri GC</div>
+  <div class="legend-item"><div class="dot" style="background:#8e44ad"></div> Kanagawa (Sagamihara GC)</div>
+  <div class="legend-item"><div class="dot" style="background:#d4ac0d"></div> LDJapan / JLDC</div>
+  <div class="legend-item"><div class="dot" style="background:#16a085"></div> Prodracon</div>
+  <div class="legend-item"><div class="dot" style="background:#e91e8c"></div> Junior Tournaments</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('cc')">🏌️ Country Clubs</div>
+  <div class="tab" onclick="showTab('kanagawa')">📍 Kanagawa Rec</div>
+  <div class="tab" onclick="showTab('junior')">👧 Junior Tournaments</div>
+  <div class="tab" onclick="showTab('ldjapan')">💥 LDJapan (JLDC)</div>
+  <div class="tab" onclick="showTab('prodracon')">⚡ Prodracon</div>
+  <div class="tab" onclick="showTab('master')">📅 Master Calendar</div>
+  <div class="tab" onclick="showTab('distances')">🗺️ Distances</div>
+  <div class="tab" onclick="showTab('gaps')">⚠️ Data Gaps</div>
+</div>
+
+<!-- ============================================================ COUNTRY CLUBS ============================================================ -->
+<div id="tab-cc" class="section active">
+  <div class="sec-header">
+    <div class="bar" style="background:linear-gradient(#27ae60,#2980b9)"></div>
+    <div><h2>Country Clubs — Tournament &amp; Event Schedules</h2><div class="meta">Member competitions + open competitions · April–December 2026</div></div>
+  </div>
+
+  <div class="alert">
+    <div class="alert-icon">⚠️</div>
+    <div><strong>Note on Member Competitions:</strong> Madaraokogen CC and Nagano Kokusai CC keep their full member tournament calendars on password-protected member pages. What's shown here is what's publicly accessible: open competitions and events open to all golfers. Contact clubs directly for complete member competition schedules.</div>
+  </div>
+
+  <!-- MADARAOKOGEN -->
+  <div class="sec-header" style="margin-bottom:14px">
+    <div class="bar" style="background:#27ae60"></div>
+    <div><h2 style="font-size:16px;color:#2ecc71">斑尾高原カントリー倶楽部 — Madaraokogen CC</h2><div class="meta">Nakano City, Nagano Prefecture · Opens April 3, 2026 (seasonal course)</div></div>
+  </div>
+  <div class="club-grid" style="margin-bottom:12px">
+    <div class="club-card">
+      <div class="club-card-header" style="background:rgba(39,174,96,.12)">
+        <div class="club-badge" style="background:#27ae60"></div>
+        <h3>Club Info</h3>
+      </div>
+      <div class="club-card-body">
+        <div class="info-row"><span class="info-label">Website</span><span class="info-val"><a href="http://www.madaraokogen-cc.jp/" target="_blank">madaraokogen-cc.jp</a></span></div>
+        <div class="info-row"><span class="info-label">Season Open</span><span class="info-val">April 3 (Fri), 2026</span></div>
+        <div class="info-row"><span class="info-label">Phone</span><span class="info-val">Nagano (seasonal)</span></div>
+        <div class="info-row"><span class="info-label">From Nagano</span><span class="info-val">~40km / ~50 min</span></div>
+        <div class="info-row"><span class="info-label">From Yokohama</span><span class="info-val">~330km / ~4.5 hrs</span></div>
+        <div class="info-row"><span class="info-label">From Fuji-K</span><span class="info-val">~190km / ~3 hrs</span></div>
+      </div>
+    </div>
+    <div class="club-card">
+      <div class="club-card-header" style="background:rgba(39,174,96,.12)">
+        <div class="club-badge" style="background:#27ae60"></div>
+        <h3>Competition Schedule</h3>
+      </div>
+      <div class="club-card-body">
+        <p style="color:#f1c40f;font-size:13px">⚠️ Member competition schedule is <strong>not publicly posted</strong>. Only accessible to members via the club directly.</p>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">Contact club to request 2026 member competition calendar. The club is a scenic seasonal highland course — typically hosts spring, summer and fall member competitions after April 3 opening.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAGANO KOKUSAI -->
+  <div class="sec-header" style="margin-bottom:14px;margin-top:28px">
+    <div class="bar" style="background:#2980b9"></div>
+    <div><h2 style="font-size:16px;color:#5dade2">長野国際カントリークラブ — Nagano Kokusai CC</h2><div class="meta">Iizuna-machi, Nagano (30 min from Nagano Station) · Opens March 6, 2026</div></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Event</th><th>Eligibility</th><th>Member</th><th>Guest</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Apr 6 (Mon)</td><td>マンデーCUP</td><td><span class="tag tag-blue">All</span></td><td>¥7,200</td><td>¥9,900</td><td class="note">半集計、参加賞あり</td></tr>
+        <tr><td>Apr 9 (Thu)</td><td>萌木の会</td><td><span class="tag tag-gray">Senior/Ladies</span></td><td>¥7,200</td><td>¥10,200</td><td class="note">男性60歳以上・女性年齢不問</td></tr>
+        <tr class="highlight"><td>Apr 14 (Tue)</td><td>レディースハーフCUP</td><td><span class="tag tag-pink">Ladies</span></td><td>¥5,800</td><td>¥6,300</td><td class="note">レディースクラブ会員 (男性同伴可)</td></tr>
+        <tr><td>Apr 16 (Thu)</td><td>春の大漁祭</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td class="note">参加賞あり、ハーフ集計</td></tr>
+        <tr><td>May 14 (Thu)</td><td>第1回ミートフェスタ①</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>May 15 (Fri)</td><td>第1回ミートフェスタ②</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr class="highlight"><td>May 19 (Tue)</td><td>レディースハーフCUP</td><td><span class="tag tag-pink">Ladies</span></td><td>¥5,800</td><td>¥6,300</td><td></td></tr>
+        <tr><td>May 21 (Thu)</td><td>萌木の会</td><td><span class="tag tag-gray">Senior/Ladies</span></td><td>¥7,200</td><td>¥10,200</td><td></td></tr>
+        <tr><td>May 22 (Fri)</td><td>萌木の会</td><td><span class="tag tag-gray">Senior/Ladies</span></td><td>¥7,200</td><td>¥10,200</td><td></td></tr>
+        <tr><td>May 25 (Mon)</td><td>マンデーCUP</td><td><span class="tag tag-blue">All</span></td><td>¥7,200</td><td>¥9,900</td><td></td></tr>
+        <tr><td>May 26 (Tue)</td><td>大漁祭</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Jun 1 (Mon)</td><td>萌木の会</td><td><span class="tag tag-gray">Senior/Ladies</span></td><td>¥7,200</td><td>¥10,200</td><td></td></tr>
+        <tr><td>Jun 5 (Fri)</td><td>日本全国旨いもの巡り①</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Jun 8 (Mon)</td><td>マンデーCUP</td><td><span class="tag tag-blue">All</span></td><td>¥7,200</td><td>¥9,900</td><td></td></tr>
+        <tr><td>Jun 11 (Thu)</td><td>第2回ミートフェスタ①</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Jun 12 (Fri)</td><td>第2回ミートフェスタ②</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Jun 16 (Tue)</td><td>バッカスCUP</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr class="highlight"><td>Jun 19 (Fri)</td><td>レディースハーフCUP</td><td><span class="tag tag-pink">Ladies</span></td><td>¥5,800</td><td>¥6,300</td><td></td></tr>
+        <tr><td>Jun 29 (Mon)</td><td>社長杯 納涼大会①</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Jun 30 (Tue)</td><td>社長杯 納涼大会②</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Jul 24 (Fri)</td><td>萌木の会</td><td><span class="tag tag-gray">Senior/Ladies</span></td><td>¥7,200</td><td>¥10,200</td><td></td></tr>
+        <tr class="highlight"><td>Jul 27 (Mon)</td><td>レディースハーフCUP</td><td><span class="tag tag-pink">Ladies</span></td><td>¥5,800</td><td>¥6,300</td><td></td></tr>
+        <tr><td>Jul 27 (Mon)</td><td>マンデーCUP</td><td><span class="tag tag-blue">All</span></td><td>¥7,200</td><td>¥9,900</td><td></td></tr>
+        <tr><td>Jul 30 (Thu)</td><td>第3回ミートフェスタ①</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Jul 31 (Fri)</td><td>第3回ミートフェスタ②</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Aug 3 (Mon)</td><td>マンデーCUP</td><td><span class="tag tag-blue">All</span></td><td>¥7,200</td><td>¥9,900</td><td></td></tr>
+        <tr><td>Aug 17 (Mon)</td><td>萌木の会</td><td><span class="tag tag-gray">Senior/Ladies</span></td><td>¥7,200</td><td>¥10,200</td><td></td></tr>
+        <tr><td>Aug 21 (Fri)</td><td>日本全国旨いもの巡り②</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr class="highlight"><td>Aug 24 (Mon)</td><td>レディースハーフCUP</td><td><span class="tag tag-pink">Ladies</span></td><td>¥5,800</td><td>¥6,300</td><td></td></tr>
+        <tr><td>Sep 6 (Sun)</td><td>ホリデーカップ</td><td><span class="tag tag-blue">All</span></td><td>¥7,200</td><td>¥13,500</td><td></td></tr>
+        <tr><td>Sep 8 (Tue)</td><td>萌木の会</td><td><span class="tag tag-gray">Senior/Ladies</span></td><td>¥7,200</td><td>¥10,200</td><td></td></tr>
+        <tr class="highlight"><td>Sep 15 (Tue)</td><td>レディースハーフCUP</td><td><span class="tag tag-pink">Ladies</span></td><td>¥5,800</td><td>¥6,300</td><td></td></tr>
+        <tr><td>Sep 24 (Thu)</td><td>社長杯 NICCアニバーサリー</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td class="note">Anniversary tournament</td></tr>
+        <tr><td>Sep 28 (Mon)</td><td>第4回ミートフェスタ①</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Sep 29 (Tue)</td><td>第4回ミートフェスタ②</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Oct 13 (Tue)</td><td>萌木の会</td><td><span class="tag tag-gray">Senior/Ladies</span></td><td>¥7,200</td><td>¥10,200</td><td></td></tr>
+        <tr><td>Oct 26 (Mon)</td><td>マンデーCUP</td><td><span class="tag tag-blue">All</span></td><td>¥7,200</td><td>¥9,900</td><td></td></tr>
+        <tr><td>Oct 27 (Tue)</td><td>秋の大漁祭</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Nov 5 (Thu)</td><td>秋の味覚祭</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Nov 24 (Tue)</td><td>萌木の会</td><td><span class="tag tag-gray">Senior/Ladies</span></td><td>¥7,200</td><td>¥10,200</td><td></td></tr>
+        <tr><td>Nov 30 (Mon)</td><td>社長杯 St Andrew's Day記念</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+        <tr><td>Dec 24 (Thu)</td><td>X'mas CUP</td><td><span class="tag tag-blue">All</span></td><td>¥9,500</td><td>¥11,500</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ASAGIRI -->
+  <div class="sec-header" style="margin-bottom:14px;margin-top:28px">
+    <div class="bar" style="background:#e67e22"></div>
+    <div><h2 style="font-size:16px;color:#e67e22">朝霧ジャンボリーゴルフクラブ — Asagiri GC</h2><div class="meta">Fujinomiya City, Shizuoka (near Mt Fuji) · Open year-round</div></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Event</th><th>Type</th><th>Entry Fee</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Mar 24 (Tue)</td><td>支配人カップ</td><td><span class="tag tag-orange">Open Compe</span></td><td>¥2,200込</td><td class="note">参加賞：平日セルフ1Rご招待券</td></tr>
+        <tr><td>Apr 1 (Wed) &amp; Apr 30 (Thu)</td><td>WEB会員感謝デー</td><td><span class="tag tag-gray">Special Rate</span></td><td>—</td><td class="note">WEB会員限定 ベストレート保証</td></tr>
+        <tr><td>Apr 6–17 (Mon–Fri)</td><td>平日限定 桜まつり</td><td><span class="tag tag-orange">Special Event</span></td><td>無料</td><td class="note">桜の開花時期、桜茶・お茶菓子サービス</td></tr>
+        <tr><td>Apr 23 (Thu)</td><td>オブリック杯</td><td><span class="tag tag-orange">Open Compe</span></td><td>無料</td><td class="note">スポンサー杯。どなたでも参加可</td></tr>
+        <tr><td>May 21 (Thu)</td><td>香薫カップ</td><td><span class="tag tag-orange">Open Compe</span></td><td>¥2,200込</td><td class="note">プリマハム商品 + プレー招待券</td></tr>
+        <tr><td>Jun 4 (Thu)</td><td>支配人カップ</td><td><span class="tag tag-orange">Open Compe</span></td><td>¥2,200込</td><td class="note">全員参加賞：平日セルフ1Rご招待券</td></tr>
+        <tr class="highlight"><td>Jul 23 (Thu)</td><td>🎀 レディースカップ</td><td><span class="tag tag-pink">Ladies Only</span></td><td>15,000円込</td><td class="note">女性組限定。8:30〜10:00スタート。デザート付。成績発表14:30〜</td></tr>
+        <tr class="highlight"><td>Sep 28–30 (Mon–Wed)</td><td>富士山カップ2026 プロアマ大会選考会</td><td><span class="tag tag-orange">Pro-Am Qualifier</span></td><td>無料</td><td class="note">主催：静岡県ゴルフ場協会中部支部。決勝大会はプロとプレー可能</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================ KANAGAWA RECOMMENDATION ============================================================ -->
+<div id="tab-kanagawa" class="section">
+  <div class="sec-header">
+    <div class="bar" style="background:#8e44ad"></div>
+    <div><h2>Kanagawa Prefecture — Club Recommendation</h2><div class="meta">Best option for a 4th club to track, accessible from Yokohama</div></div>
+  </div>
+
+  <div class="rec-card">
+    <h3><div class="dot" style="background:#8e44ad;width:14px;height:14px;border-radius:50%;display:inline-block"></div> 🏆 Primary Recommendation: 相模原ゴルフクラブ (Sagamihara Golf Club)</h3>
+    <div class="info-row"><span class="info-label">Location</span><span class="info-val">Sagamihara City, Kanagawa Prefecture</span></div>
+    <div class="info-row"><span class="info-label">Website</span><span class="info-val">sagamihara-gc.co.jp</span></div>
+    <div class="info-row"><span class="info-label">Courses</span><span class="info-val">East + West (36 holes)</span></div>
+    <div class="info-row"><span class="info-label">From Yokohama</span><span class="info-val">~35km / ~50 min</span></div>
+    <div class="rec-reason">
+      <strong>Why this club:</strong> Sagamihara GC hosts more KNGA (Kanagawa Golf Association) championship events than any other club in the prefecture — the Men's Final, Women's Final, City/Town Tournament, and Amateur semifinals are all held here. It's the unofficial "headquarters" of competitive Kanagawa golf. 36-hole layout means it can run large field events simultaneously.
+    </div>
+  </div>
+
+  <div class="rec-card" style="border-color:rgba(41,128,185,.4)">
+    <h3><div class="dot" style="background:#2980b9;width:14px;height:14px;border-radius:50%;display:inline-block"></div> Alternative: レイクウッドゴルフクラブ (Lakewood Golf Club)</h3>
+    <div class="info-row"><span class="info-label">Location</span><span class="info-val">Chigasaki City / Ninomiya-machi, Kanagawa</span></div>
+    <div class="info-row"><span class="info-label">Courses</span><span class="info-val">East + West courses</span></div>
+    <div class="rec-reason">
+      <strong>Why relevant for juniors:</strong> Lakewood (West course) hosts the <strong>KNGA Junior Championship</strong> — all age groups including girls 12–14 and girls 15–17. If tracking junior competitions in Kanagawa, this is the key venue.
+    </div>
+  </div>
+
+  <h3 style="margin:20px 0 14px;font-size:15px">2026 KNGA (Kanagawa Golf Association) Junior Events</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Event</th><th>Category</th><th>Venue</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr class="highlight"><td>Feb 22 (Sun)</td><td>KNGA 小学生の部（女子）</td><td><span class="tag tag-pink">Girls Elementary</span></td><td>相模湖CC 百合・藤コース</td><td class="note">National Sports Festival qualifier</td></tr>
+        <tr class="highlight"><td>May 6 (Wed)</td><td>神奈川アマ 15～17歳女子</td><td><span class="tag tag-pink">Girls 15–17</span></td><td>レイクウッドG.C.西</td><td class="note">KNGA Junior Championship</td></tr>
+        <tr class="highlight"><td>May 6 (Wed)</td><td>神奈川アマ 12～14歳女子</td><td><span class="tag tag-pink">Girls 12–14</span></td><td>レイクウッドG.C.西</td><td class="note">KNGA Junior Championship</td></tr>
+        <tr><td>May 6 (Wed)</td><td>神奈川アマ 15～17歳男子</td><td><span class="tag tag-blue">Boys 15–17</span></td><td>レイクウッドG.C.西</td><td></td></tr>
+        <tr><td>May 6 (Wed)</td><td>神奈川アマ 12～14歳男子</td><td><span class="tag tag-blue">Boys 12–14</span></td><td>レイクウッドG.C.西</td><td></td></tr>
+        <tr><td>Feb 22 (Sun)</td><td>KNGA 小学生の部（男子）</td><td><span class="tag tag-blue">Boys Elementary</span></td><td>相模湖CC 百合・藤コース</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================ JUNIOR TOURNAMENTS ============================================================ -->
+<div id="tab-junior" class="section">
+  <div class="sec-header">
+    <div class="bar" style="background:#e91e8c"></div>
+    <div><h2>Junior &amp; Girls Tournaments</h2><div class="meta">Girls-only, mixed junior, and women's events · Tokyo / Chiba / Kanagawa / Nagano / Yamanashi prefectures</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Event</th><th>Organizer</th><th>Category</th><th>Venue</th><th>Prefecture</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr class="highlight"><td>Feb 21–Apr 5</td><td>JJGA 大東建託ジュニア予選 (東日本)</td><td>JJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>全国34会場</td><td>各地</td><td class="note">34 venues nationwide. East Japan qualifying rounds</td></tr>
+        <tr class="highlight"><td>Mar 22 (Sun)</td><td>IJGA PGM世界ジュニア 関東予選①</td><td>IJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>千成ゴルフクラブ</td><td>栃木県</td><td class="note">~3h from Yokohama</td></tr>
+        <tr class="highlight"><td>Mar 25 (Wed)</td><td>IJGA PGM世界ジュニア 関東予選②</td><td>IJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>大日向CC</td><td>栃木県</td><td></td></tr>
+        <tr class="highlight"><td>Apr 2 (Thu)</td><td>IJGA PGM世界ジュニア 関東予選③</td><td>IJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>ムーンレイクGC 茂原C</td><td>千葉県</td><td class="note">~1.5h from Yokohama</td></tr>
+        <tr><td>Apr 18–Jun 7</td><td>JJGA ジャパンジュニアプレーヤーズ予選 (東日本)</td><td>JJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>複数会場</td><td>各地</td><td class="note">East Japan qualifying period</td></tr>
+        <tr><td>Apr 20 (Mon)</td><td>U.S. Women's Open Championship Qualifying</td><td>JGA</td><td><span class="tag tag-pink">Women Open</span></td><td>房総カントリークラブ 房総G場</td><td>千葉県</td><td class="note">~1.5h from Yokohama</td></tr>
+        <tr class="highlight"><td>Apr 24 (Fri)</td><td>IJGA PGM世界ジュニア 東日本決勝 Day1</td><td>IJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>美浦ゴルフクラブ</td><td>茨城県</td><td class="note">~2h from Yokohama</td></tr>
+        <tr class="highlight"><td>Apr 25–26 (Sat–Sun)</td><td>IJGA PGM世界ジュニア 東日本決勝</td><td>IJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>美浦ゴルフクラブ</td><td>茨城県</td><td></td></tr>
+        <tr class="highlight"><td>May 4 (Mon)</td><td>JGA 全国小学生ゴルフ大会 <strong>女子の部</strong></td><td>JGA</td><td><span class="tag tag-pink">Girls Elementary</span></td><td>我孫子ゴルフ倶楽部</td><td>千葉県</td><td class="note">~1.5h from Yokohama</td></tr>
+        <tr class="highlight"><td>May 5–6 (Tue–Wed)</td><td>JJGA 大東建託ジュニア 東日本決勝</td><td>JJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>新宇都宮CC</td><td>栃木県</td><td class="note">~2.5h from Yokohama. Girls eligible. 優勝特典：LPGA大会出場</td></tr>
+        <tr class="highlight"><td>May 6 (Wed)</td><td>KNGA 15～17歳<strong>女子</strong> Junior Championship</td><td>KNGA</td><td><span class="tag tag-pink">Girls 15–17</span></td><td>レイクウッドG.C.西</td><td>神奈川県</td><td class="note">~45min from Yokohama. Kanagawa Prefecture championship</td></tr>
+        <tr class="highlight"><td>May 6 (Wed)</td><td>KNGA 12～14歳<strong>女子</strong> Junior Championship</td><td>KNGA</td><td><span class="tag tag-pink">Girls 12–14</span></td><td>レイクウッドG.C.西</td><td>神奈川県</td><td></td></tr>
+        <tr><td>Jun 1 (Mon)</td><td>JGA 日本女子アマ東日本予選 (第67回)</td><td>JGA</td><td><span class="tag tag-pink">Women Amateur</span></td><td>平川カントリークラブ</td><td>千葉県</td><td class="note">~1.5h from Yokohama</td></tr>
+        <tr class="highlight"><td>Jun 22 (Mon)</td><td>JGA 日本女子オープン地区予選1Cブロック</td><td>JGA</td><td><span class="tag tag-pink">Women Pro/Am</span></td><td>富獄カントリークラブ</td><td>静岡県</td><td class="note">~1h from Fuji Kawaguchi! Fugaku CC near Mt Fuji</td></tr>
+        <tr class="highlight"><td>Jun 24 (Wed)</td><td>第38回 山梨県女子アマチュアゴルフ選手権</td><td>山梨県ゴルフ連盟</td><td><span class="tag tag-pink">Women Amateur</span></td><td>ヴィンテージゴルフ倶楽部</td><td>山梨県</td><td class="note">~1.5h from Fuji Kawaguchi</td></tr>
+        <tr><td>Jun 16–19</td><td>JGA 日本女子アマ選手権 (第67回)</td><td>JGA</td><td><span class="tag tag-pink">Women Amateur</span></td><td>北海道ブルックスCC</td><td>北海道</td><td class="note">National championship — finals in Hokkaido</td></tr>
+        <tr><td>Jun 27–28 (Sat–Sun)</td><td>JJGA ジャパンJrプレーヤーズ 東日本決勝</td><td>JJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>那須小川ゴルフクラブ</td><td>栃木県</td><td class="note">~3h from Yokohama. Girls included</td></tr>
+        <tr class="highlight"><td>Aug 5 (Wed)</td><td>第35回 山梨県ジュニアゴルフ大会</td><td>山梨県ゴルフ連盟</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>丘の公園清里ゴルフコース</td><td>山梨県</td><td class="note">~2h from Fuji Kawaguchi. KEY local Yamanashi junior event</td></tr>
+        <tr class="highlight"><td>Aug 19–21 (Wed–Fri)</td><td>JGA 第70回日本Jr選手権 <strong>女子15～17歳</strong></td><td>JGA</td><td><span class="tag tag-pink">Girls 15–17</span></td><td>久邇カントリークラブ 東・北コース</td><td>埼玉県</td><td class="note">~1h from Yokohama. National championship girls 15-17</td></tr>
+        <tr class="highlight"><td>Aug 19–21 (Wed–Fri)</td><td>JGA 第70回日本Jr選手権 <strong>女子12～14歳</strong></td><td>JGA</td><td><span class="tag tag-pink">Girls 12–14</span></td><td>千葉カントリークラブ 梅郷コース</td><td>千葉県</td><td class="note">~1.5h from Yokohama. National championship girls 12-14</td></tr>
+        <tr><td>Sep 5–6 (Sat–Sun)</td><td>JJGA 小平智カップ 決勝大会</td><td>JJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>ウエストワンズCC</td><td>兵庫県</td><td class="note">Finals in Hyogo (too far)</td></tr>
+        <tr><td>Oct 3–4 (Sat–Sun)</td><td>JJGA ジャパンJrゴルフオールスター</td><td>JJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>那須小川ゴルフクラブ</td><td>栃木県</td><td class="note">Invitational. Girls included</td></tr>
+        <tr><td>Nov 14–16 (Sat–Mon)</td><td>JJGA 東横インジュニアオープン 決勝</td><td>JJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>ニュー・セントアンドリュースGCジャパン</td><td>栃木県</td><td class="note">~3h from Yokohama. Girls eligible</td></tr>
+        <tr><td>Dec 5–6 (Sat–Sun)</td><td>JJGA リシャール・ミル宮里優作カップ</td><td>JJGA</td><td><span class="tag tag-pink">Junior Mixed</span></td><td>新宇都宮カントリークラブ</td><td>栃木県</td><td class="note">Invitational only (JJGA ranking)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert">
+    <div class="alert-icon">ℹ️</div>
+    <div><strong>Note on ATP Golf (ISPS HANDA Tour):</strong> ATP Golf / ISPS HANDA Tour is a <em>professional mini-tour</em> for pros and trainees — not a junior tournament series. Events are primarily in Chiba, Ibaraki, Tochigi. None fall within 1.5 hours of Nagano or Fuji Kawaguchi. Not included in junior calendar.</div>
+  </div>
+
+  <div class="alert">
+    <div class="alert-icon">🏫</div>
+    <div><strong>Nihon Kougoren (High School / Middle School Federation):</strong> Spring High/Middle School Golf (春高・春中ゴルフ) is happening March 2026 — score updates being posted. 2026 Japan Junior venue announced Dec 2025 (see JGA entries above). Check <a href="https://nihon-kougoren.jp" target="_blank">nihon-kougoren.jp</a> for school-based tournament schedule as it becomes available.</div>
+  </div>
+</div>
+
+<!-- ============================================================ LDJAPAN ============================================================ -->
+<div id="tab-ldjapan" class="section">
+  <div class="sec-header">
+    <div class="bar" style="background:#d4ac0d"></div>
+    <div><h2>LDJapan — JLDC 2026 Schedule</h2><div class="meta">LOWMEL Presents LDJ×GD Japan Long Drive Championship · <a href="https://ldjapan.jp/tour_schedule/jldc/" target="_blank">ldjapan.jp</a></div></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Prefecture</th><th>Venue</th><th>Type</th><th>From Yokohama</th><th>From Nagano</th><th>From Fuji-K</th></tr></thead>
+      <tbody>
+        <tr><td>Mar 6 (Sat)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr><td>Mar 7 (Sun)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">Qualifying</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr><td>Mar 13 (Sat)</td><td>鹿児島県</td><td>三豊ゴルフクラブ</td><td><span class="tag tag-gray">❌ Cancelled TH</span></td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>Mar 14 (Sun)</td><td>鹿児島県</td><td>三豊ゴルフクラブ</td><td><span class="tag tag-gray">❌ Cancelled TH</span></td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>Mar 20 (Sat)</td><td>山口県</td><td>朝陽カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~900km 12h</td><td>~700km 9h</td><td>~800km 10h</td></tr>
+        <tr><td>Mar 21 (Sun)</td><td>山口県</td><td>朝陽カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>Mar 27 (Sat)</td><td>栃木県</td><td>宇都宮インターリゾート 鶴CC</td><td><span class="tag tag-gold">Qualifying</span></td><td>~180km 2.5h</td><td>~280km 4h</td><td>~200km 3h</td></tr>
+        <tr><td>Mar 28 (Sun)</td><td>栃木県</td><td>宇都宮インターリゾート 鶴CC</td><td><span class="tag tag-gold">Qualifying</span></td><td>~180km 2.5h</td><td>~280km 4h</td><td>~200km 3h</td></tr>
+        <tr><td>Apr 3 (Sat)</td><td>鹿児島県</td><td>三豊ゴルフクラブ</td><td><span class="tag tag-gold">Qualifying TH</span></td><td>far</td><td>far</td><td>far</td></tr>
+        <tr><td>Apr 4 (Sun)</td><td>鹿児島県</td><td>三豊ゴルフクラブ</td><td><span class="tag tag-gold">Qualifying TH</span></td><td>far</td><td>far</td><td>far</td></tr>
+        <tr class="highlight"><td>Apr 10 (Sat)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr class="highlight"><td>Apr 11 (Sun)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr><td>Apr 17 (Sat)</td><td>静岡県</td><td>TBD</td><td><span class="tag tag-gold">Qualifying</span></td><td>~90km est</td><td>—</td><td>~35km est</td></tr>
+        <tr><td>Apr 18 (Sun)</td><td>静岡県</td><td>TBD</td><td><span class="tag tag-gold">Qualifying</span></td><td>~90km est</td><td>—</td><td>~35km est</td></tr>
+        <tr><td>May 1 (Sat)</td><td>大阪府</td><td>アートレイクゴルフ倶楽部</td><td><span class="tag tag-gold">Qualifying</span></td><td>~530km 6h</td><td>far</td><td>far</td></tr>
+        <tr><td>May 2 (Sun)</td><td>大阪府</td><td>アートレイクゴルフ倶楽部</td><td><span class="tag tag-gold">Qualifying</span></td><td>far</td><td>far</td><td>far</td></tr>
+        <tr><td>May 8 (Sat)</td><td>兵庫県</td><td>有馬カンツリー倶楽部</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>far</td><td>far</td><td>far</td></tr>
+        <tr><td>May 9 (Sun)</td><td>兵庫県</td><td>有馬カンツリー倶楽部</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>far</td><td>far</td><td>far</td></tr>
+        <tr><td>May 15 (Sat)</td><td>兵庫県</td><td>TBD</td><td><span class="tag tag-gold">Qualifying</span></td><td>far</td><td>far</td><td>far</td></tr>
+        <tr><td>May 16 (Sun)</td><td>兵庫県</td><td>TBD</td><td><span class="tag tag-gold">Qualifying</span></td><td>far</td><td>far</td><td>far</td></tr>
+        <tr class="highlight"><td>May 22 (Sat)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr class="highlight"><td>May 23 (Sun)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr><td>Jun 5 (Sat)</td><td>兵庫県</td><td>有馬カンツリー倶楽部</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>far</td><td>far</td><td>far</td></tr>
+        <tr><td>Jun 6 (Sun)</td><td>兵庫県</td><td>有馬カンツリー倶楽部</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>far</td><td>far</td><td>far</td></tr>
+        <tr><td>Jun 12 (Sat)</td><td>岐阜県</td><td>いわむらカントリークラブ</td><td><span class="tag tag-gold">Qualifying</span></td><td>~350km 4.5h</td><td>~250km 3h</td><td>~280km 3.5h</td></tr>
+        <tr><td>Jun 13 (Sun)</td><td>岐阜県</td><td>いわむらカントリークラブ</td><td><span class="tag tag-gold">Qualifying</span></td><td>~350km 4.5h</td><td>~250km 3h</td><td>~280km 3.5h</td></tr>
+        <tr class="highlight"><td>Jun 19 (Sat)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr class="highlight"><td>Jun 20 (Sun)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr><td>Jun 26 (Sat)</td><td>静岡県</td><td>TBD</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~90km est</td><td>—</td><td>~35km est</td></tr>
+        <tr><td>Jun 27 (Sun)</td><td>静岡県</td><td>TBD</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>Jul 3 (Sat)</td><td>栃木県</td><td>芳賀カントリークラブ</td><td><span class="tag tag-gold">Qualifying</span></td><td>~180km 2.5h</td><td>~280km 4h</td><td>~200km 3h</td></tr>
+        <tr><td>Jul 4 (Sun)</td><td>群馬県</td><td>玉村ゴルフ場</td><td><span class="tag tag-gold">Qualifying</span></td><td>~100km 1.5h</td><td>~140km 2h</td><td>~130km 2h</td></tr>
+        <tr class="highlight"><td>Jul 10 (Sat)</td><td>静岡県</td><td>中伊豆グリーンクラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~120km 2h</td><td>~250km 3.5h</td><td>~80km 1.5h</td></tr>
+        <tr class="highlight"><td>Jul 11 (Sun)</td><td>静岡県</td><td>中伊豆グリーンクラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~120km 2h</td><td>~250km 3.5h</td><td>~80km 1.5h</td></tr>
+        <tr class="highlight"><td>Jul 17 (Sat)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr class="highlight"><td>Jul 18 (Sun)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr class="highlight"><td>Jul 23 (Fri)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr class="highlight"><td>Jul 24 (Sat)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">Qualifying DH</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr class="highlight"><td>Jul 25 (Sun)</td><td>山梨県</td><td>都留カントリー倶楽部</td><td><span class="tag tag-gold">Qualifying</span></td><td>~100km 1.5h</td><td>~200km 3h</td><td>~20km 25min</td></tr>
+        <tr class="highlight" style="border-bottom:2px solid #d4ac0d"><td>Aug 7–9 (Sat–Mon)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-gold">🏆 JAPAN FINALS</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr style="border-bottom:2px solid #d4ac0d"><td>Sep 10–19</td><td>USA</td><td>Cog Hill Golf &amp; Country Club</td><td><span class="tag tag-gold">🌏 WORLD FINAL</span></td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:12px;color:var(--muted)">DH = Double Header · TH = Triple Header · Distances are approximate driving estimates</p>
+</div>
+
+<!-- ============================================================ PRODRACON ============================================================ -->
+<div id="tab-prodracon" class="section">
+  <div class="sec-header">
+    <div class="bar" style="background:#16a085"></div>
+    <div><h2>Prodracon — 2026 Season.1 Schedule</h2><div class="meta">プロドラコンツアー · <a href="https://prodracon.com/pro-tour/pd/" target="_blank">prodracon.com</a></div></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Prefecture</th><th>Venue / Address</th><th>Type</th><th>From Yokohama</th><th>From Nagano</th><th>From Fuji-K</th></tr></thead>
+      <tbody>
+        <tr><td>Feb 21 (Sat)</td><td>鹿児島県</td><td>三豊ゴルフクラブ<br><span class="note">南九州市川辺町神殿450</span></td><td><span class="tag tag-teal">Pro + Amateur</span></td><td>far</td><td>far</td><td>far</td></tr>
+        <tr><td>Feb 22 (Sun)</td><td>鹿児島県</td><td>三豊ゴルフクラブ</td><td><span class="tag tag-teal">Amateur Dracon</span></td><td>far</td><td>far</td><td>far</td></tr>
+        <tr class="highlight"><td>Mar 21 (Sat)</td><td>静岡県</td><td>東名カントリークラブ<br><span class="note">裾野市桃園300</span></td><td><span class="tag tag-teal">Pro + Amateur</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr class="highlight"><td>Mar 22 (Sun)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-teal">Amateur Dracon</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr class="highlight"><td>Apr 24 (Fri)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-teal">Pro + Amateur</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr class="highlight"><td>Apr 25 (Sat)</td><td>静岡県</td><td>東名カントリークラブ</td><td><span class="tag tag-teal">Pro</span></td><td>~90km 1.5h</td><td>~190km 3h</td><td>~35km 40min</td></tr>
+        <tr><td>May 9 (Sat)</td><td>三重県</td><td>ゴルフ5カントリー 四日市<br><span class="note">四日市市水沢町1510</span></td><td><span class="tag tag-teal">Pro + Amateur</span></td><td>~380km 5h</td><td>far</td><td>far</td></tr>
+        <tr><td>May 10 (Sun)</td><td>三重県</td><td>ゴルフ5カントリー 四日市</td><td><span class="tag tag-teal">Pro</span></td><td>~380km 5h</td><td>far</td><td>far</td></tr>
+        <tr><td>May 22 (Fri)</td><td>TBD</td><td>設営作業日</td><td><span class="tag tag-gray">Setup</span></td><td>—</td><td>—</td><td>—</td></tr>
+        <tr class="highlight" style="border-bottom:2px solid #16a085"><td>May 23 (Sat)</td><td>TBD</td><td>ラストクオリファイ + 挑戦者決定戦</td><td><span class="tag tag-teal">Last Qualify</span></td><td>TBD</td><td>TBD</td><td>TBD</td></tr>
+        <tr style="border-bottom:2px solid #16a085"><td>May 24 (Sun)</td><td>TBD</td><td>ドラコンプロ タイトルマッチ 2026 Season.1</td><td><span class="tag tag-teal">🏆 TITLE MATCH</span></td><td>TBD</td><td>TBD</td><td>TBD</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="alert">
+    <div class="alert-icon">ℹ️</div>
+    <div>Season.2 schedule has not yet been published. Check <a href="https://prodracon.com" target="_blank">prodracon.com</a> for updates. The May 23–24 Title Match venue is TBD — confirm directly with Prodracon.</div>
+  </div>
+</div>
+
+<!-- ============================================================ MASTER CALENDAR ============================================================ -->
+<div id="tab-master" class="section">
+  <div class="sec-header">
+    <div class="bar" style="background:linear-gradient(#e91e8c,#d4ac0d,#27ae60)"></div>
+    <div><h2>Master Calendar — All Events</h2><div class="meta">All categories sorted chronologically · April–December 2026</div></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Event</th><th>Category</th><th>Location</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td colspan="5" class="month-header">APRIL 2026</td></tr>
+        <tr class="highlight"><td>Apr 3 (Fri)</td><td>斑尾高原CC — SEASON OPEN</td><td><span class="tag tag-green">Madaraokogen</span></td><td>Nagano</td><td class="note">Opens for 2026 season</td></tr>
+        <tr><td>Apr 6 (Mon)</td><td>マンデーCUP</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano (Iizuna)</td><td></td></tr>
+        <tr><td>Apr 6–17</td><td>桜まつり (Asagiri)</td><td><span class="tag tag-orange">Asagiri GC</span></td><td>Shizuoka (Fujinomiya)</td><td></td></tr>
+        <tr><td>Apr 9 (Thu)</td><td>萌木の会</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr class="highlight"><td>Apr 10–11 (Sat–Sun)</td><td>JLDC Qualifying DH</td><td><span class="tag tag-gold">LDJapan</span></td><td>東名CC, Shizuoka</td><td class="note">Near Fuji Kawaguchi ~40min</td></tr>
+        <tr class="highlight"><td>Apr 14 (Tue)</td><td>レディースハーフCUP</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr><td>Apr 16 (Thu)</td><td>春の大漁祭</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr><td>Apr 17–18</td><td>JLDC Qualifying</td><td><span class="tag tag-gold">LDJapan</span></td><td>Shizuoka (TBD)</td><td></td></tr>
+        <tr><td>Apr 20 (Mon)</td><td>US Women's Open Japan Qualifying</td><td><span class="tag tag-pink">Junior/Women</span></td><td>房総CC, 千葉</td><td></td></tr>
+        <tr><td>Apr 23 (Thu)</td><td>オブリック杯</td><td><span class="tag tag-orange">Asagiri GC</span></td><td>Shizuoka</td><td></td></tr>
+        <tr class="highlight"><td>Apr 24 (Fri)</td><td>Prodracon Pro+Amateur</td><td><span class="tag tag-teal">Prodracon</span></td><td>東名CC, Shizuoka</td><td class="note">~40min from Fuji Kawaguchi</td></tr>
+        <tr class="highlight"><td>Apr 24–26 (Fri–Sun)</td><td>IJGA PGM世界ジュニア 東日本決勝</td><td><span class="tag tag-pink">Junior/Women</span></td><td>美浦GC, 茨城</td><td></td></tr>
+        <tr class="highlight"><td>Apr 25 (Sat)</td><td>Prodracon Pro</td><td><span class="tag tag-teal">Prodracon</span></td><td>東名CC, Shizuoka</td><td></td></tr>
+
+        <tr><td colspan="5" class="month-header">MAY 2026</td></tr>
+        <tr class="highlight"><td>May 4 (Mon)</td><td>JGA 全国小学生ゴルフ 女子の部</td><td><span class="tag tag-pink">Junior/Women</span></td><td>我孫子GC, 千葉</td><td class="note">Girls elementary national</td></tr>
+        <tr class="highlight"><td>May 5–6 (Tue–Wed)</td><td>JJGA 大東建託Jr 東日本決勝</td><td><span class="tag tag-pink">Junior/Women</span></td><td>新宇都宮CC, 栃木</td><td class="note">Girls eligible</td></tr>
+        <tr class="highlight"><td>May 6 (Wed)</td><td>KNGA Jr 12-14歳女子 / 15-17歳女子</td><td><span class="tag tag-pink">Junior/Women</span></td><td>レイクウッドGC西, 神奈川</td><td class="note">Both age groups same day</td></tr>
+        <tr><td>May 9 (Sat)</td><td>Prodracon Pro+Amateur</td><td><span class="tag tag-teal">Prodracon</span></td><td>Golf5 四日市, 三重</td><td></td></tr>
+        <tr><td>May 14–15 (Thu–Fri)</td><td>第1回ミートフェスタ①②</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr class="highlight"><td>May 19 (Tue)</td><td>レディースハーフCUP</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr><td>May 21 (Thu)</td><td>香薫カップ (Asagiri)</td><td><span class="tag tag-orange">Asagiri GC</span></td><td>Shizuoka</td><td></td></tr>
+        <tr><td>May 21–22 (Thu–Fri)</td><td>萌木の会 x2</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr class="highlight"><td>May 22–23 (Sat–Sun)</td><td>JLDC Qualifying DH</td><td><span class="tag tag-gold">LDJapan</span></td><td>東名CC, Shizuoka</td><td></td></tr>
+        <tr class="highlight"><td>May 23 (Sat)</td><td>Prodracon Last Qualify + Challenger</td><td><span class="tag tag-teal">Prodracon</span></td><td>TBD</td><td></td></tr>
+        <tr class="highlight"><td>May 24 (Sun)</td><td>Prodracon タイトルマッチ Season.1</td><td><span class="tag tag-teal">Prodracon</span></td><td>TBD</td><td class="note">Season.1 Championship</td></tr>
+        <tr><td>May 25 (Mon)</td><td>マンデーCUP</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr><td>May 26 (Tue)</td><td>大漁祭</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+
+        <tr><td colspan="5" class="month-header">JUNE 2026</td></tr>
+        <tr><td>Jun 1 (Mon)</td><td>萌木の会 / 日本女子アマ東日本予選</td><td><span class="tag tag-blue">Nagano Kokusai</span> <span class="tag tag-pink">Junior/Women</span></td><td>Nagano / 千葉</td><td></td></tr>
+        <tr><td>Jun 4 (Thu)</td><td>支配人カップ</td><td><span class="tag tag-orange">Asagiri GC</span></td><td>Shizuoka</td><td></td></tr>
+        <tr><td>Jun 5–6 (Fri–Sat)</td><td>JLDC Qualifying DH / 旨いもの巡り①</td><td><span class="tag tag-gold">LDJapan</span> <span class="tag tag-blue">Nagano Kokusai</span></td><td>兵庫 / Nagano</td><td></td></tr>
+        <tr><td>Jun 8 (Mon)</td><td>マンデーCUP</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr><td>Jun 11–12 (Thu–Fri)</td><td>第2回ミートフェスタ / JLDC Gifu</td><td><span class="tag tag-blue">Nagano Kokusai</span> <span class="tag tag-gold">LDJapan</span></td><td>Nagano / 岐阜</td><td></td></tr>
+        <tr><td>Jun 16 (Tue)</td><td>バッカスCUP</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr class="highlight"><td>Jun 19–20 (Fri–Sat)</td><td>JLDC Qualifying DH / レディースハーフCUP</td><td><span class="tag tag-gold">LDJapan</span> <span class="tag tag-blue">Nagano Kokusai</span></td><td>東名CC / Nagano</td><td></td></tr>
+        <tr class="highlight"><td>Jun 22 (Mon)</td><td>JGA 日本女子オープン地区予選1C</td><td><span class="tag tag-pink">Junior/Women</span></td><td>富獄CC, 静岡</td><td class="note">Near Mt Fuji — ~1h from Fuji Kawaguchi</td></tr>
+        <tr class="highlight"><td>Jun 24 (Wed)</td><td>山梨県女子アマチュアゴルフ選手権</td><td><span class="tag tag-pink">Junior/Women</span></td><td>ヴィンテージGC, 山梨</td><td></td></tr>
+        <tr><td>Jun 26–27</td><td>JLDC Qualifying DH</td><td><span class="tag tag-gold">LDJapan</span></td><td>Shizuoka (TBD)</td><td></td></tr>
+        <tr><td>Jun 27–28</td><td>JJGA Jr Players 東日本決勝</td><td><span class="tag tag-pink">Junior/Women</span></td><td>那須小川GC, 栃木</td><td></td></tr>
+        <tr><td>Jun 29–30</td><td>社長杯 納涼大会①②</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+
+        <tr><td colspan="5" class="month-header">JULY 2026</td></tr>
+        <tr><td>Jul 3–4</td><td>JLDC Qualifying (栃木/群馬)</td><td><span class="tag tag-gold">LDJapan</span></td><td>芳賀CC / 玉村GC</td><td></td></tr>
+        <tr><td>Jul 4–5</td><td>JJGA Jr Players Championship 東日本決勝</td><td><span class="tag tag-pink">Junior/Women</span></td><td>那須小川GC, 栃木</td><td></td></tr>
+        <tr class="highlight"><td>Jul 10–11</td><td>JLDC Qualifying DH (中伊豆)</td><td><span class="tag tag-gold">LDJapan</span></td><td>中伊豆グリーンクラブ, 静岡</td><td></td></tr>
+        <tr class="highlight"><td>Jul 17–18</td><td>JLDC Qualifying DH</td><td><span class="tag tag-gold">LDJapan</span></td><td>東名CC, Shizuoka</td><td></td></tr>
+        <tr class="highlight"><td>Jul 23</td><td>JLDC Qualifying DH / Asagiri レディースカップ</td><td><span class="tag tag-gold">LDJapan</span> <span class="tag tag-pink">Junior/Women</span></td><td>東名CC / 朝霧GC, 静岡</td><td class="note">Ladies-only event at Asagiri</td></tr>
+        <tr><td>Jul 24 (Fri)</td><td>萌木の会 / JLDC DH</td><td><span class="tag tag-blue">Nagano Kokusai</span> <span class="tag tag-gold">LDJapan</span></td><td>Nagano / 東名CC</td><td></td></tr>
+        <tr class="highlight"><td>Jul 25 (Sun)</td><td>JLDC Qualifying — 都留CC</td><td><span class="tag tag-gold">LDJapan</span></td><td>都留カントリー倶楽部, 山梨</td><td class="note">Only ~20km from Fuji Kawaguchi!</td></tr>
+        <tr class="highlight"><td>Jul 27 (Mon)</td><td>レディースハーフCUP / マンデーCUP</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr><td>Jul 28 (Tue)</td><td>山梨県社会人ゴルフ 決勝2日目</td><td><span class="tag tag-pink">Junior/Women</span></td><td>北の杜CC, 山梨</td><td class="note">Women included</td></tr>
+        <tr><td>Jul 30–31</td><td>第3回ミートフェスタ①②</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+
+        <tr><td colspan="5" class="month-header">AUGUST 2026</td></tr>
+        <tr><td>Aug 3 (Mon)</td><td>マンデーCUP</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr class="highlight"><td>Aug 5 (Wed)</td><td>第35回 山梨県ジュニアゴルフ大会</td><td><span class="tag tag-pink">Junior/Women</span></td><td>丘の公園清里GC, 山梨</td><td class="note">LOCAL KEY event. Yamanashi junior championship</td></tr>
+        <tr class="highlight"><td>Aug 7–9 (Sat–Mon)</td><td>JLDC 🏆 JAPAN FINALS</td><td><span class="tag tag-gold">LDJapan</span></td><td>東名CC, Shizuoka</td><td class="note">National championship. ~1.5h from Yokohama, ~40min from Fuji-K</td></tr>
+        <tr><td>Aug 17 (Mon)</td><td>萌木の会</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr class="highlight"><td>Aug 19–21 (Wed–Fri)</td><td>JGA 日本Jr選手権 女子15-17歳</td><td><span class="tag tag-pink">Junior/Women</span></td><td>久邇CC 東北コース, 埼玉</td><td class="note">National Girls Championship 15-17</td></tr>
+        <tr class="highlight"><td>Aug 19–21 (Wed–Fri)</td><td>JGA 日本Jr選手権 女子12-14歳</td><td><span class="tag tag-pink">Junior/Women</span></td><td>千葉CC 梅郷コース, 千葉</td><td class="note">National Girls Championship 12-14</td></tr>
+        <tr><td>Aug 21 (Fri)</td><td>旨いもの巡り②</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr class="highlight"><td>Aug 24 (Mon)</td><td>レディースハーフCUP</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+
+        <tr><td colspan="5" class="month-header">SEPTEMBER 2026</td></tr>
+        <tr><td>Sep 6 (Sun)</td><td>ホリデーカップ</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr><td>Sep 8 (Tue)</td><td>萌木の会</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr><td>Sep 10–19</td><td>JLDC 🌏 WORLD CHAMPIONSHIP</td><td><span class="tag tag-gold">LDJapan</span></td><td>Cog Hill GCC, USA</td><td></td></tr>
+        <tr class="highlight"><td>Sep 15 (Tue)</td><td>レディースハーフCUP</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr><td>Sep 24 (Thu)</td><td>社長杯 NICCアニバーサリー</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr class="highlight"><td>Sep 28–30</td><td>富士山カップ プロアマ選考会</td><td><span class="tag tag-orange">Asagiri GC</span></td><td>朝霧GC, Shizuoka</td><td class="note">Pro-Am qualifier — Fuji area</td></tr>
+        <tr><td>Sep 28–29</td><td>第4回ミートフェスタ①②</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+
+        <tr><td colspan="5" class="month-header">OCTOBER 2026</td></tr>
+        <tr><td>Oct 3–4</td><td>JJGA ジュニアゴルフオールスター</td><td><span class="tag tag-pink">Junior/Women</span></td><td>那須小川GC, 栃木</td><td></td></tr>
+        <tr><td>Oct 13 (Tue)</td><td>萌木の会</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr><td>Oct 26–27</td><td>マンデーCUP / 秋の大漁祭</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+
+        <tr><td colspan="5" class="month-header">NOVEMBER 2026</td></tr>
+        <tr><td>Nov 5 (Thu)</td><td>秋の味覚祭</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr><td>Nov 14–16</td><td>JJGA 東横インジュニアオープン 決勝</td><td><span class="tag tag-pink">Junior/Women</span></td><td>ニューセントアンドリュースGCJ, 栃木</td><td></td></tr>
+        <tr><td>Nov 24 (Tue)</td><td>萌木の会</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+        <tr><td>Nov 30 (Mon)</td><td>社長杯 St Andrew's Day記念</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+
+        <tr><td colspan="5" class="month-header">DECEMBER 2026</td></tr>
+        <tr><td>Dec 5–6</td><td>JJGA リシャール・ミル 宮里優作カップ</td><td><span class="tag tag-pink">Junior/Women</span></td><td>新宇都宮CC, 栃木</td><td class="note">Invitational only</td></tr>
+        <tr><td>Dec 24 (Thu)</td><td>X'mas CUP</td><td><span class="tag tag-blue">Nagano Kokusai</span></td><td>Nagano</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================ DISTANCES ============================================================ -->
+<div id="tab-distances" class="section">
+  <div class="sec-header">
+    <div class="bar" style="background:#aaa"></div>
+    <div><h2>Distance Reference Table</h2><div class="meta">Approximate driving distances and times from key base cities</div></div>
+  </div>
+  <div class="table-wrap">
+    <table class="dist-table">
+      <thead><tr><th>Venue</th><th>Prefecture</th><th>From Yokohama</th><th>From Nagano City</th><th>From Fuji Kawaguchi</th><th>Relevant For</th></tr></thead>
+      <tbody>
+        <tr><td><strong>斑尾高原CC</strong></td><td>Nagano</td><td>~330km / 4.5h</td><td>~40km / 50min</td><td>~190km / 3h</td><td><span class="tag tag-green">Madaraokogen</span></td></tr>
+        <tr><td><strong>長野国際CC</strong></td><td>Nagano (Iizuna)</td><td>~300km / 4h</td><td>~35km / 45min</td><td>~175km / 2.5h</td><td><span class="tag tag-blue">Nagano Kokusai</span></td></tr>
+        <tr><td><strong>朝霧ジャンボリーGC</strong></td><td>Shizuoka (Fujinomiya)</td><td>~120km / 1.75h</td><td>~160km / 2.5h</td><td>~45km / 50min</td><td><span class="tag tag-orange">Asagiri</span></td></tr>
+        <tr><td><strong>東名カントリークラブ</strong></td><td>Shizuoka (Susono)</td><td>~90km / 1.5h</td><td>~190km / 3h</td><td>~35km / 40min</td><td><span class="tag tag-gold">JLDC</span> <span class="tag tag-teal">Prodracon</span></td></tr>
+        <tr class="highlight"><td><strong>都留カントリー倶楽部</strong></td><td>Yamanashi (Tsuru)</td><td>~100km / 1.5h</td><td>~200km / 3h</td><td>~20km / 25min</td><td><span class="tag tag-gold">JLDC Jul 25</span></td></tr>
+        <tr><td><strong>中伊豆グリーンクラブ</strong></td><td>Shizuoka (Izu)</td><td>~120km / 2h</td><td>~250km / 3.5h</td><td>~80km / 1.5h</td><td><span class="tag tag-gold">JLDC Jul 10–11</span></td></tr>
+        <tr><td><strong>相模原GC (Sagamihara)</strong></td><td>Kanagawa</td><td>~35km / 50min</td><td>~310km / 4.5h</td><td>~120km / 2h</td><td><span class="tag tag-purple">Kanagawa Rec</span></td></tr>
+        <tr><td><strong>レイクウッドGC西</strong></td><td>Kanagawa (Chigasaki)</td><td>~45km / 1h</td><td>~320km / 4.5h</td><td>~130km / 2h</td><td><span class="tag tag-pink">KNGA Junior</span></td></tr>
+        <tr class="highlight"><td><strong>久邇CC (JGA Jr 15-17 Girls)</strong></td><td>Saitama</td><td>~55km / 1h</td><td>~270km / 4h</td><td>~130km / 2h</td><td><span class="tag tag-pink">JGA Jr Girls</span></td></tr>
+        <tr class="highlight"><td><strong>千葉CC 梅郷 (JGA Jr 12-14 Girls)</strong></td><td>Chiba</td><td>~60km / 1.5h</td><td>~320km / 4.5h</td><td>~170km / 2.5h</td><td><span class="tag tag-pink">JGA Jr Girls</span></td></tr>
+        <tr class="highlight"><td><strong>丘の公園清里GC (Yamanashi Jr)</strong></td><td>Yamanashi (Kiyosato)</td><td>~175km / 2.5h</td><td>~120km / 2h</td><td>~90km / 1.5h</td><td><span class="tag tag-pink">Yamanashi Jr</span></td></tr>
+        <tr><td><strong>富獄CC (Women's Open Qualifying)</strong></td><td>Shizuoka (Fuji area)</td><td>~110km / 1.75h</td><td>~190km / 3h</td><td>~55km / 1h</td><td><span class="tag tag-pink">JGA Women</span></td></tr>
+        <tr><td><strong>新宇都宮CC (JJGA Finals)</strong></td><td>Tochigi</td><td>~180km / 2.5h</td><td>~300km / 4h</td><td>~220km / 3h</td><td><span class="tag tag-pink">JJGA Finals</span></td></tr>
+        <tr><td><strong>玉村ゴルフ場 (JLDC Jul 4)</strong></td><td>Gunma</td><td>~100km / 1.5h</td><td>~140km / 2h</td><td>~130km / 2h</td><td><span class="tag tag-gold">JLDC</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:11px;color:var(--muted);margin-top:8px">All distances are approximate. Based on standard highway/expressway routing. Add 20–40min during peak traffic periods (Friday evenings, holiday weekends).</p>
+</div>
+
+<!-- ============================================================ DATA GAPS ============================================================ -->
+<div id="tab-gaps" class="section">
+  <div class="sec-header">
+    <div class="bar" style="background:#d4ac0d"></div>
+    <div><h2>Data Gaps &amp; Known Unknowns</h2><div class="meta">What was not found, not yet published, or needs direct follow-up</div></div>
+  </div>
+  <div class="data-gap">⚠️ <strong>Madaraokogen CC member competition schedule</strong> — Not publicly posted. Seasonal course opens Apr 3. Member tournament calendar is not available online. Contact club directly.</div>
+  <div class="data-gap">⚠️ <strong>Nagano Kokusai CC member competitions</strong> — Password-protected member page (password "〇〇〇〇26"). Open compes are captured above; formal member championships (Club Championship, etc.) are not public.</div>
+  <div class="data-gap">⚠️ <strong>LDJapan Apr 17–18 and Jun 26–27 venues</strong> — Prefecture (Shizuoka) confirmed but exact venues TBD at time of research.</div>
+  <div class="data-gap">⚠️ <strong>Prodracon May 23–24 Title Match venue</strong> — Location not yet announced. Watch prodracon.com for update.</div>
+  <div class="data-gap">⚠️ <strong>Prodracon Season.2 (post-June)</strong> — Not yet published. Season.1 ends May 24. Season.2 schedule typically announced mid-year.</div>
+  <div class="data-gap">⚠️ <strong>Nagano Prefecture junior tournaments</strong> — No Nagano-specific prefectural junior golf association events found online. Check 長野県ゴルフ協会 directly.</div>
+  <div class="data-gap">⚠️ <strong>Nihon Kougoren (High/Middle School Federation) summer/fall events</strong> — Spring tournament ongoing (March 2026). Summer/fall high school tournament schedule not yet published for 2026. Check nihon-kougoren.jp periodically.</div>
+  <div class="data-gap">⚠️ <strong>Kanagawa CC (Sagamihara/Lakewood) member tournament schedule</strong> — KNGA runs prefectural championships at these courses; club-internal member competitions not publicly available.</div>
+  <div class="data-gap">⚠️ <strong>Asagiri GC member competition schedule</strong> — Event page shows open compes only. Internal member competitions (Club Championship, etc.) not posted publicly.</div>
+  <div class="data-gap">ℹ️ <strong>ATP Golf / ISPS HANDA Tour</strong> — Confirmed to be a pro/trainee mini-tour, NOT a junior tournament series. Not included in junior calendar. All 2026 events are in Chiba/Ibaraki/Tochigi — none within 1.5h of Nagano or Fuji Kawaguchi.</div>
+  <div class="data-gap">ℹ️ <strong>Baycurrent Classic 2026 (Yokohama CC)</strong> — PGA Tour Japan event, typically October. 2026 date not yet announced. Watch pgatour.com.</div>
+
+  <h3 style="margin:24px 0 12px;font-size:15px">Recommended Direct Contacts</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Club / Org</th><th>What to Ask For</th><th>Contact</th></tr></thead>
+      <tbody>
+        <tr><td>斑尾高原CC</td><td>2026 member competition calendar</td><td><a href="http://www.madaraokogen-cc.jp/" target="_blank">madaraokogen-cc.jp</a></td></tr>
+        <tr><td>長野国際CC</td><td>2026 member competition calendar (or member password)</td><td>TEL: 026-253-3333</td></tr>
+        <tr><td>LDJapan</td><td>Confirm Apr 17–18 and Jun 26–27 exact venues</td><td><a href="https://ldjapan.jp/" target="_blank">ldjapan.jp</a></td></tr>
+        <tr><td>Prodracon</td><td>May 23–24 Title Match venue / Season.2 schedule</td><td><a href="https://prodracon.com/" target="_blank">prodracon.com</a></td></tr>
+        <tr><td>長野県ゴルフ連盟</td><td>Nagano Prefecture junior golf 2026 schedule</td><td>Search: 長野県ゴルフ連盟 ジュニア 2026</td></tr>
+        <tr><td>日本高校中学ゴルフ連盟</td><td>High/middle school golf tournament calendar 2026</td><td><a href="https://nihon-kougoren.jp/" target="_blank">nihon-kougoren.jp</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  <p>Data compiled March 15, 2026 · Sources: ldjapan.jp, prodracon.com, naganokokusai.com, asagiri.net, jga.or.jp, jjga.org, knga.org, yamanashi-golf.net, ijga.or.jp, nihon-kougoren.jp · Version 1</p>
+  <p style="margin-top:6px">🟢 Madaraokogen CC &nbsp;|&nbsp; 🔵 Nagano Kokusai CC &nbsp;|&nbsp; 🟠 Asagiri GC &nbsp;|&nbsp; 🟣 Kanagawa (Sagamihara) &nbsp;|&nbsp; 🟡 LDJapan &nbsp;|&nbsp; 🩵 Prodracon &nbsp;|&nbsp; 🩷 Junior Tournaments</p>
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById("tab-" + id).classList.add("active");
+  event.target.classList.add("active");
+}
+</script>
+</body>
+</html>
