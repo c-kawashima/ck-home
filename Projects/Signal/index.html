@@ -616,6 +616,70 @@ const DEMO_DATA = {
       ],
       is_new: true,
       days_ago: 6
+    },
+    {
+      id: "twis_1",
+      channel_id: "twis",
+      title: "E2047: The AI startup funding bubble — who survives the correction?",
+      date: "2026-03-11T10:00:00Z",
+      upload_date: "20260311",
+      url: "https://www.youtube.com/watch?v=twis_2047",
+      thumbnail: "https://picsum.photos/seed/twis2047/320/180",
+      duration: "1:22:18",
+      summary: "Jason breaks down which AI startups are overvalued and which have real defensibility. Hot take: Anthropic's $50B valuation is justified but most Series B AI companies are dead walking. The talent war is actually a talent bubble — too many researchers, not enough product-market fit.",
+      key_insights: [
+        "Most AI startups at Series B are overvalued by 3-5x — only companies with proprietary data moats survive the correction",
+        "Anthropic's valuation is justified because enterprise adoption is 3x ahead of OpenAI in regulated industries",
+        "The AI talent war is actually a talent bubble — too many researchers chasing too few real product problems"
+      ],
+      kpi_table: [
+        { kpi: "AI Series B median valuation", value: "$800M", context: "3-5x overvalued per Jason — correction coming in 6-12 months" }
+      ],
+      topics: ["AI Valuations", "Anthropic Series F", "AI Talent War", "Startup Survival"],
+      host_takes: [
+        "Jason: Anthropic's $50B is actually cheap — their enterprise pipeline in healthcare and finance is a freight train that OpenAI can't match",
+        "Jason: The AI talent war is a myth — we have too many researchers and not enough people who can ship product"
+      ],
+      key_quotes: [
+        "90% of AI startups at Series B will be dead or acqui-hired in 18 months. The ones with data moats survive. Everyone else is a feature."
+      ],
+      predictions: [
+        "Jason: 60% of Series B AI startups fold or get acqui-hired by Q4 2027"
+      ],
+      is_new: true,
+      days_ago: 3
+    },
+    {
+      id: "anthropic_1",
+      channel_id: "anthropic",
+      title: "Scaling Laws Revisited: What o4 and Claude 4 tell us about the next 2 years",
+      date: "2026-03-10T16:00:00Z",
+      upload_date: "20260310",
+      url: "https://www.youtube.com/watch?v=anthropic_scaling",
+      thumbnail: "https://picsum.photos/seed/anthropic1/320/180",
+      duration: "47:22",
+      summary: "Anthropic's research team presents evidence that scaling laws are not plateauing — they're changing shape. New compute-optimal training recipes are shifting the curve. Energy costs are the real bottleneck, not data or parameters.",
+      key_insights: [
+        "Scaling laws are not hitting a wall — the curve is bending, not flattening, as new training recipes emerge",
+        "Compute-optimal training has shifted: smaller models trained longer on better data outperform brute-force scaling",
+        "Energy infrastructure is the binding constraint for the next generation of models — not data, not parameters"
+      ],
+      kpi_table: [
+        { kpi: "Training efficiency gain", value: "2.3x", context: "Claude 4 achieved equivalent capability at 2.3x less compute than naive scaling would predict" }
+      ],
+      topics: ["Scaling Laws", "Energy Constraints", "AI Training Efficiency", "Model Architecture"],
+      host_takes: [
+        "Dario Amodei: The scaling laws pessimists are wrong — they're looking at the old curve while we're on a new one",
+        "Research team: Energy is the real constraint, not intelligence. We know how to make models smarter. We don't know how to power them."
+      ],
+      key_quotes: [
+        "The question isn't whether scaling works. It's whether the grid can keep up."
+      ],
+      predictions: [
+        "Anthropic: Next-gen models will require 5x less compute per capability unit by 2027"
+      ],
+      is_new: true,
+      days_ago: 4
     }
   ],
   last_updated: "2026-03-14T00:00:00+09:00"
@@ -2490,29 +2554,161 @@ function ContradictionView({ data, onVideo }) {
     return { pos, neg, ten, label };
   }
 
-  // Build per-topic, per-channel map — NO filtering, collect everything
+  // ── APPROACH: Three layers of tension detection ──
+  // Layer 1: Fuzzy topic matching (shared words merge topics)
+  // Layer 2: Content cross-references (topic A's content mentions topic B's keywords)
+  // Layer 3: Per-video cross-channel comparison (same video topics = different channels weighing in)
+
+  const stopWords = new Set(['the','a','an','and','or','of','in','on','at','to','for','is','it','by','with','as','vs','from','how','why','what','new','this','that','its']);
+  function topicWords(t) {
+    return t.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
+  }
+  function topicsRelated(a, b) {
+    if (a === b) return true;
+    const wa = topicWords(a), wb = topicWords(b);
+    // Direct word overlap
+    const shared = wa.filter(w => wb.some(w2 => w2 === w || w2.includes(w) || w.includes(w2)));
+    return shared.length > 0;
+  }
+
+  // Layer 1: Build topic groups from fuzzy word matching
+  const allTopics = [...new Set(filtered.flatMap(v => v.topics || []))];
+  const topicGroups = [];
+  allTopics.forEach(t => {
+    const existing = topicGroups.find(g => [...g.topics].some(gt => topicsRelated(gt, t)));
+    if (existing) { existing.topics.add(t); }
+    else { topicGroups.push({ topics: new Set([t]) }); }
+  });
+  topicGroups.forEach(g => { g.label = [...g.topics].sort((a,b) => a.length - b.length)[0]; });
+
+  // Layer 2: Content cross-referencing — if video A's insights mention keywords from topic B, link them
+  filtered.forEach(video => {
+    const content = [...(video.host_takes||[]), ...(video.key_insights||[]), video.summary||'', video.one_liner||''].join(' ').toLowerCase();
+    allTopics.forEach(topic => {
+      if ((video.topics || []).includes(topic)) return; // already tagged
+      const words = topicWords(topic);
+      if (words.length === 0) return;
+      const matches = words.filter(w => content.includes(w));
+      if (matches.length >= Math.max(1, Math.ceil(words.length * 0.6))) {
+        // Content mentions this topic — merge groups
+        const videoGroup = topicGroups.find(g => (video.topics||[]).some(vt => g.topics.has(vt)));
+        const topicGroup = topicGroups.find(g => g.topics.has(topic));
+        if (videoGroup && topicGroup && videoGroup !== topicGroup) {
+          [...topicGroup.topics].forEach(t => videoGroup.topics.add(t));
+          topicGroup.topics = videoGroup.topics; // point to same set
+          topicGroup.label = videoGroup.label;
+        }
+      }
+    });
+  });
+  // Deduplicate groups (some now share the same Set reference)
+  const seenSets = new Set();
+  const dedupedGroups = topicGroups.filter(g => {
+    const key = [...g.topics].sort().join('|||');
+    if (seenSets.has(key)) return false;
+    seenSets.add(key);
+    return true;
+  });
+  dedupedGroups.forEach(g => { g.label = [...g.topics].sort((a,b) => a.length - b.length)[0]; });
+
+  // Build per-group, per-channel map
   const topicChannels = {};
   filtered.forEach(video => {
     const ch = getChannel(data, video.channel_id);
     const chName = ch?.name || video.channel_id;
 
     (video.topics || []).forEach(topic => {
-      if (!topicChannels[topic]) topicChannels[topic] = {};
-      if (!topicChannels[topic][chName]) topicChannels[topic][chName] = { videos: [], takes: [], insights: [], summaries: [], channel: ch };
+      const group = dedupedGroups.find(g => g.topics.has(topic));
+      const groupLabel = group ? group.label : topic;
 
-      const entry = topicChannels[topic][chName];
-      entry.videos.push(video);
-      (video.host_takes || []).forEach(t => entry.takes.push(t));
-      (video.key_insights || []).forEach(i => entry.insights.push(i));
-      entry.summaries.push(video.one_liner || video.full_summary || video.summary || '');
+      if (!topicChannels[groupLabel]) topicChannels[groupLabel] = { allTopics: new Set(), channels: {} };
+      topicChannels[groupLabel].allTopics.add(topic);
+      const channels = topicChannels[groupLabel].channels;
+
+      if (!channels[chName]) channels[chName] = { videos: [], takes: [], insights: [], summaries: [], channel: ch };
+      const entry = channels[chName];
+      if (!entry.videos.find(v => v.id === video.id)) {
+        entry.videos.push(video);
+        (video.host_takes || []).forEach(t => entry.takes.push(t));
+        (video.key_insights || []).forEach(i => entry.insights.push(i));
+        entry.summaries.push(video.one_liner || video.full_summary || video.summary || '');
+      }
     });
   });
 
+  // ── Layer 3: Video-vs-video content similarity (catches what topic matching misses) ──
+  const videoContentCache = {};
+  filtered.forEach(v => {
+    const words = new Set(
+      [...(v.host_takes||[]), ...(v.key_insights||[]), v.summary||'', v.one_liner||'']
+        .join(' ').toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/)
+        .filter(w => w.length > 2 && !stopWords.has(w))
+    );
+    videoContentCache[v.id] = { video: v, words, channel: getChannel(data, v.channel_id) };
+  });
+
+  // Compare videos across channels
+  const videoIds = Object.keys(videoContentCache);
+  for (let i = 0; i < videoIds.length; i++) {
+    for (let j = i + 1; j < videoIds.length; j++) {
+      const a = videoContentCache[videoIds[i]], b = videoContentCache[videoIds[j]];
+      if (a.video.channel_id === b.video.channel_id) continue;
+      const shared = [...a.words].filter(w => b.words.has(w));
+      const minSize = Math.min(a.words.size, b.words.size);
+      const ratio = minSize > 0 ? shared.length / minSize : 0;
+      if (shared.length < 2 && ratio < 0.04) continue; // need 2+ shared words or 4%+ overlap
+
+      // Create a synthetic topic group from this pair
+      const topicLabel = shared.slice(0, 3).join(' + ');
+      const chNameA = a.channel?.name || a.video.channel_id;
+      const chNameB = b.channel?.name || b.video.channel_id;
+
+      // Check if these specific videos are already in a group together
+      const alreadyCovered = Object.values(topicChannels).some(g => {
+        const chs = g.channels;
+        const chA = chs[chNameA], chB = chs[chNameB];
+        if (!chA || !chB) return false;
+        return chA.videos.some(v => v.id === a.video.id) && chB.videos.some(v => v.id === b.video.id);
+      });
+      if (alreadyCovered) continue;
+
+      // Build synthetic group
+      const aTopics = (a.video.topics||[]).join(', ');
+      const bTopics = (b.video.topics||[]).join(', ');
+      const syntheticLabel = `Cross-ref: ${a.video.topics?.[0] || 'unknown'} × ${b.video.topics?.[0] || 'unknown'}`;
+
+      if (!topicChannels[syntheticLabel]) topicChannels[syntheticLabel] = { allTopics: new Set(), channels: {}, synthetic: true };
+      topicChannels[syntheticLabel].allTopics.add(aTopics);
+      topicChannels[syntheticLabel].allTopics.add(bTopics);
+      const channels = topicChannels[syntheticLabel].channels;
+
+      if (!channels[chNameA]) channels[chNameA] = { videos: [], takes: [], insights: [], summaries: [], channel: a.channel };
+      const entryA = channels[chNameA];
+      if (!entryA.videos.find(v => v.id === a.video.id)) {
+        entryA.videos.push(a.video);
+        (a.video.host_takes||[]).forEach(t => entryA.takes.push(t));
+        (a.video.key_insights||[]).forEach(k => entryA.insights.push(k));
+        entryA.summaries.push(a.video.one_liner || a.video.summary || '');
+      }
+
+      if (!channels[chNameB]) channels[chNameB] = { videos: [], takes: [], insights: [], summaries: [], channel: b.channel };
+      const entryB = channels[chNameB];
+      if (!entryB.videos.find(v => v.id === b.video.id)) {
+        entryB.videos.push(b.video);
+        (b.video.host_takes||[]).forEach(t => entryB.takes.push(t));
+        (b.video.key_insights||[]).forEach(k => entryB.insights.push(k));
+        entryB.summaries.push(b.video.one_liner || b.video.summary || '');
+      }
+    }
+  }
+
   // Find all multi-channel topics and classify the tension
   const tensions = [];
-  Object.entries(topicChannels).forEach(([topic, channels]) => {
+  Object.entries(topicChannels).forEach(([topic, groupData]) => {
+    const channels = groupData.channels;
     const chEntries = Object.entries(channels);
     if (chEntries.length < 2) return;
+    const relatedTopics = [...(groupData.allTopics || [])].join(', ');
 
     // Analyze tone per channel
     const channelTones = chEntries.map(([chName, d]) => {
@@ -2546,7 +2742,7 @@ function ContradictionView({ data, onVideo }) {
         else if (hasTension) { type = 'tension'; strength += 3; }
 
         tensions.push({
-          topic,
+          topic, relatedTopics,
           channelA: a.chName, toneA: a.tone, colorA: a.channel?.color,
           videosA: a.videos, takesA: contentA.length > 0 ? contentA : a.summaries.filter(Boolean),
           channelB: b.chName, toneB: b.tone, colorB: b.channel?.color,
@@ -2663,7 +2859,9 @@ function ContradictionView({ data, onVideo }) {
                     style={{cursor:'pointer',background:expandedIdx===idx?'var(--bg-hover)':'transparent',transition:'background 0.15s'}}>
                     <td style={{fontWeight:'500',color:'var(--text-1)'}}>
                       {c.topic}
-                      {c.channelCount > 2 && <span style={{fontSize:'10px',color:'var(--text-4)',marginLeft:'6px'}}>{c.channelCount} channels</span>}
+                      {c.relatedTopics && c.relatedTopics !== c.topic && (
+                        <div style={{fontSize:'10px',color:'var(--text-4)',marginTop:'2px'}}>{c.relatedTopics}</div>
+                      )}
                     </td>
                     <td>
                       <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
