@@ -268,6 +268,47 @@
     .task-badge.high { background: #2a0f0f; color: #cc4444; border: 1px solid #3a1414; }
     .task-badge.med  { background: #201808; color: #cc9933; border: 1px solid #302010; }
 
+    /* ── Reminders ── */
+    .reminder-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+    .reminder-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 16px; border-radius: 8px;
+      background: #110d0d; border: 1px solid #2a1818;
+    }
+    .reminder-row.warn {
+      background: #110d0d; border-color: #2a1818;
+    }
+    .reminder-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    .reminder-body { flex: 1; }
+    .reminder-title { font-size: 13px; color: #ddaa88; font-weight: 500; line-height: 1.3; }
+    .reminder-meta { font-size: 11px; color: #554; margin-top: 3px; }
+    .reminder-badge {
+      flex-shrink: 0; font-size: 9px; font-weight: 700;
+      letter-spacing: 0.5px; padding: 2px 7px; border-radius: 4px;
+      text-transform: uppercase; align-self: flex-start;
+    }
+    .reminder-badge.urgent { background: #2a0a0a; color: #ee4444; border: 1px solid #3a1010; }
+    .reminder-badge.soon   { background: #201808; color: #cc9933; border: 1px solid #302010; }
+
+    /* ── Scheduled Automation ── */
+    .sched-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .sched-card {
+      background: #0c0f0c; border: 1px solid #1a2a1a;
+      border-radius: 10px; padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 5px;
+    }
+    .sched-card-top { display: flex; align-items: center; gap: 8px; }
+    .sched-dot { width: 7px; height: 7px; border-radius: 50%; background: #44bb77; flex-shrink: 0; }
+    .sched-machine { font-size: 9.5px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #44bb77; }
+    .sched-title { font-size: 13px; font-weight: 600; color: #ccd; }
+    .sched-desc { font-size: 11px; color: #556; line-height: 1.4; }
+    .sched-time { font-size: 10.5px; color: #335533; font-weight: 600; margin-top: 2px; }
+
     /* ── Published Dashboards grid ── */
     .dash-grid {
       display: grid;
@@ -316,7 +357,7 @@
       <h1>Cowork OS</h1>
       <p>ck's workspace — all projects and folders</p>
     </div>
-    <div class="header-date">Updated March 16, 2026</div>
+    <div class="header-date">Updated March 16, 2026 · Mac Mini active</div>
   </div>
 
   <!-- ── Open Tasks ── -->
@@ -324,13 +365,13 @@
   <div class="task-list">
 
     <div class="task-group-label">This Week</div>
-    <div class="task-row high">
+    <div class="task-row med">
       <span class="task-dot"></span>
       <div class="task-body">
-        <div class="task-title">Mac mini setup — run terminal commands for nightly HOME.html push</div>
+        <div class="task-title">MacBook Air — install Claude Code, set up sync (same as Mac Mini)</div>
         <div class="task-meta">Cowork OS</div>
       </div>
-      <span class="task-badge high">High</span>
+      <span class="task-badge med">Med</span>
     </div>
     <div class="task-row high">
       <span class="task-dot"></span>
@@ -373,6 +414,82 @@
         <div class="task-meta">Career</div>
       </div>
       <span class="task-badge med">Med</span>
+    </div>
+
+  </div>
+
+  <!-- ── Reminders ── -->
+  <div class="section-label">Reminders</div>
+  <div class="reminder-list">
+
+    <div class="reminder-row warn">
+      <span class="reminder-icon">⚠️</span>
+      <div class="reminder-body">
+        <div class="reminder-title">KPMG FBAR Authorization — sign and return via KPMG LINK</div>
+        <div class="reminder-meta">Deadline: Apr 12</div>
+      </div>
+      <span class="reminder-badge soon">Apr 12</span>
+    </div>
+
+    <div class="reminder-row warn">
+      <span class="reminder-icon">⚠️</span>
+      <div class="reminder-body">
+        <div class="reminder-title">DSTY Projektwoche — choose Christine-Ami's project topic</div>
+        <div class="reminder-meta">Deadline: Wed Mar 18, 8pm</div>
+      </div>
+      <span class="reminder-badge urgent">Mar 18</span>
+    </div>
+
+    <div class="reminder-row warn">
+      <span class="reminder-icon">🔔</span>
+      <div class="reminder-body">
+        <div class="reminder-title">A1:8 Youth Group — small groups tomorrow</div>
+        <div class="reminder-meta">Mar 17 · 7:15pm</div>
+      </div>
+      <span class="reminder-badge soon">Tomorrow</span>
+    </div>
+
+    <div class="reminder-row warn">
+      <span class="reminder-icon">🔴</span>
+      <div class="reminder-body">
+        <div class="reminder-title">Signal Repo — Nightly Ingest failing consecutively</div>
+        <div class="reminder-meta">Needs investigation · check Mac Mini logs</div>
+      </div>
+      <span class="reminder-badge urgent">Failing</span>
+    </div>
+
+  </div>
+
+  <!-- ── Scheduled Automation ── -->
+  <div class="section-label">Scheduled Automation — Mac Mini</div>
+  <div class="sched-grid">
+
+    <div class="sched-card">
+      <div class="sched-card-top"><span class="sched-dot"></span><span class="sched-machine">Mac Mini</span></div>
+      <div class="sched-title">Workspace Sync</div>
+      <div class="sched-desc">Pulls latest from GitHub. Keeps all files current across machines.</div>
+      <div class="sched-time">Every 6 hours</div>
+    </div>
+
+    <div class="sched-card">
+      <div class="sched-card-top"><span class="sched-dot"></span><span class="sched-machine">Mac Mini</span></div>
+      <div class="sched-title">Daily Dashboard Update</div>
+      <div class="sched-desc">Claude reads MEMORY.md + TASKS.md, updates HOME.html, pushes to GitHub Pages.</div>
+      <div class="sched-time">Every 6 hours</div>
+    </div>
+
+    <div class="sched-card">
+      <div class="sched-card-top"><span class="sched-dot"></span><span class="sched-machine">Mac Mini</span></div>
+      <div class="sched-title">Weekly Email Digest</div>
+      <div class="sched-desc">Gmail summary of the past 7 days — key threads, action items, decisions. Draft to inbox.</div>
+      <div class="sched-time">Every Sunday · 7am</div>
+    </div>
+
+    <div class="sched-card">
+      <div class="sched-card-top"><span class="sched-dot"></span><span class="sched-machine">Mac Mini</span></div>
+      <div class="sched-title">HOME.html Push</div>
+      <div class="sched-desc">Pushes updated HOME.html to GitHub Pages at c-kawashima.github.io/ck-home.</div>
+      <div class="sched-time">Nightly · 11pm</div>
     </div>
 
   </div>
