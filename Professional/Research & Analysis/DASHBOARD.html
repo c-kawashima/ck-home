@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Reports — ck</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --dark-navy: #042D5E;
+  --navy: #06418C;
+  --mid-navy: #0A3570;
+  --blue: #4471A9;
+  --light-blue: #E8F0F8;
+  --pale-blue: #F4F8FC;
+  --gray: #6B7280;
+  --light-gray: #F5F5F5;
+  --text-dark: #2A2A2A;
+  --text-muted: #555;
+  --white: #FFFFFF;
+  --purple: #993399;
+  --amber: #D4A017;
+  --green: #2E7D32;
+  --red: #C62828;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-dark);
+  line-height: 1.6;
+  background: var(--pale-blue);
+  min-height: 100vh;
+}
+
+a { color: var(--navy); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── TOP NAV ── */
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: var(--dark-navy);
+  border-bottom: 2px solid var(--navy);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem; height: 56px;
+}
+.topnav-brand {
+  color: var(--white); font-weight: 800; font-size: 0.85rem;
+  letter-spacing: 1.5px; text-transform: uppercase;
+}
+.topnav-right { display: flex; align-items: center; gap: 1.5rem; }
+.topnav-count {
+  color: rgba(255,255,255,0.5); font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.topnav-home {
+  color: rgba(255,255,255,0.5); font-size: 0.75rem; font-weight: 500;
+  padding: 0.35rem 0.75rem; border-radius: 4px;
+  transition: all 0.2s;
+}
+.topnav-home:hover { color: var(--white); background: rgba(255,255,255,0.1); text-decoration: none; }
+
+/* ── HERO ── */
+.hero {
+  margin-top: 56px;
+  background: linear-gradient(135deg, var(--dark-navy) 0%, var(--navy) 60%, var(--blue) 100%);
+  color: var(--white);
+  padding: 3rem 2rem 2.5rem;
+  position: relative;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--purple), var(--blue));
+}
+.hero-inner { max-width: 1100px; margin: 0 auto; }
+.hero h1 { font-size: 2rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
+.hero-sub { font-size: 0.95rem; font-weight: 300; color: rgba(255,255,255,0.7); max-width: 700px; }
+
+/* ── TOPIC FILTER BAR ── */
+.filter-bar {
+  max-width: 1100px; margin: 0 auto;
+  padding: 1.25rem 2rem;
+  display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+}
+.filter-label {
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--gray); margin-right: 0.5rem;
+}
+.filter-pill {
+  font-size: 0.7rem; font-weight: 600; padding: 0.35rem 0.85rem;
+  border-radius: 20px; border: 1.5px solid #D0D8E4;
+  background: var(--white); color: var(--text-muted);
+  cursor: pointer; transition: all 0.15s; user-select: none;
+}
+.filter-pill:hover { border-color: var(--navy); color: var(--navy); }
+.filter-pill.active {
+  background: var(--dark-navy); color: var(--white); border-color: var(--dark-navy);
+}
+.filter-pill .pill-count {
+  font-size: 0.6rem; font-weight: 700; opacity: 0.6; margin-left: 0.3rem;
+}
+
+/* ── MAIN CONTENT ── */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+/* ── TOPIC SECTION ── */
+.topic-section { margin-bottom: 2.5rem; }
+.topic-header {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 0; margin-bottom: 0.75rem;
+  border-bottom: 2px solid var(--dark-navy);
+  cursor: pointer; user-select: none;
+}
+.topic-icon { font-size: 1.1rem; }
+.topic-name {
+  font-size: 0.85rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--dark-navy);
+}
+.topic-count {
+  font-size: 0.6rem; font-weight: 700; background: var(--dark-navy);
+  color: var(--white); padding: 0.15rem 0.5rem; border-radius: 10px;
+}
+.topic-toggle {
+  margin-left: auto; font-size: 0.7rem; color: var(--gray); font-weight: 500;
+  transition: transform 0.2s;
+}
+.topic-section.collapsed .topic-toggle { transform: rotate(-90deg); }
+.topic-section.collapsed .topic-cards { display: none; }
+
+/* ── REPORT CARDS ── */
+.topic-cards { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.report-card {
+  background: var(--white);
+  border: 1px solid #E0E4EC;
+  border-left: 4px solid var(--navy);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: start;
+}
+.report-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(4,45,94,0.1);
+}
+
+.card-left { min-width: 0; }
+.card-meta {
+  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+  margin-bottom: 0.4rem;
+}
+.card-week {
+  font-size: 0.6rem; font-weight: 800; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--navy);
+}
+.card-date { font-size: 0.7rem; color: var(--gray); font-weight: 500; }
+.card-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+.card-tag {
+  font-size: 0.55rem; font-weight: 600; padding: 0.15rem 0.45rem;
+  border-radius: 3px; background: var(--light-blue); color: var(--blue);
+  letter-spacing: 0.3px; text-transform: uppercase;
+}
+.card-title {
+  font-size: 1.05rem; font-weight: 700; color: var(--dark-navy);
+  line-height: 1.35; margin-bottom: 0.4rem;
+}
+.card-title a { color: inherit; }
+.card-title a:hover { color: var(--navy); text-decoration: none; }
+.card-summary {
+  font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-right {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;
+  padding-top: 0.2rem;
+}
+.format-links { display: flex; gap: 0.4rem; }
+.format-link {
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; padding: 0.3rem 0.6rem;
+  border-radius: 4px; border: 1.5px solid #D0D8E4;
+  color: var(--gray); transition: all 0.15s;
+  white-space: nowrap;
+}
+.format-link:hover { border-color: var(--navy); color: var(--navy); text-decoration: none; }
+.format-link.primary {
+  background: var(--dark-navy); color: var(--white); border-color: var(--dark-navy);
+}
+.format-link.primary:hover { background: var(--navy); }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  padding: 2rem; text-align: center;
+  color: var(--gray); font-size: 0.8rem; font-style: italic;
+}
+
+/* ── STATS BAR ── */
+.stats-bar {
+  max-width: 1100px; margin: 0 auto;
+  padding: 1rem 2rem 0;
+  display: flex; gap: 2rem;
+}
+.stat-item { display: flex; align-items: baseline; gap: 0.4rem; }
+.stat-num {
+  font-size: 1.5rem; font-weight: 900; color: var(--dark-navy);
+}
+.stat-label {
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--gray);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  .hero h1 { font-size: 1.4rem; }
+  .report-card { grid-template-columns: 1fr; }
+  .card-right { flex-direction: row; align-items: center; }
+  .filter-bar { padding: 1rem; }
+  .container { padding: 0 1rem 3rem; }
+  .stats-bar { padding: 1rem 1rem 0; gap: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOP NAV ── -->
+<nav class="topnav">
+  <span class="topnav-brand">Research Reports</span>
+  <div class="topnav-right">
+    <span class="topnav-count" id="reportCount"></span>
+    <a href="../../HOME.html" class="topnav-home">← Home</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Research Report Dashboard</h1>
+    <p class="hero-sub">Strategy research, intelligence briefs, and deep-dives. Organized by topic, newest first.</p>
+  </div>
+</section>
+
+<!-- ── STATS BAR ── -->
+<div class="stats-bar" id="statsBar"></div>
+
+<!-- ── FILTER BAR ── -->
+<div class="filter-bar" id="filterBar">
+  <span class="filter-label">Filter</span>
+</div>
+
+<!-- ── REPORT CARDS ── -->
+<div class="container" id="reportContainer"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// REPORT DATA — ADD NEW REPORTS HERE
+// Each report needs: id, calendarWeek, date, title, summary,
+//   primaryTopic, tags[], and formats {html?, docx?, pptx?, pdf?}
+// ════════════════════════════════════════════════════════════════
+const REPORTS = [
+  {
+    id: "CW12_2026_03_16_iran_ai_capital_convergence",
+    calendarWeek: "CW12",
+    date: "2026-03-16",
+    title: "AI Revenue Is a Live Grenade. The Fuse Is Iran, China, and a New Market Architecture.",
+    summary: "Anthropic ($14B ARR) and OpenAI ($20B ARR) are scaling at historic rates — but 70%+ may be experimental. Simultaneously, Iran's off-ramp is tied to Trump's China calendar, and the SEC is dismantling 80 years of capital market architecture.",
+    primaryTopic: "geopolitics",
+    tags: ["ai-tech", "capital-markets"],
+    formats: {
+      html: "research/CW12_2026_03_16_iran_ai_capital_convergence_v1.html",
+      pptx: "research/signal_deck_CW12_2026_03_16_v1.pptx",
+      pdf:  "research/signal_deck_CW12_2026_03_16_v1.pdf"
+    }
+  }
+  // ── ADD NEW REPORTS ABOVE THIS LINE ──
+];
+
+// ════════════════════════════════════════════════════════════════
+// TOPIC DEFINITIONS
+// ════════════════════════════════════════════════════════════════
+const TOPICS = {
+  "ai-tech":      { name: "AI & Technology",          icon: "⚡", order: 1 },
+  "geopolitics":  { name: "Geopolitics & Macro",      icon: "🌐", order: 2 },
+  "capital-markets": { name: "Capital Markets",        icon: "📈", order: 3 },
+  "energy":       { name: "Energy & Resources",       icon: "⛽", order: 4 },
+  "strategy":     { name: "Strategy & Business Models",icon: "♟️", order: 5 },
+  "japan-asia":   { name: "Japan & Asia",             icon: "🇯🇵", order: 6 },
+  "bots-llms":    { name: "Bots & LLMs",             icon: "🤖", order: 7 }
+};
+
+// ════════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════════
+let activeFilter = "all";
+
+// ════════════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════════════
+function render() {
+  const filtered = activeFilter === "all"
+    ? REPORTS
+    : REPORTS.filter(r => r.primaryTopic === activeFilter || r.tags.includes(activeFilter));
+
+  // Stats
+  const weeks = new Set(REPORTS.map(r => r.calendarWeek));
+  document.getElementById("statsBar").innerHTML = `
+    <div class="stat-item"><span class="stat-num">${REPORTS.length}</span><span class="stat-label">Reports</span></div>
+    <div class="stat-item"><span class="stat-num">${weeks.size}</span><span class="stat-label">Weeks</span></div>
+    <div class="stat-item"><span class="stat-num">${Object.keys(getTopicCounts()).length}</span><span class="stat-label">Topics</span></div>
+  `;
+  document.getElementById("reportCount").textContent = `${REPORTS.length} report${REPORTS.length !== 1 ? 's' : ''}`;
+
+  // Filter pills
+  renderFilters();
+
+  // Group by primary topic
+  const grouped = {};
+  filtered.forEach(r => {
+    if (!grouped[r.primaryTopic]) grouped[r.primaryTopic] = [];
+    grouped[r.primaryTopic].push(r);
+  });
+
+  // Sort each group reverse-chrono
+  Object.values(grouped).forEach(arr => arr.sort((a, b) => b.date.localeCompare(a.date)));
+
+  // Sort topics by defined order
+  const sortedTopics = Object.keys(grouped).sort((a, b) =>
+    (TOPICS[a]?.order || 99) - (TOPICS[b]?.order || 99)
+  );
+
+  const container = document.getElementById("reportContainer");
+
+  if (sortedTopics.length === 0) {
+    container.innerHTML = `<div class="empty-state">No reports match this filter.</div>`;
+    return;
+  }
+
+  container.innerHTML = sortedTopics.map(topicKey => {
+    const topic = TOPICS[topicKey] || { name: topicKey, icon: "📄" };
+    const reports = grouped[topicKey];
+    return `
+      <div class="topic-section" data-topic="${topicKey}">
+        <div class="topic-header" onclick="toggleSection(this)">
+          <span class="topic-icon">${topic.icon}</span>
+          <span class="topic-name">${topic.name}</span>
+          <span class="topic-count">${reports.length}</span>
+          <span class="topic-toggle">▼</span>
+        </div>
+        <div class="topic-cards">
+          ${reports.map(r => renderCard(r)).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderCard(r) {
+  const tagHtml = r.tags
+    .filter(t => t !== r.primaryTopic)
+    .map(t => `<span class="card-tag">${TOPICS[t]?.name || t}</span>`)
+    .join('');
+
+  const fmtLinks = [];
+  if (r.formats.html) fmtLinks.push(`<a href="${r.formats.html}" class="format-link primary">HTML</a>`);
+  if (r.formats.docx) fmtLinks.push(`<a href="${r.formats.docx}" class="format-link">DOCX</a>`);
+  if (r.formats.pptx) fmtLinks.push(`<a href="${r.formats.pptx}" class="format-link">PPTX</a>`);
+  if (r.formats.pdf)  fmtLinks.push(`<a href="${r.formats.pdf}" class="format-link">PDF</a>`);
+
+  const dateFormatted = new Date(r.date + 'T12:00:00').toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric'
+  });
+
+  return `
+    <div class="report-card">
+      <div class="card-left">
+        <div class="card-meta">
+          <span class="card-week">${r.calendarWeek}</span>
+          <span class="card-date">${dateFormatted}</span>
+          <div class="card-tags">${tagHtml}</div>
+        </div>
+        <div class="card-title"><a href="${r.formats.html || '#'}">${r.title}</a></div>
+        <div class="card-summary">${r.summary}</div>
+      </div>
+      <div class="card-right">
+        <div class="format-links">${fmtLinks.join('')}</div>
+      </div>
+    </div>
+  `;
+}
+
+function getTopicCounts() {
+  const counts = {};
+  REPORTS.forEach(r => {
+    counts[r.primaryTopic] = (counts[r.primaryTopic] || 0) + 1;
+  });
+  return counts;
+}
+
+function renderFilters() {
+  const bar = document.getElementById("filterBar");
+  const counts = {};
+  REPORTS.forEach(r => {
+    counts[r.primaryTopic] = (counts[r.primaryTopic] || 0) + 1;
+    r.tags.forEach(t => { counts[t] = (counts[t] || 0) + 1; });
+  });
+
+  // Only show topics that have at least 1 report
+  const topicKeys = Object.keys(TOPICS)
+    .filter(k => counts[k])
+    .sort((a, b) => (TOPICS[a]?.order || 99) - (TOPICS[b]?.order || 99));
+
+  bar.innerHTML = `<span class="filter-label">Filter</span>` +
+    `<span class="filter-pill ${activeFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">All<span class="pill-count">${REPORTS.length}</span></span>` +
+    topicKeys.map(k =>
+      `<span class="filter-pill ${activeFilter === k ? 'active' : ''}" onclick="setFilter('${k}')">${TOPICS[k].name}<span class="pill-count">${counts[k]}</span></span>`
+    ).join('');
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  render();
+}
+
+function toggleSection(header) {
+  header.parentElement.classList.toggle('collapsed');
+}
+
+// Initial render
+render();
+</script>
+</body>
+</html>
