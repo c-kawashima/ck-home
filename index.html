@@ -474,6 +474,48 @@
 
     hr { border: none; border-top: 1px solid var(--hr-color); margin: 8px 0 0; }
 
+    /* ── Reports panel ── */
+    .report-filter {
+      padding: 5px 12px; border-radius: 14px; font-size: 11px; font-weight: 600;
+      border: 1px solid var(--border-card); background: var(--bg-card);
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
+    }
+    .report-filter:hover { border-color: var(--drag-over-outline); color: var(--text-primary); }
+    .report-filter.active { background: var(--nav-active-bg); border-color: var(--nav-active-accent); color: var(--text-primary); }
+
+    .report-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    .report-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 16px; border-radius: 8px;
+      background: var(--bg-card); border: 1px solid var(--border-card);
+      text-decoration: none; color: inherit;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      cursor: pointer;
+    }
+    .report-row:hover { border-color: var(--drag-over-outline); background: var(--bg-card-hover); transform: translateY(-1px); }
+    .report-row.hidden { display: none; }
+
+    .report-type-pill {
+      flex-shrink: 0; font-size: 9px; font-weight: 700;
+      letter-spacing: 0.5px; padding: 3px 8px; border-radius: 4px;
+      text-transform: uppercase; min-width: 38px; text-align: center;
+    }
+    .report-type-pill.html { background: #151e2e; color: #60a5fa; border: 1px solid #1e2a40; }
+    .report-type-pill.pptx { background: #2a1a08; color: #f59e0b; border: 1px solid #3a2810; }
+    .report-type-pill.docx { background: #102a18; color: #34d399; border: 1px solid #1a3a22; }
+    body.light .report-type-pill.html { background: #e8f0fe; color: #2563eb; border-color: #b8d0f0; }
+    body.light .report-type-pill.pptx { background: #fef3c7; color: #d97706; border-color: #fcd34d; }
+    body.light .report-type-pill.docx { background: #e8f5e8; color: #059669; border-color: #b8dab8; }
+
+    .report-body { flex: 1; min-width: 0; }
+    .report-name { font-size: 13px; color: var(--text-title); font-weight: 500; }
+    .report-meta { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .report-week {
+      flex-shrink: 0; font-size: 10px; font-weight: 600;
+      color: var(--text-muted); letter-spacing: 0.5px;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 800px) {
       .sidebar { width: 56px; min-width: 56px; }
@@ -518,13 +560,16 @@
     <button class="nav-item" onclick="showPanel('remember')" id="nav-remember">
       <span class="nav-icon">&#128161;</span><span class="nav-label">Remember</span>
     </button>
+    <button class="nav-item" onclick="showPanel('reports')" id="nav-reports">
+      <span class="nav-icon">&#128202;</span><span class="nav-label">Reports</span>
+    </button>
 
     <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
       <span class="nav-icon" id="theme-icon">&#9788;</span><span>Light mode</span>
     </button>
 
     <div class="sidebar-footer">
-      Updated Mar 16, 2026<br />Mac Mini active
+      Updated Mar 17, 2026<br />Mac Mini active
     </div>
   </nav>
 
@@ -612,6 +657,30 @@
           <div class="card-title">Signal — YouTube Intelligence Hub</div>
           <div class="card-desc">13 channels across Tech, Business, Finance & AI. Nightly auto-ingest at 6pm PST.</div>
           <div class="card-footer"><div class="dot dot-red"></div><div class="card-status">Ingest failing · cksignal.vercel.app</div></div>
+        </a>
+
+        <a class="card" href="Professional/Research%20%26%20Analysis/research/signal_deck_CW12_2026_03_16_v1.pptx">
+          <div class="card-icon">&#128202;</div>
+          <div class="card-label">Signal · Research</div>
+          <div class="card-title">Enterprise AI: The Trillion-Dollar Gap</div>
+          <div class="card-desc">15-slide deck from All-In Summit. Ghodsi (Databricks) + Jain (Glean). Three camps, commodity LLMs, $500B capex gap.</div>
+          <div class="card-footer"><div class="dot dot-green"></div><div class="card-status">CW12 · v1 complete</div></div>
+        </a>
+
+        <a class="card" href="CW12_2026_03_17_signal_briefing.html">
+          <div class="card-icon">&#128200;</div>
+          <div class="card-label">Signal · Intelligence Brief</div>
+          <div class="card-title">CW12: AI Revenue Mirage + Iran/China/SEC Reset</div>
+          <div class="card-desc">4-source All-In synthesis. $14B Anthropic ARR vs. 70% experimental. Iran off-ramp, China grand bargain, capital market reform as coordinated play.</div>
+          <div class="card-footer"><div class="dot dot-green"></div><div class="card-status">CW12 · v1 complete · Mar 17</div></div>
+        </a>
+
+        <a class="card" href="intelligence_brief_CW12_2026_03_16_llm_commodity_thesis.html">
+          <div class="card-icon">&#128161;</div>
+          <div class="card-label">Signal · Intelligence Brief</div>
+          <div class="card-title">CW12: LLM Commodity Thesis</div>
+          <div class="card-desc">BG2 Pod — Ghodsi (Databricks) + Narayanan (Glean). LLMs as gas stations, three camps of AI, frozen-model problem, governance moat.</div>
+          <div class="card-footer"><div class="dot dot-green"></div><div class="card-status">CW12 · v1 complete</div></div>
         </a>
 
         <a class="card" href="Personal/Projects/College%20Apps/INDEX.md">
@@ -709,6 +778,16 @@
               </div>
               <span class="badge badge-gray">Index</span>
             </a>
+            <div class="folder-sub"><div class="folder-list">
+              <a class="folder-row link" href="Professional/Research%20%26%20Analysis/research/signal_deck_CW12_2026_03_16_v1.pptx">
+                <span class="folder-row-icon">&#128202;</span>
+                <div class="folder-row-body">
+                  <div class="folder-row-name">Signal Deck — Enterprise AI</div>
+                  <div class="folder-row-sub">CW12 · Ghodsi + Jain · All-In Summit</div>
+                </div>
+                <span class="badge badge-blue">PPTX</span>
+              </a>
+            </div></div>
             <a class="folder-row link" href="Professional/Thought%20Leadership/INDEX.md">
               <span class="folder-row-icon">&#127897;</span>
               <div class="folder-row-body">
@@ -949,6 +1028,213 @@
       </div>
     </div>
 
+    <!-- ═══ REPORTS PANEL ═══ -->
+    <div class="panel" id="panel-reports">
+      <p style="font-size:12px;color:#6a6a78;margin-bottom:18px;">All research outputs — HTMLs, decks, docs — indexed by project.</p>
+
+      <!-- Filter pills -->
+      <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;">
+        <button class="report-filter active" onclick="filterReports('all')">All</button>
+        <button class="report-filter" onclick="filterReports('html')">HTML</button>
+        <button class="report-filter" onclick="filterReports('pptx')">PPTX</button>
+        <button class="report-filter" onclick="filterReports('docx')">DOCX</button>
+      </div>
+
+      <div class="section-label">Signal — Intelligence Briefs</div>
+      <div class="report-list">
+        <a class="report-row" href="Personal/Thought%20Leadership/CW12_2026_03_17_iran-ai-revenue-tension.html" data-type="html">
+          <span class="report-type-pill html">HTML</span>
+          <div class="report-body">
+            <div class="report-name">CW12: Iran War + AI Revenue Explosion + Wealth Tax Exodus</div>
+            <div class="report-meta">All-In Podcast · Single-video deep-dive · Mar 17, 2026</div>
+          </div>
+          <span class="report-week">CW12</span>
+        </a>
+        <a class="report-row" href="CW12_2026_03_17_signal_briefing.html" data-type="html">
+          <span class="report-type-pill html">HTML</span>
+          <div class="report-body">
+            <div class="report-name">CW12: AI Revenue Mirage + Iran/China/SEC Reset</div>
+            <div class="report-meta">4-source All-In synthesis · Mar 17, 2026</div>
+          </div>
+          <span class="report-week">CW12</span>
+        </a>
+        <a class="report-row" href="intelligence_brief_CW12_2026_03_16_llm_commodity_thesis.html" data-type="html">
+          <span class="report-type-pill html">HTML</span>
+          <div class="report-body">
+            <div class="report-name">CW12: LLM Commodity Thesis</div>
+            <div class="report-meta">BG2 Pod — Ghodsi + Narayanan · Mar 16, 2026</div>
+          </div>
+          <span class="report-week">CW12</span>
+        </a>
+        <a class="report-row" href="Professional/Research%20%26%20Analysis/research/CW12_2026_03_16_iran_ai_capital_convergence_v1.html" data-type="html">
+          <span class="report-type-pill html">HTML</span>
+          <div class="report-body">
+            <div class="report-name">CW12: Iran/AI/Capital Markets Convergence</div>
+            <div class="report-meta">Cross-channel synthesis · Mar 16, 2026</div>
+          </div>
+          <span class="report-week">CW12</span>
+        </a>
+        <a class="report-row" href="Professional/Research%20%26%20Analysis/research/signal_deck_CW12_2026_03_16_v1.pptx" data-type="pptx">
+          <span class="report-type-pill pptx">PPTX</span>
+          <div class="report-body">
+            <div class="report-name">Enterprise AI: The Trillion-Dollar Gap</div>
+            <div class="report-meta">15-slide deck · All-In Summit · Mar 16, 2026</div>
+          </div>
+          <span class="report-week">CW12</span>
+        </a>
+      </div>
+
+      <div class="section-label">Career — CIO (Renesas)</div>
+      <div class="report-list">
+        <a class="report-row" href="Professional/Career/CIO/CIO_Dashboard.html" data-type="html">
+          <span class="report-type-pill html">HTML</span>
+          <div class="report-body">
+            <div class="report-name">CIO Project Files Dashboard</div>
+            <div class="report-meta">Master index — all research & deliverables</div>
+          </div>
+        </a>
+        <a class="report-row" href="Professional/Career/CIO/CIO_Vision_Interactive_v1.html" data-type="html">
+          <span class="report-type-pill html">HTML</span>
+          <div class="report-body">
+            <div class="report-name">CIO Vision — Interactive Presentation</div>
+            <div class="report-meta">7-section interactive with tabs · v1</div>
+          </div>
+        </a>
+        <a class="report-row" href="Professional/Career/CIO/CIO_Vision_Deck_v4.pptx" data-type="pptx">
+          <span class="report-type-pill pptx">PPTX</span>
+          <div class="report-body">
+            <div class="report-name">CIO Vision Deck</div>
+            <div class="report-meta">76 slides · AI transformation strategy · v4 (latest)</div>
+          </div>
+        </a>
+        <a class="report-row" href="Professional/Career/CIO/CIO_Companion_Report_v3.docx" data-type="docx">
+          <span class="report-type-pill docx">DOCX</span>
+          <div class="report-body">
+            <div class="report-name">CIO Companion Report</div>
+            <div class="report-meta">Full written report · v3 (latest)</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="section-label">Career — CIO Research Library</div>
+      <div class="report-list">
+        <a class="report-row" href="Professional/Career/CIO/research/Claud/AI_Transformation_Strategy_Research.docx" data-type="docx">
+          <span class="report-type-pill docx">DOCX</span>
+          <div class="report-body">
+            <div class="report-name">AI Transformation Strategy Research</div>
+            <div class="report-meta">Claude research · Overarching strategy</div>
+          </div>
+        </a>
+        <a class="report-row" href="Professional/Career/CIO/research/Claud/AI_Governance_Report_Semiconductor_Company.docx" data-type="docx">
+          <span class="report-type-pill docx">DOCX</span>
+          <div class="report-body">
+            <div class="report-name">AI Governance — Semiconductor</div>
+            <div class="report-meta">Claude research · Defensive layer</div>
+          </div>
+        </a>
+        <a class="report-row" href="Professional/Career/CIO/research/Claud/Semantic_AI_Infrastructure_Renesas.docx" data-type="docx">
+          <span class="report-type-pill docx">DOCX</span>
+          <div class="report-body">
+            <div class="report-name">Semantic AI Infrastructure</div>
+            <div class="report-meta">Claude research · Knowledge graph / R365</div>
+          </div>
+        </a>
+        <a class="report-row" href="Professional/Career/CIO/research/Claud/databricks_deep_dive.docx" data-type="docx">
+          <span class="report-type-pill docx">DOCX</span>
+          <div class="report-body">
+            <div class="report-name">Databricks Deep Dive</div>
+            <div class="report-meta">Claude research · Platform analysis</div>
+          </div>
+        </a>
+        <a class="report-row" href="Professional/Career/CIO/research/Claud/agentic_ai_enterprise_report.docx" data-type="docx">
+          <span class="report-type-pill docx">DOCX</span>
+          <div class="report-body">
+            <div class="report-name">Agentic AI — Enterprise Report</div>
+            <div class="report-meta">Claude research · Agent architecture</div>
+          </div>
+        </a>
+        <a class="report-row" href="Professional/Career/CIO/research/Claud/Supply_Chain_AI_for_Semiconductor_Companies.docx" data-type="docx">
+          <span class="report-type-pill docx">DOCX</span>
+          <div class="report-body">
+            <div class="report-name">Supply Chain AI for Semiconductor</div>
+            <div class="report-meta">Claude research</div>
+          </div>
+        </a>
+        <a class="report-row" href="Professional/Career/CIO/research/Claud/ai-enabled-plm-report.docx" data-type="docx">
+          <span class="report-type-pill docx">DOCX</span>
+          <div class="report-body">
+            <div class="report-name">AI-Enabled PLM</div>
+            <div class="report-meta">Claude research · Product lifecycle</div>
+          </div>
+        </a>
+        <a class="report-row" href="Professional/Career/CIO/research/Gemini/Renesas%20AI%20Transformation%20Strategy%20Research.docx" data-type="docx">
+          <span class="report-type-pill docx">DOCX</span>
+          <div class="report-body">
+            <div class="report-name">AI Transformation Strategy</div>
+            <div class="report-meta">Gemini research · Renesas-specific</div>
+          </div>
+        </a>
+        <a class="report-row" href="Professional/Career/CIO/research/Gemini/US%20AI%20Leadership%20for%20Renesas.docx" data-type="docx">
+          <span class="report-type-pill docx">DOCX</span>
+          <div class="report-body">
+            <div class="report-name">US AI Leadership for Renesas</div>
+            <div class="report-meta">Gemini research · Strategic positioning</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="section-label">Personal — Housing & College</div>
+      <div class="report-list">
+        <a class="report-row" href="Personal/Projects/Housing%20%26%20Moving/Dallas%2C%20TX/dallas_relocation_v1.html" data-type="html">
+          <span class="report-type-pill html">HTML</span>
+          <div class="report-body">
+            <div class="report-name">Dallas Relocation Analysis</div>
+            <div class="report-meta">5 scenarios, 13 sections · v1</div>
+          </div>
+        </a>
+        <a class="report-row" href="Personal/Projects/Housing%20%26%20Moving/Dallas%2C%20TX/dallas_relocation_report_v1.docx" data-type="docx">
+          <span class="report-type-pill docx">DOCX</span>
+          <div class="report-body">
+            <div class="report-name">Dallas Relocation Report</div>
+            <div class="report-meta">Companion document · v1</div>
+          </div>
+        </a>
+        <a class="report-row" href="Personal/Projects/Housing%20%26%20Moving/Dallas%2C%20TX/tournament_calendar_v1.html" data-type="html">
+          <span class="report-type-pill html">HTML</span>
+          <div class="report-body">
+            <div class="report-name">Dallas Tournament Calendar</div>
+            <div class="report-meta">Junior golf events · v1</div>
+          </div>
+        </a>
+        <a class="report-row" href="Personal/Projects/College%20Apps/aki_gap_year_plan_v2.html" data-type="html">
+          <span class="report-type-pill html">HTML</span>
+          <div class="report-body">
+            <div class="report-name">Gap Year Plan</div>
+            <div class="report-meta">College apps · v2 (latest)</div>
+          </div>
+        </a>
+        <a class="report-row" href="Personal/Projects/College%20Apps/aki_language_schools_v1.html" data-type="html">
+          <span class="report-type-pill html">HTML</span>
+          <div class="report-body">
+            <div class="report-name">Language Schools Research</div>
+            <div class="report-meta">College apps · v1</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="section-label">Other</div>
+      <div class="report-list">
+        <a class="report-row" href="japan_golf_calendar_v1.html" data-type="html">
+          <span class="report-type-pill html">HTML</span>
+          <div class="report-body">
+            <div class="report-name">Japan Golf Master Calendar</div>
+            <div class="report-meta">Apr–Dec 2026 · 21 events · v1</div>
+          </div>
+        </a>
+      </div>
+
+    </div>
+
   </div><!-- /main -->
 
   <script>
@@ -962,7 +1248,7 @@
     }
 
     // ── Panel switching ──
-    const panels = ['alerts','dsty','tasks','projects','golf','automation','remember'];
+    const panels = ['alerts','dsty','tasks','projects','golf','automation','remember','reports'];
     const titles = {
       alerts: 'Alerts',
       dsty: 'DSTY',
@@ -970,7 +1256,8 @@
       projects: 'Projects',
       golf: 'Golf Calendar',
       automation: 'Automation',
-      remember: 'Remember'
+      remember: 'Remember',
+      reports: 'Reports'
     };
 
     function showPanel(id) {
@@ -981,6 +1268,23 @@
       document.getElementById('panel-' + id).classList.add('active');
       document.getElementById('nav-' + id).classList.add('active');
       document.getElementById('panel-title').textContent = titles[id];
+    }
+
+    function filterReports(type) {
+      document.querySelectorAll('.report-filter').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.querySelectorAll('.report-row').forEach(row => {
+        if (type === 'all') { row.classList.remove('hidden'); return; }
+        row.classList.toggle('hidden', row.dataset.type !== type);
+      });
+      // Hide empty section labels
+      document.querySelectorAll('#panel-reports .section-label').forEach(label => {
+        const list = label.nextElementSibling;
+        if (!list || !list.classList.contains('report-list')) return;
+        const hasVisible = [...list.children].some(r => !r.classList.contains('hidden'));
+        label.style.display = hasVisible ? '' : 'none';
+        list.style.display = hasVisible ? '' : 'none';
+      });
     }
 
     // ═══ DATA-DRIVEN TASKS ═══
