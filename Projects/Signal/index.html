@@ -1,0 +1,3767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📡 Signal — ck's YouTube Intelligence Hub</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+  <style>
+    /* ── THEME TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --bg:           #0d1117;
+      --bg-sidebar:   #010409;
+      --bg-card:      #161b22;
+      --bg-hover:     #1c2128;
+      --bg-input:     #0d1117;
+      --bg-tag:       #1c2128;
+      --bg-thumb:     #21262d;
+      --border:       #21262d;
+      --border-med:   #30363d;
+      --border-heavy: #484f58;
+      --text-1:       #e6edf3;
+      --text-2:       #c9d1d9;
+      --text-3:       #8b949e;
+      --text-4:       #6e7681;
+      --text-5:       #484f58;
+      --scroll:       #30363d;
+      --scroll-hov:   #484f58;
+    }
+    [data-theme="light"] {
+      --bg:           #f6f8fa;
+      --bg-sidebar:   #ffffff;
+      --bg-card:      #ffffff;
+      --bg-hover:     #eef1f4;
+      --bg-input:     #ffffff;
+      --bg-tag:       #eef1f4;
+      --bg-thumb:     #e2e8f0;
+      --border:       #d0d7de;
+      --border-med:   #c8d0da;
+      --border-heavy: #b0b7bf;
+      --text-1:       #1f2328;
+      --text-2:       #24292f;
+      --text-3:       #57606a;
+      --text-4:       #6e7781;
+      --text-5:       #8c959f;
+      --scroll:       #d0d7de;
+      --scroll-hov:   #b8c1cc;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text-1); font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; transition: background 0.2s, color 0.2s; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--scroll); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--scroll-hov); }
+
+    .sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border); width: 240px; min-width: 240px; height: 100vh; overflow-y: auto; position: fixed; left: 0; top: 0; z-index: 100; display: flex; flex-direction: column; }
+    .main-content { margin-left: 240px; min-height: 100vh; }
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; }
+    .accent { color: #6366f1; }
+    .badge-new { background: #0d1f14; color: #3fb950; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.05em; }
+    .badge-count { background: var(--bg-hover); color: var(--text-3); font-size: 11px; padding: 1px 6px; border-radius: 10px; }
+    .channel-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .nav-item { padding: 7px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-3); transition: all 0.15s; }
+    .nav-item:hover { background: var(--bg-card); color: var(--text-1); }
+    .nav-item.active { background: var(--bg-hover); color: var(--text-1); }
+    .channel-item { padding: 6px 12px 6px 28px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-3); transition: all 0.15s; }
+    .channel-item:hover { background: var(--bg-card); color: var(--text-1); }
+    .channel-item.active { background: var(--bg-hover); color: var(--text-1); }
+    .section-header { font-size: 11px; font-weight: 600; color: var(--text-4); text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 12px 4px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+    .section-header:hover { color: var(--text-3); }
+    .video-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; transition: border-color 0.15s, transform 0.15s; cursor: pointer; }
+    .video-card:hover { border-color: #388bfd; transform: translateY(-1px); }
+    .tag { background: var(--bg-tag); color: var(--text-3); font-size: 11px; padding: 2px 8px; border-radius: 12px; border: 1px solid var(--border); }
+    .tag:hover { background: var(--bg-hover); color: var(--text-1); }
+    .btn-primary { background: #6366f1; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: background 0.15s; }
+    .btn-primary:hover { background: #5254cc; }
+    .btn-secondary { background: var(--bg-hover); color: var(--text-1); border: 1px solid var(--border-med); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.15s; }
+    .btn-secondary:hover { background: var(--bg-tag); border-color: var(--border-heavy); }
+    .search-input { background: var(--bg-input); border: 1px solid var(--border-med); color: var(--text-1); padding: 7px 12px 7px 32px; border-radius: 8px; font-size: 13px; width: 100%; outline: none; transition: border-color 0.15s; }
+    .search-input:focus { border-color: #6366f1; }
+    .search-input::placeholder { color: var(--text-5); }
+    .chat-bubble-user { background: #6366f1; color: white; padding: 10px 14px; border-radius: 12px 12px 2px 12px; max-width: 75%; font-size: 14px; line-height: 1.5; }
+    .chat-bubble-assistant { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-1); padding: 12px 16px; border-radius: 12px 12px 12px 2px; max-width: 85%; font-size: 14px; line-height: 1.6; }
+    .source-chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 12px; font-size: 11px; border: 1px solid; margin: 2px; cursor: pointer; }
+    .suggestion-chip { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-3); padding: 8px 14px; border-radius: 20px; font-size: 12.5px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .suggestion-chip:hover { background: var(--bg-hover); color: var(--text-1); border-color: #6366f1; }
+    .chat-input { background: var(--bg-card); border: 1px solid var(--border-med); color: var(--text-1); padding: 12px 50px 12px 16px; border-radius: 12px; font-size: 14px; width: 100%; outline: none; resize: none; transition: border-color 0.15s; }
+    .chat-input:focus { border-color: #6366f1; }
+    .chat-input::placeholder { color: var(--text-5); }
+    .filter-pill { background: var(--bg-input); border: 1px solid var(--border-med); color: var(--text-3); padding: 4px 10px; border-radius: 16px; font-size: 12px; cursor: pointer; transition: all 0.15s; white-space: nowrap; outline: none; }
+    .filter-pill:hover { border-color: #6366f1; color: var(--text-1); }
+    .filter-pill.active { background: #6366f115; border-color: #6366f1; color: #6366f1; }
+    .dot-bounce { animation: bounce 1.4s infinite ease-in-out; }
+    .dot-bounce:nth-child(1) { animation-delay: -0.32s; }
+    .dot-bounce:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes bounce { 0%, 80%, 100% { transform: scale(0); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+    .thumbnail { width: 100%; height: 160px; object-fit: cover; background: var(--bg-thumb); }
+    .thumbnail-detail { width: 100%; max-height: 220px; object-fit: cover; border-radius: 8px; background: var(--bg-thumb); }
+    .divider { height: 1px; background: var(--border); margin: 8px 0; }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; color: var(--text-3); font-size: 13px; cursor: pointer; padding: 6px 10px; border-radius: 6px; transition: all 0.15s; }
+    .back-btn:hover { color: var(--text-1); background: var(--bg-card); }
+    .home-btn { position: fixed; bottom: 20px; right: 20px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-3); padding: 8px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; text-decoration: none; transition: all 0.15s; z-index: 200; display: flex; align-items: center; gap: 5px; }
+    .home-btn:hover { color: var(--text-1); border-color: #6366f1; }
+    .kpi-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .kpi-table th { text-align: left; padding: 8px 12px; color: var(--text-4); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+    .kpi-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .kpi-table tr:last-child td { border-bottom: none; }
+    .kpi-table .kpi-name { color: var(--text-2); font-weight: 500; }
+    .kpi-table .kpi-value { color: #6366f1; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .kpi-table .kpi-context { color: var(--text-3); line-height: 1.5; }
+    .weekly-story { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 12px; transition: border-color 0.15s; }
+    .weekly-story:hover { border-color: var(--border-med); }
+    .theme-toggle { background: none; border: 1px solid var(--border-med); border-radius: 6px; color: var(--text-3); padding: 4px 8px; cursor: pointer; font-size: 13px; transition: all 0.15s; }
+    .theme-toggle:hover { color: var(--text-1); border-color: var(--border-heavy); }
+    .transcript-box { max-height: 400px; overflow-y: auto; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-top: 12px; font-size: 13px; color: var(--text-3); line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .mobile-header { display: flex !important; }
+    }
+    .mobile-header { display: none; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); padding: 10px 16px; position: sticky; top: 0; z-index: 50; align-items: center; gap: 12px; }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 90; }
+    .overlay.open { display: block; }
+    .prose-content p { margin: 0 0 8px; }
+    .prose-content ul { padding-left: 16px; margin: 4px 0; }
+    .prose-content li { margin: 4px 0; }
+
+    /* ── V2 FEATURE STYLES ─────────────────────────────────────── */
+    .graph-container { width: 100%; height: calc(100vh - 120px); position: relative; }
+    .graph-container svg { width: 100%; height: 100%; }
+    .graph-tooltip { position: absolute; background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--text-2); pointer-events: none; z-index: 10; max-width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .disagree-topic { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+    .disagree-header { padding: 14px 18px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background 0.15s; }
+    .disagree-header:hover { background: var(--bg-hover); }
+    .disagree-body { padding: 0 18px 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+    .disagree-card { background: var(--bg-hover); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+    .quote-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 8px; display: flex; gap: 12px; align-items: flex-start; transition: border-color 0.15s; }
+    .quote-item:hover { border-color: var(--border-med); }
+    .quote-item.selected { border-color: #f59e0b; background: #f59e0b08; }
+    .quote-check { width: 18px; height: 18px; border-radius: 4px; border: 2px solid var(--border-med); cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; margin-top: 2px; }
+    .quote-check.checked { background: #f59e0b; border-color: #f59e0b; }
+    .tm-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .tm-row:last-child { border-bottom: none; }
+    .tm-bars { display: flex; gap: 2px; align-items: flex-end; height: 28px; }
+    .tm-bar { border-radius: 2px 2px 0 0; min-width: 16px; transition: opacity 0.15s; cursor: pointer; }
+    .tm-bar:hover { opacity: 0.8; }
+    .tm-trend-hot { color: #10b981; font-size: 11px; font-weight: 600; }
+    .tm-trend-cold { color: #6e7681; font-size: 11px; font-weight: 600; }
+    .export-opus-btn { background: linear-gradient(135deg, #f59e0b, #f97316); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: opacity 0.15s; }
+    .export-opus-btn:hover { opacity: 0.9; }
+    .deck-export-btn { background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: opacity 0.15s; }
+    .deck-export-btn:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ─── SHARED DECK BUILDER PROMPT ──────────────────────────────────────────────
+const DECK_BUILDER_PROMPT = `You are building a data-dense, opinionated presentation deck in the style of Chamath Palihapitiya's All-In summit talks.
+INPUTS: [transcripts and data below]
+
+─── COLOR THEME (Renesas corporate) ───
+PRIMARY PALETTE — use these for 90%+ of all visuals:
+  Navy (primary bg/headers): #06418C
+  Dark Navy (hero/gradients): #042D5E
+  Blue (secondary/accents): #4471A9
+  Light Blue (card backgrounds): #E8F0F8
+  Gray (neutral/borders/muted text): #6B7280
+  Light Gray (slide bg alt): #F5F5F5
+  Text: #2A2A2A on light, #FFFFFF on dark
+SPARINGLY — only when meaning demands it:
+  Purple (light accent only, rare): #993399
+  Red (critical alerts only, very rare): #D70000
+  Green (confirmed positive only, very rare): #669933
+Slide backgrounds alternate between white and dark navy.
+Charts and data viz use navy, blue, gray as primary colors.
+Do NOT default to red/green for bullish/bearish — use navy
+vs light blue, or solid vs dashed lines instead.
+
+─── ANALYTICAL METHOD ───
+Before outlining slides, identify:
+1. The 3-4 core TENSIONS in this material — where does conventional wisdom clash with the data? Where do two true things contradict each other?
+2. The single most consequential number in the dataset — the one that reframes the conversation. This opens the deck.
+3. The strongest counterargument to your thesis. This gets its own slide.
+Build the deck around resolving these tensions, not around summarizing topics.
+
+─── SLIDE RULES ───
+- Every slide must contain at least 2 specific data points (numbers, %, $, named sources, dates). More is better. Density signals rigor.
+- Classify each data callout as: ANCHOR (frames the argument), SUPPORT (reinforces the point), or TENSION (complicates the thesis, adds credibility)
+- Slide titles ≤ 6 words. Assertions, not labels. Bad: "Market Overview." Good: "The $40B Nobody Noticed."
+- Bullet test: would this change how someone allocates capital or makes a decision? If not, cut it.
+- Every noun must refer to something specific and nameable. "The market" fails. "US enterprise SaaS" passes.
+- Slides should reward a second read — first pass gives the headline, second pass reveals something you missed. That's dense. Not cluttered.
+
+─── STRUCTURE (arc, not rigid) ───
+1. OPEN: One data point that makes the audience think "wait, really?" — the reframe.
+2. CONTEXT (2-3): What most people believe vs. what the data shows. Establish the gap.
+3. THESIS (3-4): Interconnected insights that build sequentially — each slide raises a question the next one answers. Not standalone islands.
+4. EVIDENCE (2-3): The receipts. Annotate what matters in the data — don't just display it.
+5. RED TEAM (1): The strongest case against your thesis. Then dismantle it with data. This separates analysis from advocacy.
+6. IMPLICATIONS (2): If the thesis is right, what follows? Name specific companies, sectors, dollar amounts, timelines. No vague "winners and losers."
+7. CLOSE (1): The single thing to remember. No "in conclusion" energy.
+8. APPENDIX (1-2): Tables with key data. 3-column format: Column 1 = Category, Column 2 = KPI, Column 3 = Why it's relevant or important.
+
+─── DO NOT ───
+- Write any bullet that could appear in a generic deck on the same topic
+- Summarize what was said in the transcript — synthesize it into a point of view with a direction
+- Create symmetric slides (same bullet count, same length) — vary density based on what the content demands
+- Start any bullet with "It is important to note" or "There is a growing trend"
+- Use any noun without a specific referent
+
+TARGET: 12-15 slides. For each slide, provide:
+- Title (≤6 words, assertion not label)
+- Content (2-5 bullets, variable density)
+- Data callouts (with ANCHOR / SUPPORT / TENSION label)
+- Speaker notes with three sections:
+
+  THE POINT: What this slide is arguing, in 2-3 sentences. State the conclusion first, then the evidence. Include what the audience probably believes coming in and where this slide breaks that assumption.
+
+  THE PUSHBACK: The strongest objection a smart skeptic in the room would raise. Not a strawman — the real objection, the one that would make you pause. Name the type: data challenge, logic gap, alternative explanation, or scope limitation.
+
+  THE RESPONSE: How you'd handle it live. Not defensive — either concede the narrow point and redirect ("Fair, but that misses the bigger picture which is..."), or counter with specific data. If you can't rebut it cleanly, the slide's argument isn't strong enough — revise the slide.`;
+
+const INTEL_BRIEFING_PROMPT = `INTELLIGENCE BRIEF PROMPT
+PERSONA: You are a senior McKinsey partner briefing a PE
+investment committee. You think like an operator — if it
+can't be executed Monday morning, it doesn't belong here.
+Your job is not to summarize. It's to synthesize, challenge,
+and advise. Every section should pass the test: "Would a
+board member change a decision based on this?"
+Analyze the following industry transcripts across
+semiconductor, automotive, robotics, and electronics.
+Produce a structured intelligence briefing.
+Depth is earned, not given — only expand a section when the
+data warrants it. If a section doesn't have enough substance
+to justify inclusion this week, say so in one sentence and
+move on. A short brief that's honest beats a long one
+that's padded. Never hedge without naming what you're
+hedging against and why.
+─────────────────────────────────────────
+1. EXECUTIVE SUMMARY (4 sentences. Structured as follows.)
+─────────────────────────────────────────
+Sentence 1: The single most important signal this week.
+Sentence 2: What has materially changed since last week.
+Sentence 3: The strategic implication — who wins, who's
+exposed, what shifts.
+Sentence 4: What's at stake if this read is wrong.
+This is what a CEO reads standing up before a board meeting.
+No scene-setting. No throat-clearing.
+─────────────────────────────────────────
+2. CROSS-CHANNEL THEMES
+─────────────────────────────────────────
+3–5 themes that appear across multiple sources. A theme only
+qualifies if ignoring it would be a strategic mistake.
+For each:
+- Theme name (sharp, not generic — "Inventory correction"
+  not "Supply chain dynamics")
+- Which channels raised it
+- Business implication in one sentence
+- Where the concept is complex or counterintuitive, include
+  a sharp analogy inline: [Concept] → [Analogy] → [Why it
+  maps]. Only where it genuinely clarifies — not decorative.
+- Where warranted: 1–2 sentences of supporting context
+─────────────────────────────────────────
+3. NEW SYNTHESIS — IDEAS NOT EXPLICITLY SAID
+─────────────────────────────────────────
+This is the alpha. Move it here because it's the
+highest-value section, not an afterthought.
+What connections across channels, or logical extensions of
+what was said, produce a new insight that no single source
+explicitly made? Minimum 2 observations, no ceiling. If you
+find more, include them all.
+For each: name the sources you're connecting, the inference,
+and why it matters. If an inference is speculative, say so
+— but don't let that stop you from making it.
+─────────────────────────────────────────
+4. CONTRARIAN SIGNALS & WHERE THE SMART MONEY DISAGREES
+─────────────────────────────────────────
+(Merges former Sections 3 and 6.)
+Two parts:
+CONSENSUS MAP: Where do sources broadly agree? If consensus
+is overwhelming, explain why agreement itself might be a
+risk signal — crowded trades exist in strategy too.
+DISAGREEMENTS & CONTRARIAN TAKES: 2–4 views that most
+people are missing, downplaying, or getting backwards. For
+each:
+- The contrarian view, stated directly
+- The strongest case FOR the consensus position
+- Why the contrarian read may be right anyway
+- Source(s) and supporting evidence
+If a disagreement has real stakes — competing forecasts,
+opposing strategic bets — develop both sides fully. This
+is where the brief earns its keep.
+─────────────────────────────────────────
+5. KEY DATA — KPI TABLE
+─────────────────────────────────────────
+| Metric | Value | Type | Strategic Implication |
+|--------|-------|------|----------------------|
+Minimum 8 rows. No ceiling — include every significant
+quantitative data point. Do not cut for brevity.
+Type column values:
+  ANCHOR = frames the entire argument
+  SUPPORT = reinforces a theme
+  TENSION = complicates the thesis, adds credibility
+Every noun in the Implication column must be specific and
+nameable. "The market is shifting" fails. "TSMC's 3nm
+utilization at 85% signals hyperscaler demand pull-in
+ahead of H2 capex cycle" passes.
+─────────────────────────────────────────
+6. PREDICTIONS & TIMELINES
+─────────────────────────────────────────
+Every forward-looking claim with its source and timeframe.
+Tag each: [HIGH CONFIDENCE] / [MEDIUM] / [SPECULATIVE]
+For high-confidence predictions, include the reasoning.
+For speculative ones, name what would need to be true for
+them to play out.
+─────────────────────────────────────────
+7. PRACTICAL IMPACT — "SO WHAT?"
+─────────────────────────────────────────
+For each major theme or finding above: what should someone
+actually do differently because of this?
+Each recommendation must include:
+- The specific action (not "consider" or "evaluate" —
+  the actual move)
+- Who it's relevant to (role, function, or company type
+  — let the content dictate this, don't force verticals)
+- What's at risk if they don't act
+- Timeframe: this week / this quarter / this year
+If a recommendation is obvious enough that any competent
+exec would already be doing it, cut it. Only include
+advice that changes behavior.
+─── IMPLICATIONS ───
+Close with 2-3 second-order implications — the downstream
+effects that aren't obvious yet but follow logically from
+the week's signals. These don't need to be actionable.
+They need to be worth watching. Tag each with a timeframe
+for when you'd expect the implication to become visible.
+─────────────────────────────────────────
+8. INTERNAL CONSISTENCY CHECK
+─────────────────────────────────────────
+Before finalizing: review your predictions (Section 6),
+recommendations (Section 7), and synthesis (Section 3).
+Flag any tensions between them explicitly. If your
+contrarian view in Section 4 contradicts your advice in
+Section 7, that's not a bug — but you must acknowledge it
+and explain why both can be true, or revise.
+─────────────────────────────────────────
+GLOBAL RULES:
+- Cite all claims by channel name
+- Be merciless with jargon — translate technical concepts
+  into business language without losing precision
+- Every noun must refer to something specific and nameable
+- Write for a reader with no time and high stakes
+- If the transcripts are thin this week, the brief should
+  be shorter. Don't invent depth that isn't there.`;
+
+const HTML_REPORT_PROMPT = `Produce a single self-contained HTML file that is BOTH
+an intelligence briefing AND a visual presentation in one.
+This is a hybrid: the analytical depth of a McKinsey brief
+with the visual punch of a Chamath-style deck. Someone
+should be able to open this file, scan it in 2 minutes for
+the headlines, OR read it for 20 minutes for the full picture.
+
+═══════════════════════════════════════════
+PERSONA & ANALYTICAL METHOD
+═══════════════════════════════════════════
+You are a senior McKinsey partner briefing a PE investment
+committee. You think like an operator — if it can't be
+executed Monday morning, it doesn't belong here.
+
+Before building slides, identify:
+1. The 3-4 core TENSIONS in this material — where does
+   conventional wisdom clash with the data?
+2. The single most consequential number in the dataset —
+   the one that reframes the conversation. This opens the report.
+3. The strongest counterargument to your thesis. This gets
+   its own section.
+
+Every section should pass: "Would a board member change a
+decision based on this?" If not, cut it.
+
+═══════════════════════════════════════════
+COLOR THEME (Renesas corporate — mostly blues + gray)
+═══════════════════════════════════════════
+PRIMARY (90%+ of all visuals):
+  Dark Navy #042D5E — hero bg, section headers, dark cards
+  Navy #06418C — primary accent, buttons, key numbers
+  Blue #4471A9 — secondary accent, links, chart lines
+  Light Blue #E8F0F8 — card backgrounds, subtle fills
+  Gray #6B7280 — borders, muted text, neutral elements
+  Light Gray #F5F5F5 — alternating section backgrounds
+  Text: #FFFFFF on dark, #2A2A2A on light
+SPARINGLY:
+  Purple #993399 — light accent only (e.g. one highlight per section)
+  Red #D70000 — critical alerts only, never as default sentiment
+  Green #669933 — confirmed positive only, never as default sentiment
+For bullish/bearish contrast, use navy vs light blue — not red/green.
+
+═══════════════════════════════════════════
+REQUIRED SECTIONS (in this order)
+═══════════════════════════════════════════
+
+1. HERO — Full-width dark navy header.
+   Week label + date + # of sources.
+   The single most important signal this week in large white type.
+   Below it: one sentence on what has materially changed.
+
+2. KPI DASHBOARD — 4-6 stat cards in a responsive grid.
+   Each: metric name (small label), the number (huge, navy),
+   one-line strategic implication (not just context — what it MEANS).
+   Tag each: ANCHOR / SUPPORT / TENSION in a small pill.
+   Minimum 6. Include every significant number. Do not cut for brevity.
+
+3. CROSS-CHANNEL THEMES — Each theme as a card with:
+   Sharp title (not generic — "Inventory correction" not "Supply chain")
+   Channel pills showing which sources raised it
+   Business implication in 1-2 punchy sentences
+   Where complex: inline analogy [Concept] → [Analogy] → [Why it maps]
+
+4. NEW SYNTHESIS — THE ALPHA SECTION.
+   Visually distinct (light blue bg, slightly larger type).
+   What connections across channels produce a new insight no
+   single source explicitly made? Name the sources you're
+   connecting, the inference, and why it matters.
+   Minimum 2, no ceiling. This section should never be cut short.
+
+5. TENSION BOARD — Side-by-side cards for contradictions.
+   CONSENSUS MAP: Where sources agree (and why agreement
+   itself might be a risk signal).
+   DISAGREEMENTS: 2-4 opposing reads, rendered as VS cards.
+   Each card: the view stated directly, strongest case for
+   the other side, why this read may be right anyway.
+   Source attribution on each.
+
+6. PREDICTIONS TIMELINE — Visual timeline (horizontal or vertical).
+   Every forward-looking claim with source and timeframe.
+   Confidence tags: navy pill = HIGH, blue = MEDIUM, gray = SPECULATIVE.
+   For speculative: what would need to be true for it to play out.
+
+7. SO WHAT — ACTION CARDS.
+   Each action as its own card:
+   The specific move (bold, not "consider" — the actual action)
+   Who it's for (role/function pill)
+   What's at risk if they don't act
+   Timeframe badge: this week / this quarter / this year
+   Only include advice that changes behavior.
+   Close with 2-3 second-order implications in muted cards
+   with timeframe for when you'd expect them to become visible.
+
+8. RED TEAM — INTERNAL CONSISTENCY CHECK.
+   Review your predictions, recommendations, and synthesis.
+   Flag tensions explicitly. If your contrarian view contradicts
+   your advice, acknowledge it and explain why both can be true.
+   Render as a subtle callout box at the bottom.
+
+═══════════════════════════════════════════
+DESIGN & INTERACTIVITY
+═══════════════════════════════════════════
+- Single HTML file, all CSS and JS inline
+- No external dependencies except Google Fonts (Inter)
+- Mobile-responsive (grid collapses to single column)
+- Fixed top nav with smooth scroll to each section
+- Cards have subtle hover (lift + shadow, 0.15s transition)
+- Collapsible sections (click header to expand/collapse)
+- @media print styles so it prints cleanly
+- Executive dashboard aesthetic: Bloomberg meets McKinsey
+- Clean whitespace. Dense where data demands it, airy where
+  the reader needs to breathe. No decorative elements.
+
+═══════════════════════════════════════════
+OUTPUT FORMAT
+═══════════════════════════════════════════
+Wrap the complete HTML in a code block tagged \`\`\`html
+The file must be ready to save as report.html and open in
+any browser. It must render perfectly standalone.
+
+GLOBAL RULES:
+- Cite all claims by channel name
+- Translate jargon into business language without losing precision
+- Every noun must be specific and nameable
+- If the transcripts are thin, the report should be shorter.
+  Don't invent depth that isn't there.`;
+
+// ─── DEMO DATA ────────────────────────────────────────────────────────────────
+const DEMO_DATA = {
+  categories: [
+    {
+      id: "tech-ai", name: "Tech & AI",
+      channels: [
+        { id: "allin", name: "All-In Podcast", color: "#6366f1", icon: "🎙️" },
+        { id: "twis", name: "This Week in Startups", color: "#06b6d4", icon: "🚀" }
+      ]
+    },
+    {
+      id: "claude-ai-tools", name: "Claude & AI Tools",
+      channels: [
+        { id: "anthropic", name: "Anthropic", color: "#f97316", icon: "🤖" },
+        { id: "alexfinn", name: "Alex Finn", color: "#f59e0b", icon: "💡" }
+      ]
+    },
+    {
+      id: "finance-markets", name: "Finance & Markets",
+      channels: [
+        { id: "ark", name: "ARK Invest", color: "#14b8a6", icon: "📊" }
+      ]
+    }
+  ],
+  videos: [
+    {
+      id: "allin_e188",
+      channel_id: "allin",
+      title: "E188: OpenAI's o4 drops, Anthropic's Series F, scaling law debate, and the great AI talent war",
+      date: "2026-03-13T09:00:00Z",
+      upload_date: "20260313",
+      url: "https://www.youtube.com/watch?v=allin_e188",
+      thumbnail: "https://picsum.photos/seed/allin188/320/180",
+      duration: "2:14:33",
+      summary: "The besties dig into OpenAI's o4 release and what it signals for the reasoning vs. scaling debate — Chamath and Jason are firmly in opposing camps. Anthropic's $3B Series F closes at a $50B valuation, prompting a broader discussion on AI capital efficiency and whether the sector is repeating fintech's sins.",
+      key_insights: [
+        "Chamath argues o4's reasoning gains are largely prompt engineering dressed up as architecture — Friedberg disagrees sharply",
+        "Anthropic's $50B valuation implies a 10x revenue multiple at best — Sacks questions whether enterprise adoption can sustain the thesis",
+        "AI talent churn at FAANG is at a 5-year high; Google DeepMind alone lost 40+ researchers to startups in Q1 2026"
+      ],
+      kpi_table: [
+        { kpi: "Anthropic Series F", value: "$3B", context: "Closes at $50B valuation — 10x revenue multiple at best per Sacks" },
+        { kpi: "Google DeepMind exits", value: "40+", context: "Researchers left for startups in Q1 2026 alone" }
+      ],
+      topics: ["OpenAI o4", "Anthropic Series F", "AI Talent War", "Scaling Laws"],
+      host_takes: [
+        "Chamath: o4's reasoning gains are largely prompt engineering dressed up as architecture — the moat is thinner than people think",
+        "Friedberg: Disagrees sharply — the chain-of-thought improvements are real architectural innovation, not just prompting tricks",
+        "Sacks: Anthropic at $50B is priced for perfection — enterprise adoption needs to 3x from here to justify the multiple"
+      ],
+      key_quotes: [
+        "The AI talent war isn't about compensation anymore — it's about agency. People want to build, not maintain.",
+        "If you're paying 10x revenue for an AI company in 2026, you better believe their enterprise pipeline is a freight train.",
+        "Google DeepMind is bleeding researchers like a stuck pig — 40 in one quarter is an exodus, not attrition."
+      ],
+      predictions: [
+        "Chamath: At least 2 major AI labs will merge or get acquired within 18 months",
+        "Friedberg: Agent error rates on complex tasks will drop below 5% by Q4 2026"
+      ],
+      is_new: true,
+      days_ago: 1
+    },
+    {
+      id: "allin_e187",
+      channel_id: "allin",
+      title: "E187: DeepSeek-V3 fallout — who won, who panicked, and what the market got wrong",
+      date: "2026-03-07T09:00:00Z",
+      upload_date: "20260307",
+      url: "https://www.youtube.com/watch?v=allin_e187",
+      thumbnail: "https://picsum.photos/seed/allin187/320/180",
+      duration: "2:03:17",
+      summary: "Six weeks after the DeepSeek-V3 drop, the besties do a post-mortem on the market panic. Nvidia recovered; the Mag-7 AI infrastructure thesis held.",
+      key_insights: [
+        "Nvidia's post-DeepSeek selloff was a buying opportunity — inference demand is accelerating, not collapsing",
+        "DeepSeek-V3's true innovation was distillation methodology, not raw capability",
+        "China's AI advantage is energy arbitrage — datacenter builds at $0.03/kWh vs US $0.07/kWh"
+      ],
+      kpi_table: [
+        { kpi: "China datacenter power cost", value: "$0.03/kWh", context: "vs US $0.07/kWh — 57% cheaper, structural cost advantage" }
+      ],
+      topics: ["DeepSeek V3", "Nvidia Recovery", "China AI", "Energy Costs"],
+      host_takes: [
+        "Sacks: Nvidia's selloff was a classic overreaction — inference demand is the real story, and it's accelerating",
+        "Chamath: China's energy cost advantage is structural and permanent — this is the real AI arms race variable nobody talks about"
+      ],
+      key_quotes: [
+        "DeepSeek's innovation was distillation methodology — they didn't build a better engine, they built a better factory.",
+        "At $0.03 per kilowatt-hour, China doesn't need better chips. They just need more of them."
+      ],
+      is_new: true,
+      days_ago: 7
+    },
+    {
+      id: "ark_1",
+      channel_id: "ark",
+      title: "The AI Convergence: Why 2026 is the inflection point for exponential returns",
+      date: "2026-03-08T14:00:00Z",
+      upload_date: "20260308",
+      url: "https://www.youtube.com/watch?v=ark_convergence26",
+      thumbnail: "https://picsum.photos/seed/ark2026/320/180",
+      duration: "38:55",
+      summary: "ARK's research team presents their updated 5-year model for AI-driven economic value creation. Bull case for AI GDP contribution by 2030 revised up to $90 trillion.",
+      key_insights: [
+        "ARK's revised 2030 AI GDP contribution: $90T bull case, $45T base case",
+        "Inflection signal to watch: when AI agent error rates on 10-step tasks drop below 5%",
+        "Energy is the binding constraint — nuclear and next-gen solar are prerequisites for AGI-scale compute by 2028"
+      ],
+      kpi_table: [
+        { kpi: "2030 AI GDP (bull)", value: "$90T", context: "ARK revised up — ~65% of today's global GDP added in under 5 years" },
+        { kpi: "2030 AI GDP (base)", value: "$45T", context: "Conservative scenario still implies 1 GDP equivalent in 5 years" },
+        { kpi: "Agent error threshold", value: "<5%", context: "The watch signal — when 10-step task accuracy hits this, substitution accelerates non-linearly" }
+      ],
+      topics: ["AI GDP Forecast", "ARK 2030 Model", "Agentic AI", "Energy Constraints"],
+      host_takes: [
+        "Cathie Wood: The $90T bull case isn't aspirational — it's mathematical. The deflation thesis alone gets you halfway there."
+      ],
+      key_quotes: [
+        "When AI agent error rates on 10-step tasks drop below 5%, we won't call it automation anymore. We'll call it colleagues.",
+        "Nuclear isn't a nice-to-have for AGI-scale compute — it's table stakes. Solar alone gets you 60% of the way. The last 40% is everything."
+      ],
+      predictions: [
+        "ARK: AI GDP contribution reaches $45-90T by 2030",
+        "ARK: Agent error rates below 5% on complex tasks by late 2027"
+      ],
+      is_new: true,
+      days_ago: 6
+    }
+  ],
+  last_updated: "2026-03-14T00:00:00+09:00"
+};
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function getDaysAgo(video) {
+  if (video.upload_date && /^\d{8}$/.test(video.upload_date)) {
+    const d = video.upload_date;
+    const uploaded = new Date(`${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}T00:00:00Z`);
+    return Math.max(0, Math.floor((Date.now() - uploaded.getTime()) / 86400000));
+  }
+  return video.days_ago ?? 999;
+}
+
+function timeAgo(video) {
+  const d = getDaysAgo(video);
+  if (d === 0) return "Today";
+  if (d === 1) return "Yesterday";
+  if (d < 7) return `${d}d ago`;
+  if (d < 30) return `${Math.floor(d / 7)}w ago`;
+  return `${Math.floor(d / 30)}mo ago`;
+}
+
+function isNew(video) {
+  return getDaysAgo(video) <= 7;
+}
+
+function getChannel(data, channelId) {
+  for (const cat of data.categories) {
+    for (const ch of cat.channels) {
+      if (ch.id === channelId) return ch;
+    }
+  }
+  return null;
+}
+
+function getAllChannels(data) {
+  return data.categories.flatMap(c => c.channels);
+}
+
+function findRelevantVideos(videos, query, limit = 5, filters = {}) {
+  let pool = videos;
+
+  // Apply timeframe filter
+  if (filters.days) {
+    pool = pool.filter(v => getDaysAgo(v) <= filters.days);
+  }
+
+  // Apply channel filter
+  if (filters.channels && filters.channels.length > 0) {
+    pool = pool.filter(v => filters.channels.includes(v.channel_id));
+  }
+
+  if (!query.trim()) return pool.slice(0, limit);
+
+  const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 2);
+  if (terms.length === 0) return pool.slice(0, limit);
+
+  const scored = pool.map(v => {
+    let score = 0;
+    terms.forEach(t => {
+      if (v.title.toLowerCase().includes(t)) score += 3;
+      if (v.summary.toLowerCase().includes(t)) score += 2;
+      if ((v.topics || []).some(tag => tag.toLowerCase().includes(t))) score += 2;
+      if ((v.key_insights || []).some(i => i.toLowerCase().includes(t))) score += 1;
+    });
+    return { video: v, score };
+  }).filter(x => x.score > 0).sort((a, b) => b.score - a.score);
+
+  return scored.slice(0, limit).map(x => x.video);
+}
+
+function buildContext(videos, data) {
+  return videos.map(v => {
+    const ch = getChannel(data, v.channel_id);
+    const lines = [
+      `[${ch?.name || v.channel_id}] "${v.title}" (${timeAgo(v)})`,
+      `Summary: ${v.full_summary || v.summary}`,
+      (v.key_insights || []).length > 0 ? `Key insights:\n${v.key_insights.map(i => `- ${i}`).join('\n')}` : '',
+      (v.host_takes || []).length > 0 ? `Host positions:\n${v.host_takes.map(t => `- ${t}`).join('\n')}` : '',
+      (v.predictions || []).length > 0 ? `Predictions:\n${v.predictions.map(p => `- ${p}`).join('\n')}` : '',
+      (v.key_quotes || []).length > 0 ? `Notable quotes:\n${v.key_quotes.map(q => `- "${q}"`).join('\n')}` : '',
+      (v.transcript) ? `Transcript excerpt:\n${v.transcript.slice(0, 3000)}...` : '',
+    ].filter(Boolean);
+    return lines.join('\n');
+  }).join('\n\n---\n\n');
+}
+
+function buildVideoContext(video, channel) {
+  const lines = [
+    `[${channel?.name || video.channel_id}] "${video.title}" (${timeAgo(video)})`,
+    `Summary: ${video.full_summary || video.one_liner || video.summary}`,
+    (video.segment_summaries || []).length > 0 ? `Segments:\n${video.segment_summaries.map(s => `- ${s}`).join('\n')}` : '',
+    (video.key_insights || []).length > 0 ? `Key insights:\n${video.key_insights.map(i => `- ${i}`).join('\n')}` : '',
+    (video.host_takes || []).length > 0 ? `Host positions:\n${video.host_takes.map(t => `- ${t}`).join('\n')}` : '',
+    (video.predictions || []).length > 0 ? `Predictions:\n${video.predictions.map(p => `- ${p}`).join('\n')}` : '',
+    (video.key_quotes || []).length > 0 ? `Notable quotes:\n${video.key_quotes.map(q => `- "${q}"`).join('\n')}` : '',
+    // Transcript intentionally excluded — structured fields above already contain all extracted intelligence.
+  ].filter(Boolean);
+  return lines.join('\n\n');
+}
+
+// ─── VIDEO CARD ───────────────────────────────────────────────────────────────
+function VideoCard({ video, data, onClick }) {
+  const channel = getChannel(data, video.channel_id);
+  return (
+    <div className="video-card" onClick={() => onClick(video)}>
+      <img className="thumbnail" src={video.thumbnail} alt={video.title} loading="lazy"
+        onError={e => { e.target.style.background='var(--bg-thumb)'; e.target.style.display='none'; }} />
+      <div style={{padding:'12px'}}>
+        <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'6px',flexWrap:'wrap'}}>
+          {channel && (
+            <span style={{display:'flex',alignItems:'center',gap:'5px',fontSize:'12px',color:channel.color}}>
+              <span className="channel-dot" style={{background:channel.color}}></span>
+              {channel.name}
+            </span>
+          )}
+          {isNew(video) && <span className="badge-new">NEW</span>}
+          <span style={{fontSize:'12px',color:'var(--text-4)',marginLeft:'auto'}}>{timeAgo(video)}</span>
+        </div>
+        <div style={{fontSize:'14px',fontWeight:'500',color:'var(--text-1)',marginBottom:'6px',lineHeight:'1.4'}}>
+          {video.title}
+        </div>
+        <div style={{fontSize:'12.5px',color:'var(--text-3)',lineHeight:'1.5',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden',marginBottom:'8px'}}>
+          {video.summary}
+        </div>
+        <div style={{display:'flex',flexWrap:'wrap',gap:'4px'}}>
+          {(video.topics || []).slice(0,4).map(t => (
+            <span key={t} className="tag">{t}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── WHAT'S NEW VIEW ─────────────────────────────────────────────────────────
+function WhatsNewView({ data, onVideo }) {
+  const byDate = (a, b) => getDaysAgo(a) - getDaysAgo(b);
+  const today = data.videos.filter(v => getDaysAgo(v) <= 1).sort(byDate);
+  const week  = data.videos.filter(v => getDaysAgo(v) > 1 && getDaysAgo(v) <= 7).sort(byDate);
+  const older = data.videos.filter(v => getDaysAgo(v) > 7 && getDaysAgo(v) <= 30).sort(byDate);
+
+  const Section = ({ title, videos }) => videos.length === 0 ? null : (
+    <div style={{marginBottom:'32px'}}>
+      <div style={{fontSize:'12px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'12px'}}>{title}</div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:'14px'}}>
+        {videos.map(v => <VideoCard key={v.id} video={v} data={data} onClick={onVideo} />)}
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{padding:'28px'}}>
+      <div style={{marginBottom:'24px'}}>
+        <div style={{fontSize:'22px',fontWeight:'600',color:'var(--text-1)',marginBottom:'4px'}}>What's New</div>
+        <div style={{fontSize:'13px',color:'var(--text-3)'}}>Latest across all your channels</div>
+      </div>
+      <Section title="Today" videos={today} />
+      <Section title="This Week" videos={week} />
+      <Section title="Earlier This Month" videos={older} />
+      {data.videos.length === 0 && (
+        <div style={{textAlign:'center',padding:'60px 20px',color:'var(--text-4)'}}>
+          <div style={{fontSize:'32px',marginBottom:'12px'}}>📡</div>
+          <div style={{fontSize:'15px'}}>No videos yet. Run ingest.py to load your channels.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── CHANNEL VIEW ─────────────────────────────────────────────────────────────
+function ChannelView({ channelId, data, onVideo }) {
+  const channel = getChannel(data, channelId);
+  const videos = data.videos.filter(v => v.channel_id === channelId);
+  const recent = videos.filter(v => getDaysAgo(v) <= 7);
+  const earlier = videos.filter(v => getDaysAgo(v) > 7);
+
+  if (!channel) return null;
+
+  return (
+    <div style={{padding:'28px'}}>
+      <div style={{display:'flex',alignItems:'center',gap:'12px',marginBottom:'24px'}}>
+        <span style={{fontSize:'28px'}}>{channel.icon}</span>
+        <div>
+          <div style={{fontSize:'22px',fontWeight:'600',color:channel.color}}>{channel.name}</div>
+          <div style={{fontSize:'13px',color:'var(--text-4)'}}>{videos.length} videos</div>
+        </div>
+      </div>
+      {recent.length > 0 && (
+        <div style={{marginBottom:'32px'}}>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'12px'}}>Recent (Last 7 Days)</div>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:'14px'}}>
+            {recent.map(v => <VideoCard key={v.id} video={v} data={data} onClick={onVideo} />)}
+          </div>
+        </div>
+      )}
+      {earlier.length > 0 && (
+        <div>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'12px'}}>Earlier</div>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:'14px'}}>
+            {earlier.map(v => <VideoCard key={v.id} video={v} data={data} onClick={onVideo} />)}
+          </div>
+        </div>
+      )}
+      {videos.length === 0 && (
+        <div style={{textAlign:'center',padding:'60px 20px',color:'var(--text-4)'}}>
+          <div style={{fontSize:'32px',marginBottom:'12px'}}>{channel.icon}</div>
+          <div>No videos loaded yet. Run ingest.py to fetch from {channel.name}.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── VIDEO DETAIL VIEW ────────────────────────────────────────────────────────
+// ─── PER-VIDEO EXPORT PANEL ───────────────────────────────────────────────────
+function VideoExportPanel({ video, channel, transcript, detailLoading }) {
+  const [copyState, setCopyState] = useState('idle');
+
+  function buildVideoPayload() {
+    const chName = channel?.name || video.channel_id;
+    const parts = [
+      `[${chName}] "${video.title}" (${timeAgo(video)})`,
+      video.url ? `URL: ${video.url}` : '',
+      video.one_liner ? `Summary: ${video.one_liner}` : '',
+      (video.full_summary || video.summary) ? `Full summary: ${video.full_summary || video.summary}` : '',
+      (video.key_insights || []).length > 0 ? `\nKey insights:\n${video.key_insights.map(i => `- ${i}`).join('\n')}` : '',
+      (video.host_takes || []).length > 0 ? `\nHost positions:\n${video.host_takes.map(t => `- ${t}`).join('\n')}` : '',
+      (video.kpi_table || []).length > 0 ? `\nKPIs:\n${video.kpi_table.map(k => `- ${k.kpi}: ${k.value} — ${k.context}`).join('\n')}` : '',
+      (video.predictions || []).length > 0 ? `\nPredictions:\n${video.predictions.map(p => `- ${p}`).join('\n')}` : '',
+      (video.key_quotes || []).length > 0 ? `\nNotable quotes:\n${video.key_quotes.map(q => `- "${q}"`).join('\n')}` : '',
+      transcript ? `\nTranscript:\n${transcript}` : ''
+    ].filter(Boolean);
+    return parts.join('\n');
+  }
+
+  // Build CW week number and date-based filename prefix
+  function getFilePrefix() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    // ISO week number
+    const jan1 = new Date(year, 0, 1);
+    const days = Math.floor((now - jan1) / 86400000);
+    const weekNum = Math.ceil((days + jan1.getDay() + 1) / 7);
+    const cw = String(weekNum).padStart(2, '0');
+    // Channel slug: lowercase, replace spaces/special chars with hyphens
+    const chSlug = (channel?.name || video.channel_id || 'unknown')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return `CW${cw}_${year}_${month}_${day}_${chSlug}`;
+  }
+
+  const FILE_SAVE_INSTRUCTIONS = `
+═══════════════════════════════════════════
+FILE NAMING & SAVE LOCATION
+═══════════════════════════════════════════
+Save all output files to: ~/Documents/Cowork OS/Professional/Research & Analysis/research/
+
+File naming format: ${getFilePrefix()}_[short-topic-slug].[ext]
+  - [short-topic-slug] = 2-4 word lowercase kebab-case summary of the key theme
+  - Examples:
+    ${getFilePrefix()}_ai-talent-war.html
+    ${getFilePrefix()}_ai-talent-war_briefing.md
+    ${getFilePrefix()}_ai-talent-war_deck.pptx
+
+ALL outputs from this video (HTML, briefing, deck) should share the same
+prefix and topic slug. Only the suffix/extension changes.
+═══════════════════════════════════════════`;
+
+  function copyForBriefing() {
+    const payload = buildVideoPayload();
+    const text = `SIGNAL → SINGLE VIDEO BRIEFING\nGenerated: ${new Date().toLocaleDateString()}\nSource: ${channel?.name || video.channel_id}\n${FILE_SAVE_INSTRUCTIONS}\n\n${'─'.repeat(40)}\n${INTEL_BRIEFING_PROMPT}\n${'─'.repeat(40)}\n\nNote: This briefing is based on a single video, not a cross-channel batch.\nAdapt section depth accordingly — skip sections that require multiple sources.\nFocus on: Executive Summary, Key Data (KPI table), Predictions, and Practical Impact.\n\n${'═'.repeat(40)}\n\n${payload}`;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopyState('briefing'); setTimeout(() => setCopyState('idle'), 2500);
+    });
+  }
+
+  function copyForDeck() {
+    const payload = buildVideoPayload();
+    const text = `SIGNAL → SINGLE VIDEO DECK\nGenerated: ${new Date().toLocaleDateString()}\nSource: ${channel?.name || video.channel_id}\n${FILE_SAVE_INSTRUCTIONS}\n\n${'─'.repeat(40)}\n${DECK_BUILDER_PROMPT}\n${'─'.repeat(40)}\n\nNote: This deck is based on a single video source.\nFocus the TENSIONS methodology on internal tensions within this source's arguments.\nAim for 8-12 slides rather than 15-20.\n\n${'═'.repeat(40)}\n\n${payload}`;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopyState('deck'); setTimeout(() => setCopyState('idle'), 2500);
+    });
+  }
+
+  function copyForHTML() {
+    const payload = buildVideoPayload();
+    const text = `SIGNAL → SINGLE VIDEO VISUAL REPORT\nGenerated: ${new Date().toLocaleDateString()}\nSource: ${channel?.name || video.channel_id}\n${FILE_SAVE_INSTRUCTIONS}\n\n${'─'.repeat(40)}\n${HTML_REPORT_PROMPT}\n${'─'.repeat(40)}\n\nNote: This report is based on a single video source.\nAdapt sections that require cross-channel comparison — focus instead on\nthe depth of this source's data, predictions, and actionable insights.\nScale the report to match the content density — shorter is fine.\n\n${'═'.repeat(40)}\n\n${payload}`;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopyState('html'); setTimeout(() => setCopyState('idle'), 2500);
+    });
+  }
+
+  return (
+    <div className="card" style={{padding:'14px 18px',marginBottom:'16px',borderLeft:'3px solid #6366f1'}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'8px'}}>
+        <div>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'var(--text-1)',marginBottom:'2px'}}>Export to Opus</div>
+          <div style={{fontSize:'11px',color:'var(--text-4)'}}>
+            {transcript ? 'Full transcript + structured data + prompt → clipboard' : detailLoading ? 'Loading transcript…' : 'Structured data + prompt (no transcript available)'}
+          </div>
+        </div>
+        <div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}>
+          <button onClick={copyForBriefing} style={{
+            background: copyState==='briefing' ? '#10b981' : '#6366f1',
+            color:'white', border:'none', padding:'6px 14px', borderRadius:'7px',
+            cursor:'pointer', fontSize:'12px', fontWeight:'500', transition:'background 0.2s', whiteSpace:'nowrap'
+          }}>
+            {copyState==='briefing' ? '✓ Copied' : '📋 Briefing'}
+          </button>
+          <button onClick={copyForDeck} className="deck-export-btn" style={{padding:'6px 14px',fontSize:'12px',whiteSpace:'nowrap'}}>
+            {copyState==='deck' ? '✓ Copied' : '🎯 Deck'}
+          </button>
+          <button onClick={copyForHTML} style={{
+            background: copyState==='html' ? '#10b981' : '#f59e0b',
+            color:'white', border:'none', padding:'6px 14px', borderRadius:'7px',
+            cursor:'pointer', fontSize:'12px', fontWeight:'500', transition:'background 0.2s', whiteSpace:'nowrap'
+          }}>
+            {copyState==='html' ? '✓ Copied' : '🌐 HTML Report'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VideoDetailView({ video, data, onBack, onChat, onVideoChat }) {
+  const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [detailData, setDetailData] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const channel = getChannel(data, video.channel_id);
+
+  const related = data.videos.filter(v =>
+    v.id !== video.id &&
+    (v.topics || []).some(t => (video.topics || []).includes(t))
+  ).slice(0, 3);
+
+  // Fetch full detail file (includes transcript) when video opens
+  useEffect(() => {
+    setDetailData(null);
+    setDetailLoading(true);
+    fetch(`/data/videos/${video.id}.json`)
+      .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
+      .then(d => setDetailData(d))
+      .catch(() => setDetailData(null))
+      .finally(() => setDetailLoading(false));
+  }, [video.id]);
+
+  const fullVideo = detailData || video;
+  const transcript = detailData?.transcript || video.transcript || null;
+
+  // KPI table — supports both new structured format and old flat strings
+  const kpiRows = fullVideo.kpi_table || null;
+  const legacyFigures = (!kpiRows && (fullVideo.figures_and_data || []).length > 0)
+    ? fullVideo.figures_and_data : null;
+
+  return (
+    <div style={{padding:'28px',maxWidth:'800px'}}>
+      <div onClick={onBack} className="back-btn" style={{marginBottom:'20px'}}>
+        ← Back
+      </div>
+
+      <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'10px',flexWrap:'wrap'}}>
+        {channel && (
+          <span style={{display:'flex',alignItems:'center',gap:'5px',fontSize:'13px',color:channel.color}}>
+            <span className="channel-dot" style={{background:channel.color}}></span>
+            {channel.name}
+          </span>
+        )}
+        <span style={{fontSize:'12px',color:'var(--text-4)'}}>{timeAgo(video)}</span>
+        {video.duration && <span style={{fontSize:'12px',color:'var(--text-4)'}}>· {video.duration}</span>}
+        {isNew(video) && <span className="badge-new">NEW</span>}
+        <a href={video.url} target="_blank" rel="noopener noreferrer"
+          style={{fontSize:'12px',color:'#6366f1',textDecoration:'none',marginLeft:'auto'}}
+          onClick={e => e.stopPropagation()}>
+          Watch on YouTube ↗
+        </a>
+      </div>
+
+      <h1 style={{fontSize:'20px',fontWeight:'600',color:'var(--text-1)',lineHeight:'1.4',marginBottom:'16px'}}>{video.title}</h1>
+
+      <img className="thumbnail-detail" src={video.thumbnail} alt={video.title}
+        onError={e => { e.target.style.display='none'; }} style={{marginBottom:'20px',display:'block'}} />
+
+      {/* Summary */}
+      <div className="card" style={{padding:'18px',marginBottom:'16px'}}>
+        <div style={{fontSize:'12px',fontWeight:'600',color:'#6366f1',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'8px'}}>Summary</div>
+        <p style={{fontSize:'14px',color:'var(--text-2)',lineHeight:'1.7',margin:0}}>
+          {fullVideo.one_liner || fullVideo.full_summary || video.summary}
+        </p>
+      </div>
+
+      {/* KPI / Data Table */}
+      {kpiRows && kpiRows.length > 0 && (
+        <div className="card" style={{padding:'18px',marginBottom:'16px'}}>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'#14b8a6',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'12px'}}>Key Figures</div>
+          <table className="kpi-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Figure</th>
+                <th>Context</th>
+              </tr>
+            </thead>
+            <tbody>
+              {kpiRows.map((row, i) => (
+                <tr key={i}>
+                  <td className="kpi-name">{row.kpi}</td>
+                  <td className="kpi-value">{row.value}</td>
+                  <td className="kpi-context">{row.context}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Legacy flat figures (old format) */}
+      {legacyFigures && legacyFigures.length > 0 && (
+        <div className="card" style={{padding:'18px',marginBottom:'16px'}}>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'#14b8a6',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'10px'}}>Data Points</div>
+          <ul style={{margin:0,padding:0,listStyle:'none'}}>
+            {legacyFigures.map((fig, i) => (
+              <li key={i} style={{display:'flex',gap:'10px',marginBottom:'6px',fontSize:'13px',color:'var(--text-3)'}}>
+                <span style={{color:'#14b8a6',flexShrink:0}}>▸</span>
+                <span>{fig}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Key Insights */}
+      {(fullVideo.key_insights || []).length > 0 && (
+        <div className="card" style={{padding:'18px',marginBottom:'16px'}}>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'#6366f1',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'10px'}}>Key Insights</div>
+          <ul style={{margin:0,padding:0,listStyle:'none'}}>
+            {fullVideo.key_insights.map((insight, i) => (
+              <li key={i} style={{display:'flex',gap:'10px',marginBottom:'8px',fontSize:'14px',color:'var(--text-2)',lineHeight:'1.6'}}>
+                <span style={{color:'#6366f1',fontWeight:'700',flexShrink:0,marginTop:'2px'}}>·</span>
+                <span>{insight}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Host Takes */}
+      {(fullVideo.host_takes || []).length > 0 && (
+        <div className="card" style={{padding:'18px',marginBottom:'16px'}}>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'#f97316',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'10px'}}>Host Positions</div>
+          <ul style={{margin:0,padding:0,listStyle:'none'}}>
+            {fullVideo.host_takes.map((take, i) => (
+              <li key={i} style={{display:'flex',gap:'10px',marginBottom:'10px',fontSize:'14px',color:'var(--text-2)',lineHeight:'1.6'}}>
+                <span style={{color:'#f97316',fontWeight:'700',flexShrink:0,marginTop:'2px'}}>▸</span>
+                <span>{take}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Predictions */}
+      {(fullVideo.predictions || []).length > 0 && (
+        <div className="card" style={{padding:'18px',marginBottom:'16px'}}>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'#10b981',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'10px'}}>Predictions Made</div>
+          <ul style={{margin:0,padding:0,listStyle:'none'}}>
+            {fullVideo.predictions.map((pred, i) => (
+              <li key={i} style={{display:'flex',gap:'10px',marginBottom:'8px',fontSize:'14px',color:'var(--text-2)',lineHeight:'1.6'}}>
+                <span style={{color:'#10b981',fontWeight:'700',flexShrink:0,marginTop:'2px'}}>◈</span>
+                <span>{pred}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Key Quotes */}
+      {(fullVideo.key_quotes || []).length > 0 && (
+        <div className="card" style={{padding:'18px',marginBottom:'16px'}}>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'10px'}}>Notable Quotes</div>
+          {fullVideo.key_quotes.map((quote, i) => (
+            <blockquote key={i} style={{margin:'0 0 10px',padding:'10px 14px',borderLeft:'3px solid var(--border-med)',color:'var(--text-3)',fontSize:'14px',fontStyle:'italic',lineHeight:'1.7'}}>
+              {quote}
+            </blockquote>
+          ))}
+        </div>
+      )}
+
+      {/* Topics */}
+      {(video.topics || []).length > 0 && (
+        <div style={{display:'flex',flexWrap:'wrap',gap:'6px',marginBottom:'16px'}}>
+          {video.topics.map(t => <span key={t} className="tag">{t}</span>)}
+        </div>
+      )}
+
+      {/* Export to Opus buttons */}
+      <VideoExportPanel video={fullVideo} channel={channel} transcript={transcript} detailLoading={detailLoading} />
+
+      {/* Transcript */}
+      <div className="card" style={{marginBottom:'16px'}}>
+        <div style={{padding:'14px 18px',display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}}
+          onClick={() => setTranscriptOpen(!transcriptOpen)}>
+          <span style={{fontSize:'13px',fontWeight:'500',color:'var(--text-1)'}}>Transcript</span>
+          <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+            {detailLoading && <span style={{fontSize:'11px',color:'var(--text-4)'}}>Loading…</span>}
+            {transcript && transcriptOpen && (
+              <button
+                onClick={e => {
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(transcript).then(() => {
+                    e.target.textContent = '✓ Copied';
+                    setTimeout(() => { e.target.textContent = 'Copy'; }, 2000);
+                  });
+                }}
+                style={{fontSize:'11px',color:'var(--text-3)',background:'var(--bg-hover)',border:'1px solid var(--border-med)',borderRadius:'5px',padding:'3px 10px',cursor:'pointer'}}>
+                Copy
+              </button>
+            )}
+            <span style={{fontSize:'12px',color:'var(--text-4)'}}>{transcriptOpen ? '▲ Collapse' : '▼ Expand'}</span>
+          </div>
+        </div>
+        {transcriptOpen && (
+          <div style={{padding:'0 18px 16px',borderTop:'1px solid var(--border)'}}>
+            {transcript ? (
+              <div className="transcript-box">{transcript}</div>
+            ) : detailLoading ? (
+              <p style={{fontSize:'13px',color:'var(--text-4)',marginTop:'14px',fontStyle:'italic'}}>
+                Fetching transcript…
+              </p>
+            ) : (
+              <p style={{fontSize:'13px',color:'var(--text-4)',marginTop:'14px',fontStyle:'italic'}}>
+                No transcript available for this video. Run ingest.py to fetch from YouTube.
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Related */}
+      {related.length > 0 && (
+        <div>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'12px'}}>Related Videos</div>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:'12px'}}>
+            {related.map(v => (
+              <VideoCard key={v.id} video={v} data={data} onClick={() => {}} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── VIDEO CHAT VIEW ──────────────────────────────────────────────────────────
+function VideoChatView({ video, detailData, data, onBack }) {
+  const channel = getChannel(data, video.channel_id);
+  const fullVideo = detailData || video;
+  const context = buildVideoContext(fullVideo, channel);
+
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState(null);
+  const [sessionCost, setSessionCost] = useState(0);
+  const bottomRef = useRef(null);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, loading]);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const suggestions = [
+    "What's the single biggest insight from this?",
+    "Summarize the key debate or tension",
+    "What predictions were made and are they credible?",
+    "What would I tell a colleague about this?"
+  ];
+
+  async function sendMessage(text) {
+    if (!text.trim() || loading) return;
+    const userMsg = { role: 'user', content: text };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    setInput('');
+    setLoading(true);
+    setApiError(null);
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+          context,
+          query: text,
+          mode: 'video'
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setApiError(res.status === 503
+          ? "Add your ANTHROPIC_API_KEY to Vercel env vars to enable chat."
+          : err.error || `Error ${res.status}`);
+        setLoading(false);
+        return;
+      }
+
+      const { reply, usage } = await res.json();
+      if (usage?.cost_usd) setSessionCost(prev => prev + usage.cost_usd);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: reply,
+        usage: usage || null
+      }]);
+    } catch (err) {
+      setApiError("Add your ANTHROPIC_API_KEY to Vercel env vars to enable chat.");
+    }
+    setLoading(false);
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input); }
+  }
+
+  return (
+    <div style={{display:'flex',flexDirection:'column',height:'100vh',maxHeight:'100vh'}}>
+      {/* Header */}
+      <div style={{padding:'16px 24px 12px',borderBottom:'1px solid var(--border)',flexShrink:0}}>
+        <div onClick={onBack} className="back-btn" style={{marginBottom:'8px',display:'inline-flex'}}>
+          ← Back to video
+        </div>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'8px'}}>
+          <div>
+            <div style={{fontSize:'15px',fontWeight:'600',color:'var(--text-1)',marginBottom:'2px'}}>
+              💬 Chat about this video
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:'6px',fontSize:'12px',color:'var(--text-4)'}}>
+              {channel && <span className="channel-dot" style={{background:channel.color}}></span>}
+              <span style={{color:'var(--text-3)',maxWidth:'400px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                {video.title}
+              </span>
+            </div>
+          </div>
+          {sessionCost > 0 && (
+            <div style={{fontSize:'11px',color:'var(--text-4)',background:'var(--bg-card)',border:'1px solid var(--border-med)',borderRadius:'6px',padding:'3px 8px'}}>
+              session: <span style={{color:'var(--text-3)'}}>${sessionCost.toFixed(4)}</span>
+            </div>
+          )}
+        </div>
+        {/* Scope indicator */}
+        <div style={{marginTop:'8px',display:'flex',alignItems:'center',gap:'6px',fontSize:'11px',color:'var(--text-4)',background:'var(--bg-hover)',borderRadius:'6px',padding:'5px 10px',width:'fit-content'}}>
+          <span>🎯</span>
+          <span>Scoped to this video only · full summary + all extracted insights</span>
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div style={{flex:1,overflowY:'auto',padding:'20px 24px'}}>
+        {messages.length === 0 && (
+          <div>
+            <div style={{textAlign:'center',padding:'30px 20px 24px',color:'var(--text-4)'}}>
+              <div style={{fontSize:'28px',marginBottom:'8px'}}>💬</div>
+              <div style={{fontSize:'14px',color:'var(--text-3)',marginBottom:'4px'}}>Ask anything about this video</div>
+              <div style={{fontSize:'12px'}}>Context is scoped to this episode only — cheaper and more focused</div>
+            </div>
+            <div style={{display:'flex',flexWrap:'wrap',gap:'8px',justifyContent:'center',marginBottom:'20px'}}>
+              {suggestions.map(s => (
+                <button key={s} className="suggestion-chip" onClick={() => sendMessage(s)}>{s}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {messages.map((msg, i) => (
+          <div key={i} style={{display:'flex',flexDirection:'column',alignItems:msg.role === 'user' ? 'flex-end' : 'flex-start',marginBottom:'16px'}}>
+            {msg.role === 'user' ? (
+              <div className="chat-bubble-user">{msg.content}</div>
+            ) : (
+              <div>
+                <div className="chat-bubble-assistant">
+                  <div className="prose-content" style={{whiteSpace:'pre-wrap'}}>{msg.content}</div>
+                </div>
+                {msg.usage && (
+                  <div style={{fontSize:'10px',color:'var(--text-5)',marginTop:'4px',paddingLeft:'4px'}}>
+                    {msg.usage.input_tokens}↑ {msg.usage.output_tokens}↓ tokens · ${msg.usage.cost_usd.toFixed(4)}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+
+        {loading && (
+          <div style={{display:'flex',alignItems:'flex-start',marginBottom:'16px'}}>
+            <div className="chat-bubble-assistant" style={{padding:'14px 18px'}}>
+              <div style={{display:'flex',gap:'5px',alignItems:'center'}}>
+                {[0,1,2].map(i => (
+                  <span key={i} className="dot-bounce" style={{width:'7px',height:'7px',borderRadius:'50%',background:'#6366f1',display:'inline-block'}}></span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {apiError && (
+          <div style={{background:'#1a0a0a',border:'1px solid #3d1a1a',borderRadius:'8px',padding:'12px 16px',marginBottom:'16px',color:'#f87171',fontSize:'13px'}}>
+            ⚠ {apiError}
+          </div>
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Input */}
+      <div style={{padding:'12px 24px 20px',borderTop:'1px solid var(--border)',flexShrink:0}}>
+        <div style={{position:'relative'}}>
+          <textarea ref={inputRef} className="chat-input" value={input}
+            onChange={e => setInput(e.target.value)} onKeyDown={handleKey}
+            placeholder="Ask about this video… (Enter to send)"
+            rows={1} style={{minHeight:'46px',maxHeight:'120px'}} />
+          <button onClick={() => sendMessage(input)}
+            style={{position:'absolute',right:'10px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',color:input.trim() ? '#6366f1' : 'var(--border-med)',fontSize:'18px',padding:'4px',transition:'color 0.15s'}}>
+            ➤
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN CHAT VIEW ───────────────────────────────────────────────────────────
+const CHAT_STORAGE_KEY = 'signal_chat_history';
+const MAX_STORED_MESSAGES = 100;
+
+const TIMEFRAME_OPTIONS = [
+  { label: 'All time', days: null },
+  { label: 'Last 7d', days: 7 },
+  { label: '2 weeks', days: 14 },
+  { label: '3 weeks', days: 21 },
+  { label: '1 month', days: 30 },
+  { label: '6 weeks', days: 42 },
+  { label: '2 months', days: 60 },
+  { label: '3 months', days: 90 },
+];
+
+function ChatView({ data, initialQuery }) {
+  const [messages, setMessages] = useState(() => {
+    try {
+      const stored = localStorage.getItem(CHAT_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch { return []; }
+  });
+  const [input, setInput] = useState(initialQuery || '');
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState(null);
+  const [sessionCost, setSessionCost] = useState(0);
+  const [filterDays, setFilterDays] = useState(null);
+  const [filterChannels, setFilterChannels] = useState([]); // empty = all
+  const [showFilters, setShowFilters] = useState(false);
+  const bottomRef = useRef(null);
+  const inputRef = useRef(null);
+
+  const allChannels = getAllChannels(data);
+  const hasActiveFilters = filterDays !== null || filterChannels.length > 0;
+
+  // Compute filtered pool for display
+  const filteredPool = (() => {
+    let pool = data.videos;
+    if (filterDays) pool = pool.filter(v => getDaysAgo(v) <= filterDays);
+    if (filterChannels.length > 0) pool = pool.filter(v => filterChannels.includes(v.channel_id));
+    return pool;
+  })();
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages.slice(-MAX_STORED_MESSAGES)));
+    } catch {}
+  }, [messages]);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, loading]);
+
+  useEffect(() => {
+    if (initialQuery) sendMessage(initialQuery);
+    inputRef.current?.focus();
+  }, []);
+
+  function clearHistory() {
+    setMessages([]);
+    localStorage.removeItem(CHAT_STORAGE_KEY);
+  }
+
+  function toggleChannel(id) {
+    setFilterChannels(prev =>
+      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+    );
+  }
+
+  const suggestions = [
+    "What's the consensus on AI timelines?",
+    "What are people saying about DeepSeek?",
+    "Summarize this week's biggest themes",
+    "How are different channels covering AI stocks?"
+  ];
+
+  async function sendMessage(text) {
+    if (!text.trim() || loading) return;
+    const userMsg = { role: 'user', content: text };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    setInput('');
+    setLoading(true);
+    setApiError(null);
+
+    const filters = { days: filterDays, channels: filterChannels.length > 0 ? filterChannels : null };
+    const relevant = findRelevantVideos(data.videos, text, 5, filters);
+    const context = buildContext(relevant, data);
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+          context, query: text
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setApiError(res.status === 503
+          ? "Add your ANTHROPIC_API_KEY to Vercel env vars to enable chat."
+          : err.error || `Error ${res.status}`);
+        setLoading(false);
+        return;
+      }
+
+      const { reply, usage } = await res.json();
+      if (usage?.cost_usd) setSessionCost(prev => prev + usage.cost_usd);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: reply,
+        usage: usage || null,
+        sources: relevant.map(v => getChannel(data, v.channel_id))
+          .filter(Boolean)
+          .filter((ch, i, arr) => arr.findIndex(c => c.id === ch.id) === i),
+        videoCount: relevant.length
+      }]);
+    } catch (err) {
+      setApiError("Add your ANTHROPIC_API_KEY to Vercel env vars to enable chat.");
+    }
+    setLoading(false);
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input); }
+  }
+
+  return (
+    <div style={{display:'flex',flexDirection:'column',height:'100vh',maxHeight:'100vh'}}>
+      {/* Header */}
+      <div style={{padding:'20px 24px 0',borderBottom:'1px solid var(--border)',flexShrink:0}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'12px'}}>
+          <div>
+            <div style={{fontSize:'18px',fontWeight:'600',color:'var(--text-1)',marginBottom:'3px'}}>Chat with Signal</div>
+            <div style={{fontSize:'12px',color:'var(--text-4)'}}>
+              {hasActiveFilters
+                ? `Querying ${filteredPool.length} of ${data.videos.length} videos`
+                : `Querying across ${data.videos.length} videos · ${allChannels.length} channels`}
+            </div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+            {sessionCost > 0 && (
+              <div style={{fontSize:'11px',color:'var(--text-4)',background:'var(--bg-card)',border:'1px solid var(--border-med)',borderRadius:'6px',padding:'3px 8px'}}>
+                ${sessionCost.toFixed(4)}
+              </div>
+            )}
+            <button onClick={() => setShowFilters(!showFilters)}
+              className={`filter-pill ${hasActiveFilters ? 'active' : ''}`}>
+              {hasActiveFilters ? '⚙ Filters on' : '⚙ Filters'}
+            </button>
+            {messages.length > 0 && (
+              <button onClick={clearHistory} style={{background:'none',border:'1px solid var(--border-med)',borderRadius:'6px',color:'var(--text-4)',fontSize:'11px',padding:'4px 10px',cursor:'pointer'}}>
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Filter bar */}
+        {showFilters && (
+          <div style={{paddingBottom:'12px',display:'flex',flexDirection:'column',gap:'10px'}}>
+            {/* Timeframe */}
+            <div>
+              <div style={{fontSize:'11px',color:'var(--text-4)',fontWeight:'600',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'6px'}}>Timeframe</div>
+              <div style={{display:'flex',flexWrap:'wrap',gap:'6px'}}>
+                {TIMEFRAME_OPTIONS.map(opt => (
+                  <button key={opt.label}
+                    className={`filter-pill ${filterDays === opt.days ? 'active' : ''}`}
+                    onClick={() => setFilterDays(opt.days)}>
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {/* Channels */}
+            <div>
+              <div style={{fontSize:'11px',color:'var(--text-4)',fontWeight:'600',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'6px'}}>
+                Channels {filterChannels.length > 0 ? `(${filterChannels.length} selected)` : '(all)'}
+              </div>
+              <div style={{display:'flex',flexWrap:'wrap',gap:'6px'}}>
+                {allChannels.map(ch => (
+                  <button key={ch.id}
+                    onClick={() => toggleChannel(ch.id)}
+                    style={{
+                      display:'flex',alignItems:'center',gap:'5px',
+                      padding:'4px 10px',borderRadius:'16px',fontSize:'12px',cursor:'pointer',
+                      border:`1px solid ${filterChannels.includes(ch.id) ? ch.color : 'var(--border-med)'}`,
+                      background: filterChannels.includes(ch.id) ? ch.color + '20' : 'var(--bg-input)',
+                      color: filterChannels.includes(ch.id) ? ch.color : 'var(--text-3)',
+                      transition:'all 0.15s'
+                    }}>
+                    <span className="channel-dot" style={{background:ch.color}}></span>
+                    {ch.name}
+                  </button>
+                ))}
+                {filterChannels.length > 0 && (
+                  <button className="filter-pill" onClick={() => setFilterChannels([])}>
+                    Clear channels
+                  </button>
+                )}
+              </div>
+            </div>
+            {/* Zero results warning */}
+            {filteredPool.length === 0 && (
+              <div style={{fontSize:'12px',color:'#f87171',background:'#1a0a0a',border:'1px solid #3d1a1a',borderRadius:'6px',padding:'8px 12px'}}>
+                ⚠ No videos match these filters — try expanding the timeframe or adding more channels.
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Messages */}
+      <div style={{flex:1,overflowY:'auto',padding:'20px 24px'}}>
+        {messages.length === 0 && (
+          <div>
+            <div style={{textAlign:'center',padding:'40px 20px 30px',color:'var(--text-4)'}}>
+              <div style={{fontSize:'36px',marginBottom:'10px'}}>📡</div>
+              <div style={{fontSize:'15px',color:'var(--text-3)',marginBottom:'6px'}}>Ask Signal anything about your channels</div>
+              <div style={{fontSize:'12px'}}>Triangulates across {filteredPool.length} videos · cites sources</div>
+            </div>
+            <div style={{display:'flex',flexWrap:'wrap',gap:'8px',justifyContent:'center',marginBottom:'20px'}}>
+              {suggestions.map(s => (
+                <button key={s} className="suggestion-chip" onClick={() => sendMessage(s)}>{s}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {messages.map((msg, i) => (
+          <div key={i} style={{display:'flex',flexDirection:'column',alignItems:msg.role === 'user' ? 'flex-end' : 'flex-start',marginBottom:'16px'}}>
+            {msg.role === 'user' ? (
+              <div className="chat-bubble-user">{msg.content}</div>
+            ) : (
+              <div>
+                <div className="chat-bubble-assistant">
+                  <div className="prose-content" style={{whiteSpace:'pre-wrap'}}>{msg.content}</div>
+                  {(msg.sources || []).length > 0 && (
+                    <div style={{marginTop:'10px',paddingTop:'10px',borderTop:'1px solid var(--border)'}}>
+                      <div style={{fontSize:'11px',color:'var(--text-4)',marginBottom:'5px'}}>
+                        Sources ({msg.videoCount} videos):
+                      </div>
+                      <div style={{display:'flex',flexWrap:'wrap',gap:'4px'}}>
+                        {msg.sources.map(ch => (
+                          <span key={ch.id} className="source-chip"
+                            style={{color:ch.color,borderColor:ch.color+'40',background:ch.color+'15'}}>
+                            <span className="channel-dot" style={{background:ch.color}}></span>
+                            {ch.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {msg.usage && (
+                  <div style={{fontSize:'10px',color:'var(--text-5)',marginTop:'4px',paddingLeft:'4px'}}>
+                    {msg.usage.input_tokens}↑ {msg.usage.output_tokens}↓ tokens · ${msg.usage.cost_usd.toFixed(4)}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+
+        {loading && (
+          <div style={{display:'flex',alignItems:'flex-start',marginBottom:'16px'}}>
+            <div className="chat-bubble-assistant" style={{padding:'14px 18px'}}>
+              <div style={{display:'flex',gap:'5px',alignItems:'center'}}>
+                {[0,1,2].map(i => (
+                  <span key={i} className="dot-bounce" style={{width:'7px',height:'7px',borderRadius:'50%',background:'#6366f1',display:'inline-block'}}></span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {apiError && (
+          <div style={{background:'#1a0a0a',border:'1px solid #3d1a1a',borderRadius:'8px',padding:'12px 16px',marginBottom:'16px',color:'#f87171',fontSize:'13px'}}>
+            ⚠ {apiError}
+          </div>
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Input */}
+      <div style={{padding:'12px 24px 20px',borderTop:'1px solid var(--border)',flexShrink:0}}>
+        <div style={{position:'relative'}}>
+          <textarea ref={inputRef} className="chat-input" value={input}
+            onChange={e => setInput(e.target.value)} onKeyDown={handleKey}
+            placeholder="Ask Signal anything… (Enter to send, Shift+Enter for newline)"
+            rows={1} style={{minHeight:'46px',maxHeight:'120px'}} />
+          <button onClick={() => sendMessage(input)}
+            style={{position:'absolute',right:'10px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',color:input.trim() ? '#6366f1' : 'var(--border-med)',fontSize:'18px',padding:'4px',transition:'color 0.15s'}}>
+            ➤
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── INTEL DUMP BUILDER (uses pre-fetched detail data with transcripts) ───────
+function buildIntelDump(detailedVideos, data) {
+  if (!detailedVideos || detailedVideos.length === 0) return null;
+
+  // Group by channel name, preserving order
+  const byChannel = {};
+  detailedVideos.forEach(v => {
+    const ch = getChannel(data, v.channel_id);
+    const name = ch?.name || v.channel_id;
+    if (!byChannel[name]) byChannel[name] = [];
+    byChannel[name].push(v);
+  });
+
+  const sections = Object.entries(byChannel).map(([chName, vids]) => {
+    const vidBlocks = vids.map(v => {
+      const lines = [
+        `"${v.title}"`,
+        `Published: ${timeAgo(v)}${v.duration ? ' · ' + v.duration : ''}`,
+        v.url ? `URL: ${v.url}` : '',
+        '',
+        v.transcript
+          ? `TRANSCRIPT:\n${v.transcript}`
+          : `[No transcript — summary only]\n${v.one_liner || v.full_summary || v.summary || ''}`,
+      ].filter(Boolean);
+      return lines.join('\n');
+    });
+    const bar = '═'.repeat(56);
+    return `${bar}\n  ${chName.toUpperCase()}\n${bar}\n\n${vidBlocks.join('\n\n' + '─'.repeat(40) + '\n\n')}`;
+  });
+
+  const header = [
+    `SIGNAL TRANSCRIPT DUMP · ${detailedVideos.length} video${detailedVideos.length!==1?'s':''}`,
+    `Generated: ${new Date().toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}`,
+    '',
+    '─'.repeat(56),
+    INTEL_BRIEFING_PROMPT,
+    '─'.repeat(56),
+    '', '',
+  ].join('\n');
+
+  return header + sections.join('\n\n\n');
+}
+
+// ─── INTEL DUMP PANEL COMPONENT ──────────────────────────────────────────────
+const DUMP_TIMEFRAMES = [
+  { label: '7 days', days: 7 },
+  { label: '14 days', days: 14 },
+  { label: '21 days', days: 21 },
+];
+
+function IntelDumpPanel({ data, dumpDays, setDumpDays, dumpChannels, toggleDumpChannel, dumpPool, copyState, handleCopyIntel, handleCopyDeck, handleCopyHTML, allChannels }) {
+  return (
+    <div className="card" style={{padding:'18px',marginBottom:'28px',borderLeft:'3px solid #6366f1'}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'12px',flexWrap:'wrap',gap:'8px'}}>
+        <div>
+          <div style={{fontSize:'14px',fontWeight:'600',color:'var(--text-1)',marginBottom:'2px'}}>
+            📋 Copy Intel
+          </div>
+          <div style={{fontSize:'12px',color:'var(--text-4)'}}>
+            {dumpPool.length} video{dumpPool.length!==1?'s':''} · raw transcripts + briefing prompt → paste into Claude
+          </div>
+        </div>
+        <div style={{display:'flex',gap:'8px'}}>
+          <button onClick={handleCopyIntel} disabled={copyState==='fetching'} style={{
+            background: copyState==='copied' ? '#10b981' : '#6366f1',
+            color:'white', border:'none', padding:'8px 18px', borderRadius:'8px',
+            cursor: copyState==='fetching' ? 'wait' : 'pointer',
+            fontSize:'13px', fontWeight:'500', transition:'background 0.2s', whiteSpace:'nowrap',
+            opacity: copyState==='fetching' ? 0.8 : 1
+          }}>
+            {copyState==='copied' ? '✓ Copied!' : copyState==='fetching' ? `Fetching ${dumpPool.length} transcripts…` : copyState==='empty' ? 'No videos found' : '📋 Copy for Briefing →'}
+          </button>
+          <button onClick={handleCopyDeck} disabled={copyState==='fetching'} className="deck-export-btn" style={{whiteSpace:'nowrap'}}>
+            {copyState==='deck-copied' ? '✓ Copied!' : '🎯 Copy for Deck →'}
+          </button>
+          <button onClick={handleCopyHTML} disabled={copyState==='fetching'} style={{
+            background: copyState==='html-copied' ? '#10b981' : '#f59e0b',
+            color:'white', border:'none', padding:'8px 18px', borderRadius:'8px',
+            cursor: copyState==='fetching' ? 'wait' : 'pointer',
+            fontSize:'13px', fontWeight:'500', transition:'background 0.2s', whiteSpace:'nowrap',
+            opacity: copyState==='fetching' ? 0.8 : 1
+          }}>
+            {copyState==='html-copied' ? '✓ Copied!' : '🌐 Briefing + HTML →'}
+          </button>
+        </div>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'10px',flexWrap:'wrap'}}>
+        <span style={{fontSize:'11px',color:'var(--text-4)',fontWeight:'600',textTransform:'uppercase',letterSpacing:'0.06em'}}>Timeframe</span>
+        {DUMP_TIMEFRAMES.map(opt => (
+          <button key={opt.days} onClick={() => setDumpDays(opt.days)}
+            className={`filter-pill ${dumpDays===opt.days?'active':''}`}>
+            {opt.label}
+          </button>
+        ))}
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:'6px',flexWrap:'wrap'}}>
+        <span style={{fontSize:'11px',color:'var(--text-4)',fontWeight:'600',textTransform:'uppercase',letterSpacing:'0.06em'}}>Channels</span>
+        {allChannels.map(ch => (
+          <button key={ch.id} onClick={() => toggleDumpChannel(ch.id)} style={{
+            display:'flex',alignItems:'center',gap:'5px',
+            padding:'3px 9px',borderRadius:'14px',fontSize:'11px',cursor:'pointer',
+            border:`1px solid ${dumpChannels.includes(ch.id) ? ch.color : 'var(--border-med)'}`,
+            background: dumpChannels.includes(ch.id) ? ch.color+'20' : 'var(--bg-input)',
+            color: dumpChannels.includes(ch.id) ? ch.color : 'var(--text-3)',
+            transition:'all 0.15s'
+          }}>
+            <span className="channel-dot" style={{background:ch.color,width:'6px',height:'6px'}}></span>
+            {ch.name}
+          </button>
+        ))}
+        {dumpChannels.length > 0 && (
+          <button className="filter-pill" onClick={() => toggleDumpChannel('__clear__')} style={{fontSize:'11px'}}>
+            All channels
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── WEEKLY WRAP VIEW ─────────────────────────────────────────────────────────
+const DUMP_TIMEFRAMES_UNUSED = [
+  { label: '7 days', days: 7 },
+  { label: '14 days', days: 14 },
+  { label: '21 days', days: 21 },
+];
+
+function WeeklyWrapView({ data }) {
+  const [wrap, setWrap] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [dumpDays, setDumpDays] = useState(7);
+  const [dumpChannels, setDumpChannels] = useState([]);
+  const [copyState, setCopyState] = useState('idle'); // idle | fetching | copied | empty
+  const allChannels = getAllChannels(data);
+
+  const dumpPool = (() => {
+    let pool = data.videos.filter(v => getDaysAgo(v) <= dumpDays);
+    if (dumpChannels.length > 0) pool = pool.filter(v => dumpChannels.includes(v.channel_id));
+    return pool;
+  })();
+
+  function toggleDumpChannel(id) {
+    if (id === '__clear__') { setDumpChannels([]); return; }
+    setDumpChannels(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
+  }
+
+  // Batch file naming: CWxx_year_month_day_signal-batch_[topic-slug].[ext]
+  function getBatchFileInstructions(numVideos) {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const jan1 = new Date(year, 0, 1);
+    const days = Math.floor((now - jan1) / 86400000);
+    const weekNum = Math.ceil((days + jan1.getDay() + 1) / 7);
+    const cw = String(weekNum).padStart(2, '0');
+    const prefix = `CW${cw}_${year}_${month}_${day}_signal-batch`;
+    return `\n${'═'.repeat(40)}\nFILE NAMING & SAVE LOCATION\n${'═'.repeat(40)}\nSave all output files to: ~/Documents/Cowork OS/Professional/Research & Analysis/research/\n\nFile naming: ${prefix}_[short-topic-slug].[ext]\n  - [short-topic-slug] = 2-4 word kebab-case key theme\n  - Examples: ${prefix}_ai-capex-gap.html, ${prefix}_ai-capex-gap_briefing.md, ${prefix}_ai-capex-gap_deck.pptx\nALL outputs from this batch share the same prefix + topic slug. Only suffix/ext changes.\n${'═'.repeat(40)}\n`;
+  }
+
+  async function handleCopyIntel() {
+    if (dumpPool.length === 0) { setCopyState('empty'); setTimeout(() => setCopyState('idle'), 2000); return; }
+    setCopyState('fetching');
+    const detailed = await Promise.all(
+      dumpPool.map(v =>
+        fetch(`/data/videos/${v.id}.json`)
+          .then(r => r.ok ? r.json() : v)
+          .catch(() => v)
+      )
+    );
+    detailed.sort((a, b) => getDaysAgo(a) - getDaysAgo(b));
+    const text = buildIntelDump(detailed, data);
+    if (!text) { setCopyState('empty'); setTimeout(() => setCopyState('idle'), 2000); return; }
+    const fullText = text.replace('SIGNAL TRANSCRIPT DUMP', 'SIGNAL TRANSCRIPT DUMP' + getBatchFileInstructions(detailed.length));
+    navigator.clipboard.writeText(fullText).then(() => {
+      setCopyState('copied');
+      setTimeout(() => setCopyState('idle'), 4000);
+    });
+  }
+
+  async function handleCopyDeck() {
+    if (dumpPool.length === 0) { setCopyState('empty'); setTimeout(() => setCopyState('idle'), 2000); return; }
+    setCopyState('fetching');
+    const detailed = await Promise.all(
+      dumpPool.map(v => fetch(`/data/videos/${v.id}.json`).then(r => r.ok ? r.json() : v).catch(() => v))
+    );
+    detailed.sort((a, b) => getDaysAgo(a) - getDaysAgo(b));
+    const transcripts = detailed.map(v => {
+      const ch = getChannel(data, v.channel_id);
+      return `[${ch?.name}] "${v.title}" (${timeAgo(v)})\n${v.transcript || v.one_liner || v.full_summary || v.summary || ''}`;
+    }).join('\n\n---\n\n');
+    const text = `SIGNAL → DECK BUILDER\nGenerated: ${new Date().toLocaleDateString()}\n${detailed.length} videos analyzed\n${getBatchFileInstructions(detailed.length)}\n${'─'.repeat(40)}\n${DECK_BUILDER_PROMPT}\n${'─'.repeat(40)}\n\n${transcripts}`;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopyState('deck-copied');
+      setTimeout(() => setCopyState('idle'), 4000);
+    });
+  }
+
+  async function handleCopyHTML() {
+    if (dumpPool.length === 0) { setCopyState('empty'); setTimeout(() => setCopyState('idle'), 2000); return; }
+    setCopyState('fetching');
+    const detailed = await Promise.all(
+      dumpPool.map(v => fetch(`/data/videos/${v.id}.json`).then(r => r.ok ? r.json() : v).catch(() => v))
+    );
+    detailed.sort((a, b) => getDaysAgo(a) - getDaysAgo(b));
+    const transcripts = detailed.map(v => {
+      const ch = getChannel(data, v.channel_id);
+      const parts = [
+        `[${ch?.name || v.channel_id}] "${v.title}" (${timeAgo(v)})`,
+        v.one_liner ? `Summary: ${v.one_liner}` : '',
+        (v.key_insights || []).length > 0 ? `Key insights:\n${v.key_insights.map(i => `- ${i}`).join('\n')}` : '',
+        (v.host_takes || []).length > 0 ? `Host positions:\n${v.host_takes.map(t => `- ${t}`).join('\n')}` : '',
+        (v.kpi_table || []).length > 0 ? `KPIs:\n${v.kpi_table.map(k => `- ${k.kpi}: ${k.value} — ${k.context}`).join('\n')}` : '',
+        (v.predictions || []).length > 0 ? `Predictions:\n${v.predictions.map(p => `- ${p}`).join('\n')}` : '',
+        v.transcript ? `Transcript:\n${v.transcript.slice(0, 4000)}` : (v.full_summary || v.summary || '')
+      ].filter(Boolean);
+      return parts.join('\n');
+    }).join('\n\n' + '═'.repeat(40) + '\n\n');
+    const text = `SIGNAL → BRIEFING + VISUAL HTML REPORT\nGenerated: ${new Date().toLocaleDateString()}\n${detailed.length} videos analyzed\n${getBatchFileInstructions(detailed.length)}\n${'─'.repeat(56)}\n${HTML_REPORT_PROMPT}\n${'─'.repeat(56)}\n\nTRANSCRIPTS & DATA:\n${'═'.repeat(40)}\n\n${transcripts}`;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopyState('html-copied');
+      setTimeout(() => setCopyState('idle'), 4000);
+    });
+  }
+
+  useEffect(() => {
+    fetch('/data/weekly/latest.json')
+      .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
+      .then(d => setWrap(d))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{padding:'28px',textAlign:'center',color:'var(--text-4)'}}>
+        <div style={{fontSize:'24px',marginBottom:'8px'}}>📰</div>
+        <div>Loading weekly wrap…</div>
+      </div>
+    );
+  }
+
+  if (error || !wrap) {
+    return (
+      <div style={{padding:'28px',maxWidth:'760px'}}>
+        <div style={{marginBottom:'24px'}}>
+          <div style={{fontSize:'22px',fontWeight:'600',color:'var(--text-1)',marginBottom:'4px'}}>Weekly Wrap</div>
+          <div style={{fontSize:'13px',color:'var(--text-3)'}}>Signal's Friday intelligence digest</div>
+        </div>
+
+        {/* Intel dump panel — always visible */}
+        <IntelDumpPanel data={data} dumpDays={dumpDays} setDumpDays={setDumpDays}
+          dumpChannels={dumpChannels} toggleDumpChannel={toggleDumpChannel}
+          dumpPool={dumpPool} copyState={copyState} handleCopyIntel={handleCopyIntel}
+          handleCopyDeck={handleCopyDeck} handleCopyHTML={handleCopyHTML} allChannels={allChannels} />
+
+        <div className="card" style={{padding:'32px',textAlign:'center'}}>
+          <div style={{fontSize:'36px',marginBottom:'12px'}}>📰</div>
+          <div style={{fontSize:'15px',color:'var(--text-3)',marginBottom:'8px'}}>No weekly wrap generated yet</div>
+          <div style={{fontSize:'13px',color:'var(--text-4)',marginBottom:'16px'}}>
+            Run the weekly wrap script to generate your first digest:
+          </div>
+          <code style={{background:'var(--bg-hover)',border:'1px solid var(--border-med)',borderRadius:'6px',padding:'8px 14px',fontSize:'13px',color:'var(--text-2)',display:'inline-block'}}>
+            python3 scripts/weekly_wrap.py
+          </code>
+          <div style={{fontSize:'12px',color:'var(--text-5)',marginTop:'12px'}}>
+            Runs automatically every Friday at 9pm JST via GitHub Actions
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{padding:'28px',maxWidth:'760px'}}>
+
+      <IntelDumpPanel data={data} dumpDays={dumpDays} setDumpDays={setDumpDays}
+        dumpChannels={dumpChannels} toggleDumpChannel={toggleDumpChannel}
+        dumpPool={dumpPool} copyState={copyState} handleCopyIntel={handleCopyIntel}
+        allChannels={allChannels} />
+
+      {/* Header */}
+      <div style={{marginBottom:'24px'}}>
+        <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'4px'}}>
+          <div style={{fontSize:'22px',fontWeight:'600',color:'var(--text-1)'}}>📰 Weekly Wrap</div>
+          <span style={{fontSize:'12px',color:'var(--text-4)',background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:'6px',padding:'2px 8px'}}>
+            {wrap.date_range}
+          </span>
+        </div>
+        <div style={{fontSize:'13px',color:'var(--text-3)'}}>
+          {wrap.videos_analyzed} videos · {wrap.channels_covered} channels · generated {new Date(wrap.generated_at).toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'})}
+        </div>
+      </div>
+
+      {/* Hero headline */}
+      {wrap.headline && (
+        <div className="card" style={{padding:'20px 22px',marginBottom:'20px',borderLeft:'3px solid #6366f1'}}>
+          <div style={{fontSize:'11px',fontWeight:'600',color:'#6366f1',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'8px'}}>This Week in One Line</div>
+          <div style={{fontSize:'16px',fontWeight:'500',color:'var(--text-1)',lineHeight:'1.5'}}>{wrap.headline}</div>
+        </div>
+      )}
+
+      {/* Top Stories */}
+      {(wrap.top_stories || []).length > 0 && (
+        <div style={{marginBottom:'24px'}}>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'12px'}}>Top Stories</div>
+          {wrap.top_stories.map((story, i) => (
+            <div key={i} className="weekly-story">
+              <div style={{display:'flex',alignItems:'flex-start',gap:'12px'}}>
+                <div style={{fontSize:'18px',fontWeight:'700',color:'#6366f140',flexShrink:0,marginTop:'1px'}}>
+                  {String(i + 1).padStart(2, '0')}
+                </div>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:'14px',fontWeight:'600',color:'var(--text-1)',marginBottom:'6px',lineHeight:'1.4'}}>
+                    {story.title}
+                  </div>
+                  <div style={{fontSize:'13px',color:'var(--text-3)',lineHeight:'1.6',marginBottom:'8px'}}>
+                    {story.summary}
+                  </div>
+                  {story.why_it_matters && (
+                    <div style={{fontSize:'12px',color:'#10b981',background:'#10b98110',borderRadius:'6px',padding:'5px 10px',display:'inline-block'}}>
+                      💡 {story.why_it_matters}
+                    </div>
+                  )}
+                  {(story.channels || []).length > 0 && (
+                    <div style={{display:'flex',flexWrap:'wrap',gap:'5px',marginTop:'8px'}}>
+                      {story.channels.map(chId => {
+                        const ch = getChannel(data, chId);
+                        return ch ? (
+                          <span key={chId} style={{display:'flex',alignItems:'center',gap:'4px',fontSize:'11px',color:ch.color,background:ch.color+'15',border:`1px solid ${ch.color}40`,borderRadius:'10px',padding:'2px 8px'}}>
+                            <span className="channel-dot" style={{background:ch.color,width:'6px',height:'6px'}}></span>
+                            {ch.name}
+                          </span>
+                        ) : null;
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Data of the Week */}
+      {(wrap.data_of_the_week || []).length > 0 && (
+        <div style={{marginBottom:'24px'}}>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'12px'}}>Numbers That Moved</div>
+          <div className="card" style={{padding:'4px 0'}}>
+            <table className="kpi-table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Figure</th>
+                  <th>Context</th>
+                </tr>
+              </thead>
+              <tbody>
+                {wrap.data_of_the_week.map((row, i) => (
+                  <tr key={i}>
+                    <td className="kpi-name">{row.kpi}</td>
+                    <td className="kpi-value">{row.value}</td>
+                    <td className="kpi-context">{row.context}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Consensus vs Debate */}
+      {wrap.consensus_vs_debate && (
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'24px'}}>
+          {wrap.consensus_vs_debate.consensus && (
+            <div className="card" style={{padding:'16px'}}>
+              <div style={{fontSize:'11px',fontWeight:'600',color:'#10b981',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px'}}>✓ Consensus This Week</div>
+              <div style={{fontSize:'13px',color:'var(--text-2)',lineHeight:'1.6'}}>{wrap.consensus_vs_debate.consensus}</div>
+            </div>
+          )}
+          {wrap.consensus_vs_debate.debate && (
+            <div className="card" style={{padding:'16px'}}>
+              <div style={{fontSize:'11px',fontWeight:'600',color:'#f97316',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px'}}>⚡ Still Debated</div>
+              <div style={{fontSize:'13px',color:'var(--text-2)',lineHeight:'1.6'}}>{wrap.consensus_vs_debate.debate}</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Predictions */}
+      {(wrap.predictions_made || []).length > 0 && (
+        <div style={{marginBottom:'24px'}}>
+          <div style={{fontSize:'12px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'12px'}}>Predictions on Record</div>
+          <div className="card" style={{padding:'16px'}}>
+            <ul style={{margin:0,padding:0,listStyle:'none'}}>
+              {wrap.predictions_made.map((p, i) => (
+                <li key={i} style={{display:'flex',gap:'10px',marginBottom:'8px',fontSize:'13px',color:'var(--text-2)',lineHeight:'1.6'}}>
+                  <span style={{color:'#10b981',flexShrink:0}}>◈</span>
+                  <span>{p}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {/* Verdict */}
+      {wrap.verdict && (
+        <div className="card" style={{padding:'18px',borderLeft:'3px solid #14b8a6'}}>
+          <div style={{fontSize:'11px',fontWeight:'600',color:'#14b8a6',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'8px'}}>Worth Your Time This Week</div>
+          <div style={{fontSize:'14px',color:'var(--text-2)',lineHeight:'1.6'}}>{wrap.verdict}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── TOPIC INTELLIGENCE VIEW ─────────────────────────────────────────────────
+function KnowledgeGraphView({ data, onVideo, onSelectChannel }) {
+  const [timeframe, setTimeframe] = useState(30);
+  const [expandedTopic, setExpandedTopic] = useState(null);
+  const [sortBy, setSortBy] = useState('count'); // count | channels | trend
+
+  const filtered = data.videos.filter(v => timeframe === null ? true : getDaysAgo(v) <= timeframe);
+
+  // Build topic intelligence
+  const topicData = {};
+  filtered.forEach(video => {
+    const ch = getChannel(data, video.channel_id);
+    (video.topics || []).forEach(topic => {
+      if (!topicData[topic]) topicData[topic] = { count: 0, channels: new Set(), channelList: [], videos: [], coTopics: {} };
+      topicData[topic].count++;
+      topicData[topic].channels.add(video.channel_id);
+      topicData[topic].videos.push(video);
+      // Track co-occurring topics
+      (video.topics || []).forEach(other => {
+        if (other !== topic) topicData[topic].coTopics[other] = (topicData[topic].coTopics[other] || 0) + 1;
+      });
+    });
+  });
+
+  // Detect parent/child topic hierarchy: "AI Talent War" is child of "AI"
+  const topicNames = Object.keys(topicData);
+  const hierarchy = {};
+  topicNames.forEach(name => {
+    const words = name.toLowerCase().split(/\s+/);
+    const parent = topicNames.find(p =>
+      p !== name && p.length < name.length && words.includes(p.toLowerCase()) && topicData[p].count >= 2
+    );
+    if (parent) {
+      if (!hierarchy[parent]) hierarchy[parent] = [];
+      hierarchy[parent].push(name);
+    }
+  });
+
+  // Trend detection (recent 7d vs prior period)
+  function getTrend(topic) {
+    const recent = topic.videos.filter(v => getDaysAgo(v) <= 7).length;
+    const older = topic.videos.filter(v => getDaysAgo(v) > 7).length;
+    const olderWeeks = Math.max(1, (timeframe === null ? 12 : Math.floor(timeframe / 7)) - 1);
+    const avgOlder = older / olderWeeks;
+    if (recent > avgOlder * 1.3 && recent > 0) return 'hot';
+    if (recent < avgOlder * 0.5 && avgOlder > 0) return 'cold';
+    return 'stable';
+  }
+
+  const topicRows = Object.entries(topicData).map(([name, d]) => ({
+    name, count: d.count, channelCount: d.channels.size,
+    channels: [...d.channels].map(id => getChannel(data, id)).filter(Boolean),
+    videos: d.videos, coTopics: Object.entries(d.coTopics).sort((a,b) => b[1]-a[1]).slice(0,5),
+    trend: getTrend(d), children: hierarchy[name] || []
+  })).sort((a,b) => {
+    if (sortBy === 'channels') return b.channelCount - a.channelCount;
+    if (sortBy === 'trend') return (a.trend === 'hot' ? -1 : a.trend === 'cold' ? 1 : 0) - (b.trend === 'hot' ? -1 : b.trend === 'cold' ? 1 : 0);
+    return b.count - a.count;
+  });
+
+  return (
+    <div style={{padding:'28px'}}>
+      <div style={{marginBottom:'24px'}}>
+        <div style={{fontSize:'22px',fontWeight:'600',color:'var(--text-1)',marginBottom:'4px'}}>🧠 Topic Intelligence</div>
+        <div style={{fontSize:'13px',color:'var(--text-3)'}}>{topicRows.length} topics across {filtered.length} videos</div>
+      </div>
+      <div style={{display:'flex',gap:'8px',marginBottom:'16px',flexWrap:'wrap'}}>
+        {[{l:'7d',v:7},{l:'14d',v:14},{l:'30d',v:30},{l:'All',v:null}].map(o => (
+          <button key={o.l} className={`filter-pill ${timeframe===o.v?'active':''}`} onClick={() => setTimeframe(o.v)}>{o.l}</button>
+        ))}
+        <span style={{color:'var(--text-5)',margin:'0 8px'}}>|</span>
+        {[{l:'By Frequency',v:'count'},{l:'By Reach',v:'channels'},{l:'By Trend',v:'trend'}].map(o => (
+          <button key={o.v} className={`filter-pill ${sortBy===o.v?'active':''}`} onClick={() => setSortBy(o.v)}>{o.l}</button>
+        ))}
+      </div>
+      <div className="card" style={{overflow:'hidden'}}>
+        <table className="kpi-table" style={{width:'100%'}}>
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th style={{width:'60px',textAlign:'center'}}>Videos</th>
+              <th style={{width:'80px',textAlign:'center'}}>Channels</th>
+              <th style={{width:'60px',textAlign:'center'}}>Trend</th>
+              <th>Co-occurring Topics</th>
+            </tr>
+          </thead>
+          <tbody>
+            {topicRows.map(t => (
+              <React.Fragment key={t.name}>
+                <tr onClick={() => setExpandedTopic(expandedTopic === t.name ? null : t.name)}
+                  style={{cursor:'pointer',background:expandedTopic===t.name?'var(--bg-hover)':'transparent',transition:'background 0.15s'}}>
+                  <td style={{fontWeight:'500',color:'var(--text-1)'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                      <span style={{color:'var(--text-4)',fontSize:'10px'}}>{expandedTopic===t.name?'▼':'▶'}</span>
+                      {t.name}
+                      {t.children.length > 0 && <span style={{fontSize:'10px',color:'var(--text-4)',background:'var(--bg-hover)',borderRadius:'4px',padding:'1px 5px'}}>{t.children.length} sub</span>}
+                    </div>
+                  </td>
+                  <td style={{textAlign:'center'}}><span style={{color:'#6366f1',fontWeight:'600'}}>{t.count}</span></td>
+                  <td style={{textAlign:'center'}}>
+                    <div style={{display:'flex',gap:'3px',justifyContent:'center'}}>
+                      {t.channels.map(ch => <span key={ch.id} className="channel-dot" style={{background:ch.color}} title={ch.name}></span>)}
+                    </div>
+                  </td>
+                  <td style={{textAlign:'center'}}>
+                    {t.trend==='hot' && <span style={{color:'#10b981',fontWeight:'600',fontSize:'11px'}}>🔥 HOT</span>}
+                    {t.trend==='cold' && <span style={{color:'#6e7681',fontSize:'11px'}}>↓ cold</span>}
+                    {t.trend==='stable' && <span style={{color:'var(--text-5)',fontSize:'11px'}}>—</span>}
+                  </td>
+                  <td>
+                    <div style={{display:'flex',gap:'4px',flexWrap:'wrap'}}>
+                      {t.coTopics.map(([name,ct]) => <span key={name} className="tag" style={{fontSize:'10px'}}>{name} ({ct})</span>)}
+                    </div>
+                  </td>
+                </tr>
+                {expandedTopic === t.name && (
+                  <tr><td colSpan={5} style={{padding:'12px 16px',background:'var(--bg)'}}>
+                    {t.children.length > 0 && (
+                      <div style={{marginBottom:'14px'}}>
+                        <div style={{fontSize:'11px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px'}}>Sub-topics</div>
+                        <div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}>
+                          {t.children.map(child => {
+                            const cd = topicData[child];
+                            return <span key={child} className="tag" style={{cursor:'pointer',fontSize:'12px'}} onClick={e=>{e.stopPropagation();setExpandedTopic(child);}}>
+                              {child} <span style={{color:'#6366f1',fontWeight:'600',marginLeft:'4px'}}>{cd?.count||0}</span>
+                            </span>;
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    <div style={{fontSize:'11px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px'}}>Videos ({t.videos.length})</div>
+                    {t.videos.slice(0,8).map(v => {const ch=getChannel(data,v.channel_id);return(
+                      <div key={v.id} onClick={()=>onVideo(v)} style={{padding:'6px 10px',background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:'6px',marginBottom:'4px',cursor:'pointer',display:'flex',alignItems:'center',gap:'8px'}}>
+                        <span className="channel-dot" style={{background:ch?.color}}></span>
+                        <span style={{flex:1,fontSize:'12px',color:'var(--text-2)'}}>{v.title}</span>
+                        <span style={{fontSize:'11px',color:'var(--text-4)'}}>{timeAgo(v)}</span>
+                      </div>
+                    )})}
+                    {t.videos.length > 8 && <div style={{fontSize:'11px',color:'var(--text-4)',marginTop:'4px'}}>+ {t.videos.length-8} more</div>}
+                  </td></tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// ─── TOPIC CONNECTION MATRIX VIEW ─────────────────────────────────────────────
+function TopicConnectionMatrix({ data, onVideo }) {
+  const [timeframe, setTimeframe] = useState(30);
+  const [selectedCell, setSelectedCell] = useState(null); // "topicA|||topicB"
+  const [minConnections, setMinConnections] = useState(1);
+  const [copiedCell, setCopiedCell] = useState(null);
+
+  const filtered = data.videos.filter(v => timeframe === null ? true : getDaysAgo(v) <= timeframe);
+
+  // Build co-occurrence matrix
+  const coMap = {}; // "A|||B" → { count, videos, channels }
+  const topicCounts = {};
+  filtered.forEach(video => {
+    const ch = getChannel(data, video.channel_id);
+    const topics = video.topics || [];
+    topics.forEach(t => { topicCounts[t] = (topicCounts[t] || 0) + 1; });
+    for (let i = 0; i < topics.length; i++) {
+      for (let j = i + 1; j < topics.length; j++) {
+        const key = [topics[i], topics[j]].sort().join('|||');
+        if (!coMap[key]) coMap[key] = { count: 0, videos: [], channels: new Set() };
+        coMap[key].count++;
+        coMap[key].videos.push(video);
+        if (ch) coMap[key].channels.add(ch.id);
+      }
+    }
+  });
+
+  // Get top topics by frequency
+  const topTopics = Object.entries(topicCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15)
+    .map(([name]) => name);
+
+  // Build connection list (for table view below matrix)
+  const connections = Object.entries(coMap)
+    .map(([key, d]) => {
+      const [a, b] = key.split('|||');
+      return { key, topicA: a, topicB: b, count: d.count, videos: d.videos,
+        channelCount: d.channels.size,
+        channels: [...d.channels].map(id => getChannel(data, id)).filter(Boolean)
+      };
+    })
+    .filter(d => d.count >= minConnections)
+    .sort((a, b) => b.count - a.count);
+
+  const maxCount = Math.max(...connections.map(d => d.count), 1);
+
+  function getCellColor(count) {
+    if (count === 0) return 'transparent';
+    const intensity = Math.min(1, count / Math.max(maxCount * 0.6, 1));
+    return `rgba(99, 102, 241, ${0.15 + intensity * 0.65})`;
+  }
+
+  function getCoCount(a, b) {
+    const key = [a, b].sort().join('|||');
+    return coMap[key]?.count || 0;
+  }
+
+  function copyForOpus(conn) {
+    const lines = [
+      `TOPIC CONNECTION: ${conn.topicA} × ${conn.topicB}`,
+      `${conn.count} co-occurrences across ${conn.channelCount} channel${conn.channelCount !== 1 ? 's' : ''}`,
+      '',
+      'PROMPT: These two topics keep appearing together. Analyze why.',
+      'What is the causal or strategic link? Is this a leading indicator of a larger trend?',
+      'What would a PE investor or operator conclude from this co-occurrence?',
+      '', 'VIDEOS:', ''
+    ];
+    conn.videos.forEach(v => {
+      const ch = getChannel(data, v.channel_id);
+      lines.push(`[${ch?.name || v.channel_id}] "${v.title}" (${timeAgo(v)})`);
+      if (v.one_liner) lines.push(`  → ${v.one_liner}`);
+      lines.push('');
+    });
+    navigator.clipboard.writeText(lines.join('\n'));
+    setCopiedCell(conn.key); setTimeout(() => setCopiedCell(null), 2000);
+  }
+
+  const selConn = selectedCell ? connections.find(c => c.key === selectedCell) : null;
+
+  return (
+    <div style={{padding:'28px'}}>
+      <div style={{marginBottom:'24px'}}>
+        <div style={{fontSize:'22px',fontWeight:'600',color:'var(--text-1)',marginBottom:'4px'}}>⚡ Topic Connections</div>
+        <div style={{fontSize:'13px',color:'var(--text-3)',lineHeight:'1.6',maxWidth:'640px'}}>
+          Which topics keep showing up together — and why that matters. Brighter cells = stronger connection.
+          Click any cell or row to see the videos at that intersection.
+        </div>
+      </div>
+
+      <div style={{display:'flex',gap:'8px',marginBottom:'16px',flexWrap:'wrap',alignItems:'center'}}>
+        {[{l:'7d',v:7},{l:'14d',v:14},{l:'30d',v:30},{l:'90d',v:90},{l:'All',v:null}].map(o => (
+          <button key={o.l} className={`filter-pill ${timeframe===o.v?'active':''}`} onClick={() => setTimeframe(o.v)}>{o.l}</button>
+        ))}
+        <span style={{color:'var(--text-5)',margin:'0 6px'}}>|</span>
+        <span style={{fontSize:'11px',color:'var(--text-4)'}}>Min:</span>
+        {[1,2,3].map(n => (
+          <button key={n} className={`filter-pill ${minConnections===n?'active':''}`} onClick={() => setMinConnections(n)}>{n}+</button>
+        ))}
+      </div>
+
+      {/* Heatmap grid */}
+      {topTopics.length >= 2 && (
+        <div className="card" style={{padding:'16px',marginBottom:'24px',overflowX:'auto'}}>
+          <div style={{fontSize:'11px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'12px'}}>
+            Co-occurrence Heatmap · Top {topTopics.length} Topics
+          </div>
+          <table style={{borderCollapse:'collapse',fontSize:'11px'}}>
+            <thead>
+              <tr>
+                <th style={{padding:'4px 8px',textAlign:'left',color:'var(--text-4)',fontSize:'10px',minWidth:'100px'}}></th>
+                {topTopics.map(t => (
+                  <th key={t} style={{padding:'4px 3px',textAlign:'center',color:'var(--text-3)',fontSize:'9px',fontWeight:'500',
+                    writingMode:'vertical-lr',transform:'rotate(180deg)',height:'80px',maxWidth:'28px',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>
+                    {t.length > 16 ? t.slice(0,14) + '…' : t}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {topTopics.map((rowTopic, ri) => (
+                <tr key={rowTopic}>
+                  <td style={{padding:'3px 8px',fontSize:'10px',color:'var(--text-2)',fontWeight:'500',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'120px'}}>
+                    {rowTopic.length > 18 ? rowTopic.slice(0,16) + '…' : rowTopic}
+                  </td>
+                  {topTopics.map((colTopic, ci) => {
+                    if (ci <= ri) return <td key={colTopic} style={{padding:'2px',width:'28px',height:'28px'}}></td>;
+                    const count = getCoCount(rowTopic, colTopic);
+                    const cellKey = [rowTopic, colTopic].sort().join('|||');
+                    return (
+                      <td key={colTopic} onClick={() => count > 0 && setSelectedCell(selectedCell === cellKey ? null : cellKey)}
+                        style={{padding:'2px',width:'28px',height:'28px',textAlign:'center',cursor:count>0?'pointer':'default',position:'relative'}}
+                        title={count > 0 ? `${rowTopic} × ${colTopic}: ${count}` : ''}>
+                        <div style={{width:'24px',height:'24px',borderRadius:'4px',display:'flex',alignItems:'center',justifyContent:'center',
+                          background: getCellColor(count),
+                          border: selectedCell === cellKey ? '2px solid #6366f1' : count > 0 ? '1px solid rgba(99,102,241,0.2)' : '1px solid var(--border)',
+                          color: count > 0 ? (count / maxCount > 0.4 ? 'white' : 'var(--text-2)') : 'var(--text-5)',
+                          fontSize:'9px',fontWeight:'600',margin:'0 auto',transition:'all 0.15s'}}>
+                          {count > 0 ? count : '·'}
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Selected cell detail */}
+      {selConn && (
+        <div className="card" style={{padding:'16px',marginBottom:'24px',borderLeft:'3px solid #6366f1'}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'12px'}}>
+            <div>
+              <span style={{fontSize:'14px',fontWeight:'600',color:'var(--text-1)'}}>{selConn.topicA}</span>
+              <span style={{color:'#6366f1',margin:'0 8px',fontSize:'13px'}}>×</span>
+              <span style={{fontSize:'14px',fontWeight:'600',color:'var(--text-1)'}}>{selConn.topicB}</span>
+              <span className="badge-count" style={{marginLeft:'8px'}}>{selConn.count} videos</span>
+            </div>
+            <button className="export-opus-btn" onClick={() => copyForOpus(selConn)} style={{fontSize:'11px',padding:'4px 10px'}}>
+              {copiedCell === selConn.key ? '✓ Copied' : '📋 Opus'}
+            </button>
+          </div>
+          <div style={{display:'flex',gap:'4px',marginBottom:'10px'}}>
+            {selConn.channels.map(ch => (
+              <span key={ch.id} style={{display:'flex',alignItems:'center',gap:'4px',fontSize:'10px',color:'var(--text-3)',background:'var(--bg-hover)',padding:'2px 8px',borderRadius:'10px'}}>
+                <span className="channel-dot" style={{background:ch.color,width:'6px',height:'6px'}}></span>{ch.name}
+              </span>
+            ))}
+          </div>
+          {selConn.videos.map(v => { const ch = getChannel(data, v.channel_id); return (
+            <div key={v.id} onClick={() => onVideo(v)} style={{padding:'6px 10px',background:'var(--bg)',border:'1px solid var(--border)',borderRadius:'6px',marginBottom:'4px',cursor:'pointer',display:'flex',alignItems:'center',gap:'8px'}}>
+              <span className="channel-dot" style={{background:ch?.color}}></span>
+              <span style={{flex:1,fontSize:'12px',color:'var(--text-2)'}}>{v.title}</span>
+              <span style={{fontSize:'11px',color:'var(--text-4)'}}>{timeAgo(v)}</span>
+            </div>
+          );})}
+        </div>
+      )}
+
+      {/* Connection table */}
+      <div className="card" style={{overflow:'hidden'}}>
+        <div style={{padding:'12px 16px',borderBottom:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div style={{fontSize:'11px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.06em'}}>
+            All Connections · {connections.length} pairs
+          </div>
+        </div>
+        <table className="kpi-table" style={{width:'100%'}}>
+          <thead>
+            <tr>
+              <th>Topic A</th>
+              <th>Topic B</th>
+              <th style={{width:'70px',textAlign:'center'}}>Strength</th>
+              <th style={{width:'80px',textAlign:'center'}}>Channels</th>
+              <th style={{width:'60px',textAlign:'center'}}>Opus</th>
+            </tr>
+          </thead>
+          <tbody>
+            {connections.slice(0, 30).map(conn => (
+              <tr key={conn.key} onClick={() => setSelectedCell(selectedCell === conn.key ? null : conn.key)}
+                style={{cursor:'pointer',background:selectedCell===conn.key?'var(--bg-hover)':'transparent',transition:'background 0.15s'}}>
+                <td style={{fontWeight:'500',color:'var(--text-1)',fontSize:'13px'}}>{conn.topicA}</td>
+                <td style={{fontWeight:'500',color:'var(--text-1)',fontSize:'13px'}}>{conn.topicB}</td>
+                <td style={{textAlign:'center'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'6px',justifyContent:'center'}}>
+                    <div style={{width:'40px',height:'6px',background:'var(--border)',borderRadius:'3px',overflow:'hidden'}}>
+                      <div style={{width:`${Math.min(100, (conn.count/maxCount)*100)}%`,height:'100%',background:'#6366f1',borderRadius:'3px',transition:'width 0.3s'}}></div>
+                    </div>
+                    <span style={{fontSize:'12px',fontWeight:'600',color:'#6366f1'}}>{conn.count}</span>
+                  </div>
+                </td>
+                <td style={{textAlign:'center'}}>
+                  <div style={{display:'flex',gap:'3px',justifyContent:'center'}}>
+                    {conn.channels.map(ch => <span key={ch.id} className="channel-dot" style={{background:ch.color}} title={ch.name}></span>)}
+                  </div>
+                </td>
+                <td style={{textAlign:'center'}}>
+                  <button className="export-opus-btn" onClick={e => {e.stopPropagation(); copyForOpus(conn);}} style={{fontSize:'10px',padding:'2px 8px'}}>
+                    {copiedCell === conn.key ? '✓' : '📋'}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {connections.length === 0 && (
+          <div style={{padding:'48px',textAlign:'center',color:'var(--text-4)'}}>
+            <div style={{fontSize:'32px',marginBottom:'12px'}}>⚡</div>
+            <div>No topic connections found in this timeframe. Need videos with 2+ topics each.</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── CONTRADICTION DETECTOR VIEW ──────────────────────────────────────────────
+function ContradictionView({ data, onVideo }) {
+  const [timeframe, setTimeframe] = useState(30);
+  const [expandedIdx, setExpandedIdx] = useState(null);
+  const [copiedIdx, setCopiedIdx] = useState(null);
+  const [filterType, setFilterType] = useState('all');
+
+  const filtered = data.videos.filter(v => timeframe === null ? true : getDaysAgo(v) <= timeframe);
+
+  // Broad sentiment word lists — natural language, not finance jargon
+  const positive = ['good','great','strong','better','best','improve','success','win','advantage','lead','growing','accelerat','promising','exciting','impressive','powerful','efficient','innovative','transform','breakthrough','enable','opportunity','upside','benefit','gain','boost','surge','momentum','bullish','optimistic','tailwind','outperform','exceed','record','remarkable','incredible'];
+  const negative = ['bad','worse','worst','weak','fail','risk','threat','lose','losing','struggle','slow','decline','drop','fall','concern','problem','challenge','difficult','expensive','costly','overvalued','bubble','crash','behind','lag','miss','gap','limit','barrier','headwind','bearish','pessimistic','overhyped','overrated','unsustainable','fragile','vulnerable','danger'];
+  const tension = ['but','however','yet','although','despite','disagree','wrong','actually','contrary','whereas','instead','unlike','contrast','debate','question','skeptic','doubt','uncertain','unclear','tension','conflict','paradox','ironic','surprising','unexpected','overlooked','underestimated','overestimated','misunderstood','not so sure','on the other hand'];
+
+  function detectTone(text) {
+    if (!text) return { pos: 0, neg: 0, ten: 0, label: 'neutral' };
+    const lower = text.toLowerCase();
+    let pos = 0, neg = 0, ten = 0;
+    positive.forEach(w => { if (lower.includes(w)) pos++; });
+    negative.forEach(w => { if (lower.includes(w)) neg++; });
+    tension.forEach(w => { if (lower.includes(w)) ten++; });
+    let label = 'neutral';
+    if (pos > neg + 1) label = 'positive';
+    else if (neg > pos + 1) label = 'negative';
+    else if (pos > 0 && neg > 0) label = 'mixed';
+    return { pos, neg, ten, label };
+  }
+
+  // Build per-topic, per-channel map — NO filtering, collect everything
+  const topicChannels = {};
+  filtered.forEach(video => {
+    const ch = getChannel(data, video.channel_id);
+    const chName = ch?.name || video.channel_id;
+
+    (video.topics || []).forEach(topic => {
+      if (!topicChannels[topic]) topicChannels[topic] = {};
+      if (!topicChannels[topic][chName]) topicChannels[topic][chName] = { videos: [], takes: [], insights: [], summaries: [], channel: ch };
+
+      const entry = topicChannels[topic][chName];
+      entry.videos.push(video);
+      (video.host_takes || []).forEach(t => entry.takes.push(t));
+      (video.key_insights || []).forEach(i => entry.insights.push(i));
+      entry.summaries.push(video.one_liner || video.full_summary || video.summary || '');
+    });
+  });
+
+  // Find all multi-channel topics and classify the tension
+  const tensions = [];
+  Object.entries(topicChannels).forEach(([topic, channels]) => {
+    const chEntries = Object.entries(channels);
+    if (chEntries.length < 2) return;
+
+    // Analyze tone per channel
+    const channelTones = chEntries.map(([chName, d]) => {
+      const allText = [...d.takes, ...d.insights, ...d.summaries].join(' ');
+      const tone = detectTone(allText);
+      return { chName, ...d, tone, allText };
+    });
+
+    // Generate pairs
+    for (let i = 0; i < channelTones.length; i++) {
+      for (let j = i + 1; j < channelTones.length; j++) {
+        const a = channelTones[i], b = channelTones[j];
+        const contentA = [...a.takes, ...a.insights].filter(Boolean);
+        const contentB = [...b.takes, ...b.insights].filter(Boolean);
+
+        // Skip if either side has zero content
+        if (contentA.length === 0 && a.summaries.every(s => !s)) continue;
+        if (contentB.length === 0 && b.summaries.every(s => !s)) continue;
+
+        // Classify tension type
+        let type = 'multi-view'; // default: same topic, different sources
+        let strength = chEntries.length + contentA.length + contentB.length;
+
+        const opposing = (a.tone.label === 'positive' && b.tone.label === 'negative') ||
+                         (a.tone.label === 'negative' && b.tone.label === 'positive');
+        const hasTension = a.tone.ten > 1 || b.tone.ten > 1;
+        const tonesDiffer = a.tone.label !== b.tone.label && a.tone.label !== 'neutral' && b.tone.label !== 'neutral';
+
+        if (opposing) { type = 'opposing'; strength += 10; }
+        else if (tonesDiffer) { type = 'divergent'; strength += 5; }
+        else if (hasTension) { type = 'tension'; strength += 3; }
+
+        tensions.push({
+          topic,
+          channelA: a.chName, toneA: a.tone, colorA: a.channel?.color,
+          videosA: a.videos, takesA: contentA.length > 0 ? contentA : a.summaries.filter(Boolean),
+          channelB: b.chName, toneB: b.tone, colorB: b.channel?.color,
+          videosB: b.videos, takesB: contentB.length > 0 ? contentB : b.summaries.filter(Boolean),
+          type, strength, channelCount: chEntries.length
+        });
+      }
+    }
+  });
+
+  tensions.sort((a, b) => b.strength - a.strength);
+
+  const filteredTensions = filterType === 'all' ? tensions : tensions.filter(t => t.type === filterType);
+
+  const typeCounts = { all: tensions.length, opposing: 0, divergent: 0, tension: 0, 'multi-view': 0 };
+  tensions.forEach(t => typeCounts[t.type]++);
+
+  function copyForOpus(c, idx) {
+    const lines = [
+      `CROSS-CHANNEL TENSION: ${c.topic}`,
+      `${c.channelA} (${c.toneA.label}) vs ${c.channelB} (${c.toneB.label})`,
+      `Tension type: ${c.type} | Channels covering this topic: ${c.channelCount}`, '',
+      'PROMPT: Two credible sources cover the same topic from different angles.',
+      'Analyze both positions carefully:',
+      '1. What is each source really saying? Steel-man both sides.',
+      '2. Where specifically do they diverge — on facts, interpretation, or emphasis?',
+      '3. Who has the stronger case and why?',
+      '4. What data or evidence would definitively resolve the disagreement?',
+      '5. What is each side missing or underweighting?',
+      '6. If you had to pick a side, which one and at what confidence level?',
+      '', `── ${c.channelA} ──`
+    ];
+    c.takesA.slice(0, 8).forEach(t => lines.push(`  • ${t}`));
+    lines.push('', `── ${c.channelB} ──`);
+    c.takesB.slice(0, 8).forEach(t => lines.push(`  • ${t}`));
+    lines.push('', 'VIDEOS:');
+    [...c.videosA, ...c.videosB].forEach(v => lines.push(`  [${getChannel(data, v.channel_id)?.name}] "${v.title}" (${timeAgo(v)})`));
+    navigator.clipboard.writeText(lines.join('\n'));
+    setCopiedIdx(idx); setTimeout(() => setCopiedIdx(null), 2000);
+  }
+
+  const typeConfig = {
+    opposing: { icon: '⚔️', label: 'OPPOSING', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
+    divergent: { icon: '↔️', label: 'DIVERGENT', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+    tension: { icon: '⚡', label: 'TENSION', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
+    'multi-view': { icon: '👁️', label: 'MULTI-VIEW', color: '#06418C', bg: 'rgba(6,65,140,0.1)' }
+  };
+  const toneColors = { positive: '#10b981', negative: '#ef4444', mixed: '#f59e0b', neutral: '#6B7280' };
+  const toneIcons = { positive: '↑', negative: '↓', mixed: '↕', neutral: '—' };
+
+  return (
+    <div style={{padding:'28px'}}>
+      <div style={{marginBottom:'24px'}}>
+        <div style={{fontSize:'22px',fontWeight:'600',color:'var(--text-1)',marginBottom:'4px'}}>🔥 Contradiction Detector</div>
+        <div style={{fontSize:'13px',color:'var(--text-3)',lineHeight:'1.6',maxWidth:'640px'}}>
+          Where your sources see the same topic differently. Opposing tones, divergent takes,
+          and multi-channel perspectives — ranked by tension strength. Click any row to compare the evidence.
+        </div>
+      </div>
+
+      {/* Stats bar */}
+      <div style={{display:'flex',gap:'16px',marginBottom:'20px',flexWrap:'wrap'}}>
+        {[
+          { label: 'Opposing', count: typeCounts.opposing, color: '#ef4444', icon: '⚔️' },
+          { label: 'Divergent', count: typeCounts.divergent, color: '#f59e0b', icon: '↔️' },
+          { label: 'Tension', count: typeCounts.tension, color: '#8b5cf6', icon: '⚡' },
+          { label: 'Multi-View', count: typeCounts['multi-view'], color: '#06418C', icon: '👁️' }
+        ].map(s => (
+          <div key={s.label} className="card" style={{padding:'12px 16px',display:'flex',alignItems:'center',gap:'10px',minWidth:'120px'}}>
+            <span style={{fontSize:'18px'}}>{s.icon}</span>
+            <div>
+              <div style={{fontSize:'18px',fontWeight:'700',color:s.color}}>{s.count}</div>
+              <div style={{fontSize:'10px',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.05em'}}>{s.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{display:'flex',gap:'8px',marginBottom:'16px',flexWrap:'wrap'}}>
+        {[{l:'7d',v:7},{l:'14d',v:14},{l:'30d',v:30},{l:'90d',v:90},{l:'All',v:null}].map(o => (
+          <button key={o.l} className={`filter-pill ${timeframe===o.v?'active':''}`} onClick={() => setTimeframe(o.v)}>{o.l}</button>
+        ))}
+        <div style={{width:'1px',background:'var(--border)',margin:'0 4px'}}></div>
+        {[{l:'All Types',v:'all'},{l:'⚔️ Opposing',v:'opposing'},{l:'↔️ Divergent',v:'divergent'},{l:'⚡ Tension',v:'tension'},{l:'👁️ Multi-View',v:'multi-view'}].map(o => (
+          <button key={o.v} className={`filter-pill ${filterType===o.v?'active':''}`} onClick={() => setFilterType(o.v)}>{o.l}</button>
+        ))}
+      </div>
+
+      {filteredTensions.length === 0 ? (
+        <div className="card" style={{padding:'48px',textAlign:'center',color:'var(--text-4)'}}>
+          <div style={{fontSize:'32px',marginBottom:'12px'}}>🔥</div>
+          <div>No cross-channel tensions detected in this timeframe.</div>
+          <div style={{fontSize:'12px',marginTop:'8px'}}>Try expanding the timeframe or ingesting more channels.</div>
+        </div>
+      ) : (
+        <div className="card" style={{overflow:'hidden'}}>
+          <table className="kpi-table" style={{width:'100%'}}>
+            <thead>
+              <tr>
+                <th>Topic</th>
+                <th style={{width:'160px'}}>Channel A</th>
+                <th style={{width:'60px',textAlign:'center'}}>vs</th>
+                <th style={{width:'160px'}}>Channel B</th>
+                <th style={{width:'100px',textAlign:'center'}}>Type</th>
+                <th style={{width:'50px',textAlign:'center'}}>Opus</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTensions.map((c, idx) => {
+                const cfg = typeConfig[c.type];
+                return (
+                <React.Fragment key={idx}>
+                  <tr onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
+                    style={{cursor:'pointer',background:expandedIdx===idx?'var(--bg-hover)':'transparent',transition:'background 0.15s'}}>
+                    <td style={{fontWeight:'500',color:'var(--text-1)'}}>
+                      {c.topic}
+                      {c.channelCount > 2 && <span style={{fontSize:'10px',color:'var(--text-4)',marginLeft:'6px'}}>{c.channelCount} channels</span>}
+                    </td>
+                    <td>
+                      <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                        <span className="channel-dot" style={{background:c.colorA}}></span>
+                        <span style={{fontSize:'12px',color:'var(--text-2)'}}>{c.channelA}</span>
+                        <span style={{color:toneColors[c.toneA.label],fontWeight:'700',fontSize:'13px'}}>{toneIcons[c.toneA.label]}</span>
+                      </div>
+                    </td>
+                    <td style={{textAlign:'center'}}>
+                      <span style={{fontSize:'16px'}}>{cfg.icon}</span>
+                    </td>
+                    <td>
+                      <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                        <span className="channel-dot" style={{background:c.colorB}}></span>
+                        <span style={{fontSize:'12px',color:'var(--text-2)'}}>{c.channelB}</span>
+                        <span style={{color:toneColors[c.toneB.label],fontWeight:'700',fontSize:'13px'}}>{toneIcons[c.toneB.label]}</span>
+                      </div>
+                    </td>
+                    <td style={{textAlign:'center'}}>
+                      <span style={{fontSize:'10px',padding:'2px 8px',borderRadius:'10px',fontWeight:'600',
+                        background:cfg.bg, color:cfg.color}}>
+                        {cfg.label}
+                      </span>
+                    </td>
+                    <td style={{textAlign:'center'}}>
+                      <button className="export-opus-btn" onClick={e => {e.stopPropagation(); copyForOpus(c, idx);}} style={{fontSize:'10px',padding:'2px 8px'}}>
+                        {copiedIdx === idx ? '✓' : '📋'}
+                      </button>
+                    </td>
+                  </tr>
+                  {expandedIdx === idx && (
+                    <tr><td colSpan={6} style={{padding:'16px',background:'var(--bg)'}}>
+                      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+                        <div>
+                          <div style={{fontSize:'11px',fontWeight:'600',color:c.colorA||'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px'}}>
+                            {c.channelA} — tone: {c.toneA.label} (pos:{c.toneA.pos} neg:{c.toneA.neg})
+                          </div>
+                          {c.takesA.slice(0,5).map((t,i) => (
+                            <div key={i} style={{fontSize:'12px',color:'var(--text-2)',lineHeight:'1.5',marginBottom:'6px',paddingLeft:'8px',borderLeft:`2px solid ${c.colorA||'var(--border)'}`}}>
+                              {t.length > 250 ? t.slice(0,250) + '…' : t}
+                            </div>
+                          ))}
+                          {c.videosA.map(v => (
+                            <div key={v.id} onClick={(e) => {e.stopPropagation(); onVideo(v);}} style={{fontSize:'11px',color:'var(--text-4)',cursor:'pointer',marginTop:'4px'}}>
+                              📎 {v.title} ({timeAgo(v)})
+                            </div>
+                          ))}
+                        </div>
+                        <div>
+                          <div style={{fontSize:'11px',fontWeight:'600',color:c.colorB||'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px'}}>
+                            {c.channelB} — tone: {c.toneB.label} (pos:{c.toneB.pos} neg:{c.toneB.neg})
+                          </div>
+                          {c.takesB.slice(0,5).map((t,i) => (
+                            <div key={i} style={{fontSize:'12px',color:'var(--text-2)',lineHeight:'1.5',marginBottom:'6px',paddingLeft:'8px',borderLeft:`2px solid ${c.colorB||'var(--border)'}`}}>
+                              {t.length > 250 ? t.slice(0,250) + '…' : t}
+                            </div>
+                          ))}
+                          {c.videosB.map(v => (
+                            <div key={v.id} onClick={(e) => {e.stopPropagation(); onVideo(v);}} style={{fontSize:'11px',color:'var(--text-4)',cursor:'pointer',marginTop:'4px'}}>
+                              📎 {v.title} ({timeAgo(v)})
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </td></tr>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── WEEKLY DIFF VIEW ─────────────────────────────────────────────────────────
+function WeeklyDiffView({ data, onVideo }) {
+  const now = Date.now();
+  const day = 86400000;
+
+  // This week = last 7 days, prior week = 7-14 days ago
+  const thisWeek = data.videos.filter(v => getDaysAgo(v) <= 7);
+  const lastWeek = data.videos.filter(v => getDaysAgo(v) > 7 && getDaysAgo(v) <= 14);
+
+  function buildTopicMap(videos) {
+    const map = {};
+    videos.forEach(v => {
+      const ch = getChannel(data, v.channel_id);
+      (v.topics || []).forEach(t => {
+        if (!map[t]) map[t] = { count: 0, channels: new Set(), videos: [] };
+        map[t].count++;
+        map[t].channels.add(ch?.name || v.channel_id);
+        map[t].videos.push(v);
+      });
+    });
+    return map;
+  }
+
+  const thisMap = buildTopicMap(thisWeek);
+  const lastMap = buildTopicMap(lastWeek);
+  const allTopics = [...new Set([...Object.keys(thisMap), ...Object.keys(lastMap)])];
+
+  const diffs = allTopics.map(topic => {
+    const thisCount = thisMap[topic]?.count || 0;
+    const lastCount = lastMap[topic]?.count || 0;
+    const delta = thisCount - lastCount;
+    const isNew = thisCount > 0 && lastCount === 0;
+    const isGone = thisCount === 0 && lastCount > 0;
+    const isSurge = delta >= 2 && thisCount >= 3;
+    const isDrop = delta <= -2;
+    return {
+      topic, thisCount, lastCount, delta, isNew, isGone, isSurge, isDrop,
+      channels: thisMap[topic]?.channels || lastMap[topic]?.channels || new Set(),
+      videos: thisMap[topic]?.videos || []
+    };
+  }).filter(d => d.delta !== 0 || d.isNew || d.isGone)
+    .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+
+  const newTopics = diffs.filter(d => d.isNew);
+  const goneTopics = diffs.filter(d => d.isGone);
+  const surges = diffs.filter(d => d.isSurge && !d.isNew);
+  const drops = diffs.filter(d => d.isDrop && !d.isGone);
+  const movers = diffs.filter(d => !d.isNew && !d.isGone && !d.isSurge && !d.isDrop && d.delta !== 0);
+
+  function DiffSection({ title, icon, items, color, emptyMsg }) {
+    if (items.length === 0) return null;
+    return (
+      <div style={{marginBottom:'20px'}}>
+        <div style={{fontSize:'12px',fontWeight:'600',color,textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px',display:'flex',alignItems:'center',gap:'6px'}}>
+          <span>{icon}</span> {title}
+        </div>
+        {items.map(d => (
+          <div key={d.topic} className="card" style={{padding:'12px 16px',marginBottom:'6px',borderLeft:`3px solid ${color}`}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+                <span style={{fontWeight:'600',color:'var(--text-1)',fontSize:'14px'}}>{d.topic}</span>
+                <span style={{fontSize:'11px',color:'var(--text-4)'}}>
+                  {d.isNew ? 'NEW' : d.isGone ? `was ${d.lastCount}` : `${d.lastCount} → ${d.thisCount}`}
+                </span>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                {!d.isGone && <span style={{fontWeight:'700',fontSize:'14px',color}}>{d.delta > 0 ? '+' : ''}{d.delta}</span>}
+                <div style={{display:'flex',gap:'2px'}}>
+                  {[...d.channels].slice(0,3).map(ch => (
+                    <span key={ch} style={{fontSize:'10px',color:'var(--text-4)',background:'var(--bg-hover)',padding:'1px 6px',borderRadius:'8px'}}>{ch}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {d.videos.length > 0 && (
+              <div style={{marginTop:'8px',display:'flex',gap:'4px',flexWrap:'wrap'}}>
+                {d.videos.slice(0,3).map(v => (
+                  <span key={v.id} onClick={() => onVideo(v)} style={{fontSize:'10px',color:'var(--text-3)',cursor:'pointer',background:'var(--bg)',padding:'2px 8px',borderRadius:'6px',border:'1px solid var(--border)'}}>
+                    {v.title.length > 40 ? v.title.slice(0,38) + '…' : v.title}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{padding:'28px'}}>
+      <div style={{marginBottom:'24px'}}>
+        <div style={{fontSize:'22px',fontWeight:'600',color:'var(--text-1)',marginBottom:'4px'}}>📈 Weekly Diff</div>
+        <div style={{fontSize:'13px',color:'var(--text-3)',lineHeight:'1.6',maxWidth:'640px'}}>
+          What changed in the last 7 days vs. the prior 7. New topics, disappeared topics,
+          and shifts in frequency — the signal beneath the noise.
+        </div>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(120px, 1fr))',gap:'10px',marginBottom:'24px'}}>
+        <div className="card" style={{padding:'14px',textAlign:'center'}}>
+          <div style={{fontSize:'24px',fontWeight:'700',color:'#6366f1'}}>{thisWeek.length}</div>
+          <div style={{fontSize:'11px',color:'var(--text-4)'}}>Videos this week</div>
+        </div>
+        <div className="card" style={{padding:'14px',textAlign:'center'}}>
+          <div style={{fontSize:'24px',fontWeight:'700',color:'var(--text-3)'}}>{lastWeek.length}</div>
+          <div style={{fontSize:'11px',color:'var(--text-4)'}}>Videos last week</div>
+        </div>
+        <div className="card" style={{padding:'14px',textAlign:'center'}}>
+          <div style={{fontSize:'24px',fontWeight:'700',color:'#10b981'}}>{newTopics.length}</div>
+          <div style={{fontSize:'11px',color:'var(--text-4)'}}>New topics</div>
+        </div>
+        <div className="card" style={{padding:'14px',textAlign:'center'}}>
+          <div style={{fontSize:'24px',fontWeight:'700',color:'#ef4444'}}>{goneTopics.length}</div>
+          <div style={{fontSize:'11px',color:'var(--text-4)'}}>Dropped off</div>
+        </div>
+      </div>
+
+      {diffs.length === 0 ? (
+        <div className="card" style={{padding:'48px',textAlign:'center',color:'var(--text-4)'}}>
+          <div style={{fontSize:'32px',marginBottom:'12px'}}>📈</div>
+          <div>No changes detected between this week and last week.</div>
+          <div style={{fontSize:'12px',marginTop:'8px'}}>Need videos in both the last 7 and prior 7 days to compare.</div>
+        </div>
+      ) : (
+        <div>
+          <DiffSection title="New This Week" icon="🟢" items={newTopics} color="#10b981" />
+          <DiffSection title="Surging" icon="🔥" items={surges} color="#f59e0b" />
+          <DiffSection title="Dropping" icon="📉" items={drops} color="#ef4444" />
+          <DiffSection title="Disappeared" icon="💨" items={goneTopics} color="#6e7681" />
+          <DiffSection title="Shifted" icon="↕️" items={movers} color="#6366f1" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── THESIS BUILDER VIEW ──────────────────────────────────────────────────────
+function ThesisBuilderView({ data, onVideo }) {
+  const [timeframe, setTimeframe] = useState(14);
+  const [selectedThesis, setSelectedThesis] = useState(null);
+  const [copiedIdx, setCopiedIdx] = useState(null);
+
+  const filtered = data.videos.filter(v => timeframe === null ? true : getDaysAgo(v) <= timeframe);
+
+  // Build topic clusters — groups of topics that frequently co-occur
+  const coMap = {};
+  const topicVideos = {};
+  filtered.forEach(video => {
+    const topics = video.topics || [];
+    topics.forEach(t => {
+      if (!topicVideos[t]) topicVideos[t] = [];
+      topicVideos[t].push(video);
+    });
+    for (let i = 0; i < topics.length; i++) {
+      for (let j = i + 1; j < topics.length; j++) {
+        const key = [topics[i], topics[j]].sort().join('|||');
+        coMap[key] = (coMap[key] || 0) + 1;
+      }
+    }
+  });
+
+  // Find topic clusters via greedy grouping
+  const topTopics = Object.entries(topicVideos)
+    .sort((a, b) => b[1].length - a[1].length)
+    .slice(0, 20)
+    .map(([name]) => name);
+
+  const used = new Set();
+  const clusters = [];
+
+  topTopics.forEach(seed => {
+    if (used.has(seed)) return;
+    const cluster = [seed];
+    used.add(seed);
+
+    // Find strongly connected topics
+    topTopics.forEach(other => {
+      if (used.has(other)) return;
+      const key = [seed, other].sort().join('|||');
+      if ((coMap[key] || 0) >= 2) {
+        cluster.push(other);
+        used.add(other);
+      }
+    });
+
+    if (cluster.length >= 2) {
+      // Gather all videos touching any topic in this cluster
+      const clusterVideos = [...new Set(cluster.flatMap(t => topicVideos[t] || []))];
+      const channels = [...new Set(clusterVideos.map(v => {
+        const ch = getChannel(data, v.channel_id);
+        return ch?.name || v.channel_id;
+      }))];
+
+      // Extract key data points
+      const kpis = clusterVideos.flatMap(v => (v.kpi_table || []).map(k => ({ ...k, video: v })));
+      const takes = clusterVideos.flatMap(v => (v.host_takes || []).map(t => ({ text: t, video: v })));
+      const predictions = clusterVideos.flatMap(v => (v.predictions || []).map(p => ({ text: p, video: v })));
+      const insights = clusterVideos.flatMap(v => (v.key_insights || []).map(i => ({ text: i, video: v })));
+
+      // Auto-generate thesis name from topic combination
+      const thesisName = cluster.length <= 3 ? cluster.join(' + ') : cluster.slice(0,2).join(' + ') + ` +${cluster.length-2}`;
+
+      clusters.push({
+        name: thesisName, topics: cluster, videos: clusterVideos, channels,
+        kpis: kpis.slice(0, 8), takes: takes.slice(0, 6), predictions: predictions.slice(0, 4), insights: insights.slice(0, 6),
+        strength: clusterVideos.length
+      });
+    }
+  });
+
+  clusters.sort((a, b) => b.strength - a.strength);
+
+  function copyForOpus(c, idx) {
+    const lines = [
+      `THESIS: ${c.name}`,
+      `Topics: ${c.topics.join(', ')}`,
+      `${c.videos.length} videos across ${c.channels.length} channels (${c.channels.join(', ')})`,
+      '',
+      'PROMPT: The following data points, takes, and predictions cluster around a connected thesis.',
+      'Synthesize them into a single sharp investment or strategic thesis.',
+      'Structure: (1) The thesis in one sentence. (2) The 3 strongest supporting data points.',
+      '(3) The biggest risk to this thesis. (4) What would change your mind.',
+      '(5) If this thesis is right, name 3 specific actions a CEO/investor should take this quarter.',
+      ''
+    ];
+    if (c.kpis.length > 0) {
+      lines.push('── KEY DATA ──');
+      c.kpis.forEach(k => lines.push(`  ${k.kpi}: ${k.value} — ${k.context}`));
+      lines.push('');
+    }
+    if (c.takes.length > 0) {
+      lines.push('── HOST TAKES ──');
+      c.takes.forEach(t => lines.push(`  • ${t.text}`));
+      lines.push('');
+    }
+    if (c.predictions.length > 0) {
+      lines.push('── PREDICTIONS ──');
+      c.predictions.forEach(p => lines.push(`  • ${p.text}`));
+      lines.push('');
+    }
+    if (c.insights.length > 0) {
+      lines.push('── KEY INSIGHTS ──');
+      c.insights.forEach(i => lines.push(`  • ${i.text}`));
+      lines.push('');
+    }
+    lines.push('── VIDEOS ──');
+    c.videos.forEach(v => {
+      const ch = getChannel(data, v.channel_id);
+      lines.push(`  [${ch?.name}] "${v.title}" (${timeAgo(v)})`);
+    });
+    navigator.clipboard.writeText(lines.join('\n'));
+    setCopiedIdx(idx); setTimeout(() => setCopiedIdx(null), 2000);
+  }
+
+  return (
+    <div style={{padding:'28px'}}>
+      <div style={{marginBottom:'24px'}}>
+        <div style={{fontSize:'22px',fontWeight:'600',color:'var(--text-1)',marginBottom:'4px'}}>🎯 Thesis Builder</div>
+        <div style={{fontSize:'13px',color:'var(--text-3)',lineHeight:'1.6',maxWidth:'640px'}}>
+          Auto-detected topic clusters that form investable theses. Topics that keep appearing together
+          across channels suggest a connected narrative. Click to explore, copy to Opus to sharpen into
+          a real thesis.
+        </div>
+      </div>
+
+      <div style={{display:'flex',gap:'8px',marginBottom:'24px'}}>
+        {[{l:'7d',v:7},{l:'14d',v:14},{l:'30d',v:30},{l:'All',v:null}].map(o => (
+          <button key={o.l} className={`filter-pill ${timeframe===o.v?'active':''}`} onClick={() => setTimeframe(o.v)}>{o.l}</button>
+        ))}
+      </div>
+
+      {clusters.length === 0 ? (
+        <div className="card" style={{padding:'48px',textAlign:'center',color:'var(--text-4)'}}>
+          <div style={{fontSize:'32px',marginBottom:'12px'}}>🎯</div>
+          <div>No topic clusters detected. Need more videos with overlapping topics.</div>
+        </div>
+      ) : clusters.map((c, idx) => (
+        <div key={idx} className="card" style={{padding:'0',marginBottom:'12px',overflow:'hidden',
+          borderLeft: selectedThesis === idx ? '3px solid #6366f1' : '3px solid transparent'}}>
+          <div onClick={() => setSelectedThesis(selectedThesis === idx ? null : idx)}
+            style={{padding:'16px 20px',cursor:'pointer',transition:'background 0.15s',
+              background: selectedThesis === idx ? 'var(--bg-hover)' : 'transparent'}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'8px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+                <span style={{fontSize:'16px',fontWeight:'700',color:'var(--text-1)'}}>{c.name}</span>
+                <span className="badge-count">{c.videos.length} videos</span>
+                <span className="badge-count" style={{background:'rgba(99,102,241,0.1)',color:'#6366f1'}}>{c.channels.length} channels</span>
+              </div>
+              <button className="export-opus-btn" onClick={e => {e.stopPropagation(); copyForOpus(c, idx);}} style={{fontSize:'11px',padding:'4px 12px'}}>
+                {copiedIdx === idx ? '✓ Copied' : '📋 Build Thesis in Opus'}
+              </button>
+            </div>
+            <div style={{display:'flex',gap:'4px',flexWrap:'wrap'}}>
+              {c.topics.map(t => (
+                <span key={t} className="tag" style={{fontSize:'11px'}}>{t}</span>
+              ))}
+            </div>
+          </div>
+
+          {selectedThesis === idx && (
+            <div style={{padding:'0 20px 20px',borderTop:'1px solid var(--border)'}}>
+              {c.kpis.length > 0 && (
+                <div style={{marginTop:'14px'}}>
+                  <div style={{fontSize:'11px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px'}}>Key Data</div>
+                  <table style={{width:'100%',fontSize:'12px',borderCollapse:'collapse'}}>
+                    <tbody>
+                      {c.kpis.map((k, i) => (
+                        <tr key={i} style={{borderBottom:'1px solid var(--border)'}}>
+                          <td style={{padding:'6px 8px',color:'var(--text-2)',fontWeight:'500',width:'30%'}}>{k.kpi}</td>
+                          <td style={{padding:'6px 8px',color:'#6366f1',fontWeight:'700',width:'15%'}}>{k.value}</td>
+                          <td style={{padding:'6px 8px',color:'var(--text-3)'}}>{k.context}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              {c.takes.length > 0 && (
+                <div style={{marginTop:'14px'}}>
+                  <div style={{fontSize:'11px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px'}}>Host Takes</div>
+                  {c.takes.map((t, i) => (
+                    <div key={i} style={{fontSize:'12px',color:'var(--text-2)',lineHeight:'1.5',marginBottom:'6px',paddingLeft:'8px',borderLeft:'2px solid var(--border)'}}>
+                      {t.text}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {c.predictions.length > 0 && (
+                <div style={{marginTop:'14px'}}>
+                  <div style={{fontSize:'11px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px'}}>Predictions</div>
+                  {c.predictions.map((p, i) => (
+                    <div key={i} style={{fontSize:'12px',color:'var(--text-2)',lineHeight:'1.5',marginBottom:'4px'}}>🔮 {p.text}</div>
+                  ))}
+                </div>
+              )}
+              <div style={{marginTop:'14px'}}>
+                <div style={{fontSize:'11px',fontWeight:'600',color:'var(--text-4)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px'}}>Videos ({c.videos.length})</div>
+                {c.videos.slice(0,6).map(v => { const ch = getChannel(data, v.channel_id); return (
+                  <div key={v.id} onClick={() => onVideo(v)} style={{padding:'6px 10px',background:'var(--bg)',border:'1px solid var(--border)',borderRadius:'6px',marginBottom:'4px',cursor:'pointer',display:'flex',alignItems:'center',gap:'8px'}}>
+                    <span className="channel-dot" style={{background:ch?.color}}></span>
+                    <span style={{flex:1,fontSize:'12px',color:'var(--text-2)'}}>{v.title}</span>
+                    <span style={{fontSize:'11px',color:'var(--text-4)'}}>{timeAgo(v)}</span>
+                  </div>
+                );})}
+                {c.videos.length > 6 && <div style={{fontSize:'11px',color:'var(--text-4)',marginTop:'4px'}}>+ {c.videos.length-6} more</div>}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── DATA VAULT VIEW ─────────────────────────────────────────────────────────
+function QuoteBankView({ data, onVideo }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterChannels, setFilterChannels] = useState([]);
+  const [timeframe, setTimeframe] = useState(null);
+  const [selectedItems, setSelectedItems] = useState(new Set());
+  const [copiedId, setCopiedId] = useState(null);
+  const [tab, setTab] = useState('data'); // data | quotes
+
+  // Aggregate KPI data points from kpi_table and figures_and_data
+  const allDataPoints = data.videos.flatMap(v => {
+    const ch = getChannel(data, v.channel_id);
+    const kpis = (v.kpi_table || []).map((row, idx) => ({
+      id: `${v.id}-kpi${idx}`, type: 'kpi', metric: row.kpi, value: row.value, context: row.context,
+      channelId: v.channel_id, channel: ch, videoTitle: v.title, video: v, topics: v.topics || []
+    }));
+    const figs = (v.figures_and_data || []).map((fig, idx) => ({
+      id: `${v.id}-fig${idx}`, type: 'figure', metric: fig, value: '', context: '',
+      channelId: v.channel_id, channel: ch, videoTitle: v.title, video: v, topics: v.topics || []
+    }));
+    return [...kpis, ...figs];
+  });
+
+  // Aggregate quotes (secondary tab)
+  const allQuotes = data.videos.flatMap(v => {
+    const ch = getChannel(data, v.channel_id);
+    return (v.key_quotes || []).map((quote, idx) => ({
+      id: `${v.id}-q${idx}`, quote, channelId: v.channel_id, channel: ch,
+      videoTitle: v.title, video: v, topics: v.topics || []
+    }));
+  });
+
+  const items = tab === 'data' ? allDataPoints : allQuotes;
+  const filtered = items.filter(item => {
+    if (filterChannels.length > 0 && !filterChannels.includes(item.channelId)) return false;
+    if (timeframe !== null && getDaysAgo(item.video) > timeframe) return false;
+    if (searchTerm) {
+      const s = searchTerm.toLowerCase();
+      if (tab === 'data') return (item.metric||'').toLowerCase().includes(s) || (item.value||'').toLowerCase().includes(s) || (item.context||'').toLowerCase().includes(s);
+      return (item.quote||'').toLowerCase().includes(s);
+    }
+    return true;
+  });
+
+  function toggleChannel(id) { setFilterChannels(prev => prev.includes(id)?prev.filter(c=>c!==id):[...prev,id]); }
+  function toggleItem(id) { setSelectedItems(prev => { const n=new Set(prev); n.has(id)?n.delete(id):n.add(id); return n; }); }
+
+  function copyOne(item) {
+    const text = tab === 'data'
+      ? `${item.metric}: ${item.value}${item.context ? ' — '+item.context : ''}\n— ${item.channel?.name}, "${item.videoTitle}" (${timeAgo(item.video)})`
+      : `"${item.quote}"\n— ${item.channel?.name}, "${item.videoTitle}" (${timeAgo(item.video)})`;
+    navigator.clipboard.writeText(text);
+    setCopiedId(item.id); setTimeout(()=>setCopiedId(null),2000);
+  }
+
+  function exportItems(format) {
+    const toExport = selectedItems.size > 0 ? filtered.filter(i=>selectedItems.has(i.id)) : filtered;
+    const chNames = [...new Set(toExport.map(i=>i.channel?.name).filter(Boolean))];
+    const isData = tab === 'data';
+    const prompt = format === 'opus'
+      ? (isData
+        ? `You are a senior strategy consultant building an executive briefing.\nUsing the data points below, create a sharp intelligence report.\nLead with the most significant numbers. Contextualize each metric.\nIdentify patterns across the data. Call out what's surprising.\nWrite for a reader who bills $5,000/hour.`
+        : `You are a thought leadership ghostwriter.\nUsing the quotes below as primary source material, create a compelling\npiece. Cite each quote by speaker/channel. Be opinionated. Lead with insight.`)
+      : DECK_BUILDER_PROMPT;
+    const itemsText = toExport.map((item, i) => {
+      if (isData) return `${i+1}. ${item.metric}${item.value ? ': '+item.value : ''}${item.context ? '\n   Context: '+item.context : ''}\n   — ${item.channel?.name}, "${item.videoTitle}" (${timeAgo(item.video)})`;
+      return `${i+1}. "${item.quote}"\n   — ${item.channel?.name}, "${item.videoTitle}" (${timeAgo(item.video)})`;
+    }).join('\n\n');
+    const header = isData ? 'DATA VAULT EXPORT' : 'QUOTE BANK EXPORT';
+    const text = `${header} — Signal Intelligence Hub\nGenerated: ${new Date().toLocaleDateString()}\n${toExport.length} items from ${chNames.length} channels\n\n${'─'.repeat(40)}\nPROMPT FOR CLAUDE:\n${prompt}\n${'─'.repeat(40)}\n\n${isData?'DATA POINTS':'QUOTES'}:\n\n${itemsText}`;
+    navigator.clipboard.writeText(text);
+    setCopiedId(`export-${format}`); setTimeout(()=>setCopiedId(null),2000);
+  }
+
+  const allChannels = getAllChannels(data);
+
+  return (
+    <div style={{padding:'28px'}}>
+      <div style={{marginBottom:'24px'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'8px'}}>
+          <div>
+            <div style={{fontSize:'22px',fontWeight:'600',color:'var(--text-1)',marginBottom:'4px'}}>📊 Data Vault</div>
+            <div style={{fontSize:'13px',color:'var(--text-3)'}}>
+              {filtered.length} {tab==='data'?'data point':'quote'}{filtered.length!==1?'s':''}
+              {selectedItems.size > 0 && <span style={{color:'#f59e0b',fontWeight:'600'}}> · {selectedItems.size} selected</span>}
+            </div>
+          </div>
+          <div style={{display:'flex',gap:'8px'}}>
+            <button className="export-opus-btn" onClick={() => exportItems('opus')}>
+              {copiedId==='export-opus' ? '✓ Copied!' : '📋 Export for Opus'}
+            </button>
+            <button className="deck-export-btn" onClick={() => exportItems('deck')}>
+              {copiedId==='export-deck' ? '✓ Copied!' : '🎯 Export for Deck'}
+            </button>
+          </div>
+        </div>
+      </div>
+      {/* Tab toggle */}
+      <div style={{display:'flex',gap:'4px',marginBottom:'16px',background:'var(--bg-hover)',borderRadius:'8px',padding:'3px',width:'fit-content'}}>
+        <button onClick={()=>{setTab('data');setSelectedItems(new Set());}} style={{
+          padding:'6px 16px',borderRadius:'6px',fontSize:'13px',fontWeight:'500',cursor:'pointer',border:'none',transition:'all 0.15s',
+          background:tab==='data'?'var(--bg-card)':'transparent',color:tab==='data'?'#14b8a6':'var(--text-3)',
+          boxShadow:tab==='data'?'0 1px 3px rgba(0,0,0,0.2)':'none'
+        }}>📊 KPIs & Data</button>
+        <button onClick={()=>{setTab('quotes');setSelectedItems(new Set());}} style={{
+          padding:'6px 16px',borderRadius:'6px',fontSize:'13px',fontWeight:'500',cursor:'pointer',border:'none',transition:'all 0.15s',
+          background:tab==='quotes'?'var(--bg-card)':'transparent',color:tab==='quotes'?'#f59e0b':'var(--text-3)',
+          boxShadow:tab==='quotes'?'0 1px 3px rgba(0,0,0,0.2)':'none'
+        }}>💬 Key Quotes</button>
+      </div>
+      <div style={{position:'relative',marginBottom:'16px'}}>
+        <span style={{position:'absolute',left:'12px',top:'9px',color:'var(--text-5)',fontSize:'13px'}}>⌕</span>
+        <input className="search-input" type="text" placeholder={tab==='data'?'Search metrics, values, context…':'Search quotes…'} value={searchTerm} onChange={e=>setSearchTerm(e.target.value)} />
+      </div>
+      <div style={{display:'flex',gap:'6px',marginBottom:'10px',flexWrap:'wrap'}}>
+        {allChannels.map(ch => (
+          <button key={ch.id} onClick={()=>toggleChannel(ch.id)} style={{
+            display:'flex',alignItems:'center',gap:'5px',padding:'4px 10px',borderRadius:'14px',fontSize:'12px',cursor:'pointer',
+            border:`1px solid ${filterChannels.includes(ch.id)?ch.color:'var(--border-med)'}`,
+            background:filterChannels.includes(ch.id)?ch.color+'20':'var(--bg-input)',
+            color:filterChannels.includes(ch.id)?ch.color:'var(--text-3)',transition:'all 0.15s'
+          }}>
+            <span className="channel-dot" style={{background:ch.color,width:'6px',height:'6px'}}></span>{ch.name}
+          </button>
+        ))}
+      </div>
+      <div style={{display:'flex',gap:'8px',marginBottom:'24px'}}>
+        {[{l:'7d',v:7},{l:'14d',v:14},{l:'30d',v:30},{l:'90d',v:90},{l:'All',v:null}].map(o => (
+          <button key={o.l} className={`filter-pill ${timeframe===o.v?'active':''}`} onClick={()=>setTimeframe(o.v)}>{o.l}</button>
+        ))}
+      </div>
+      {filtered.length === 0 ? (
+        <div className="card" style={{padding:'48px',textAlign:'center',color:'var(--text-4)'}}>
+          <div style={{fontSize:'32px',marginBottom:'12px'}}>{tab==='data'?'📊':'💬'}</div>
+          <div>No {tab==='data'?'data points':'quotes'} found. {tab==='data'?'KPI tables from ingested videos will appear here.':'Try adjusting filters.'}</div>
+        </div>
+      ) : tab === 'data' ? (
+        <div className="card" style={{overflow:'hidden'}}>
+          <table className="kpi-table">
+            <thead>
+              <tr>
+                <th style={{width:'30px'}}></th>
+                <th>Metric</th>
+                <th style={{width:'100px'}}>Value</th>
+                <th>Context</th>
+                <th style={{width:'140px'}}>Source</th>
+                <th style={{width:'40px'}}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(item => {
+                const isSel = selectedItems.has(item.id);
+                return (
+                  <tr key={item.id} style={{background:isSel?'#f59e0b08':'transparent'}}>
+                    <td style={{textAlign:'center'}}>
+                      <div className={`quote-check ${isSel?'checked':''}`} onClick={()=>toggleItem(item.id)} style={{display:'inline-flex'}}>
+                        {isSel && <span style={{color:'white',fontSize:'10px'}}>✓</span>}
+                      </div>
+                    </td>
+                    <td className="kpi-name">{item.metric}</td>
+                    <td className="kpi-value">{item.value}</td>
+                    <td className="kpi-context">{item.context}</td>
+                    <td>
+                      <div onClick={()=>onVideo(item.video)} style={{cursor:'pointer',fontSize:'11px',color:'var(--text-3)',lineHeight:'1.4'}}>
+                        <span style={{display:'flex',alignItems:'center',gap:'4px'}}>
+                          <span className="channel-dot" style={{background:item.channel?.color,width:'5px',height:'5px'}}></span>
+                          {item.channel?.name}
+                        </span>
+                        <span style={{color:'var(--text-4)'}}>{timeAgo(item.video)}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <button onClick={()=>copyOne(item)} style={{background:'none',border:'1px solid var(--border)',borderRadius:'4px',color:'var(--text-4)',fontSize:'10px',padding:'2px 6px',cursor:'pointer'}}>
+                        {copiedId===item.id?'✓':'⎘'}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : filtered.map(q => {
+        const isSel = selectedItems.has(q.id);
+        return (
+          <div key={q.id} className={`quote-item ${isSel?'selected':''}`}>
+            <div className={`quote-check ${isSel?'checked':''}`} onClick={()=>toggleItem(q.id)}>
+              {isSel && <span style={{color:'white',fontSize:'12px'}}>✓</span>}
+            </div>
+            <div style={{flex:1}}>
+              <div style={{fontStyle:'italic',fontSize:'14px',color:'var(--text-1)',lineHeight:'1.6',marginBottom:'8px'}}>"{q.quote}"</div>
+              <div style={{display:'flex',alignItems:'center',gap:'8px',fontSize:'12px',color:'var(--text-3)',flexWrap:'wrap'}}>
+                <span style={{display:'flex',alignItems:'center',gap:'4px'}}>
+                  <span className="channel-dot" style={{background:q.channel?.color,width:'6px',height:'6px'}}></span>
+                  <span style={{color:q.channel?.color,fontWeight:'500'}}>{q.channel?.name}</span>
+                </span>
+                <span>·</span>
+                <span onClick={()=>onVideo(q.video)} style={{cursor:'pointer',textDecoration:'underline'}}>{q.videoTitle}</span>
+                <span>·</span>
+                <span style={{color:'var(--text-4)'}}>{timeAgo(q.video)}</span>
+              </div>
+            </div>
+            <button onClick={()=>copyOne(q)} style={{background:'none',border:'1px solid var(--border-med)',borderRadius:'5px',color:'var(--text-4)',fontSize:'11px',padding:'3px 10px',cursor:'pointer'}}>
+              {copiedId===q.id ? '✓' : 'Copy'}
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── TIME MACHINE VIEW ───────────────────────────────────────────────────────
+function TimeMachineView({ data, onVideo }) {
+  const [timeframe, setTimeframe] = useState(8);
+  const [expandedTopic, setExpandedTopic] = useState(null);
+  const [drillTopic, setDrillTopic] = useState(null); // sub-topic drill
+  const [hoveredBar, setHoveredBar] = useState(null);
+
+  const weekBuckets = {};
+  data.videos.forEach(v => {
+    const w = Math.floor(getDaysAgo(v) / 7);
+    if (w < timeframe) { if (!weekBuckets[w]) weekBuckets[w] = []; weekBuckets[w].push(v); }
+  });
+
+  const topicWeekCounts = {};
+  Object.entries(weekBuckets).forEach(([week, vids]) => {
+    vids.forEach(v => (v.topics||[]).forEach(topic => {
+      if (!topicWeekCounts[topic]) topicWeekCounts[topic] = {};
+      topicWeekCounts[topic][week] = (topicWeekCounts[topic][week] || 0) + 1;
+    }));
+  });
+
+  // Build parent/child hierarchy: detect broad topics and their sub-topics
+  const topicNames = Object.keys(topicWeekCounts);
+  const parentChildren = {};
+  topicNames.forEach(name => {
+    const lName = name.toLowerCase();
+    topicNames.forEach(other => {
+      if (other === name) return;
+      const lOther = other.toLowerCase();
+      // "AI Talent War" is child of "AI" if "AI" appears as a word boundary in the longer topic
+      if (lOther.length > lName.length && lOther.includes(lName) && lName.length >= 2) {
+        // Ensure it's a word boundary match
+        const idx = lOther.indexOf(lName);
+        const before = idx === 0 || lOther[idx-1] === ' ';
+        const after = idx + lName.length >= lOther.length || lOther[idx + lName.length] === ' ';
+        if (before && after) {
+          if (!parentChildren[name]) parentChildren[name] = [];
+          parentChildren[name].push(other);
+        }
+      }
+    });
+  });
+
+  const topicsWithCounts = Object.entries(topicWeekCounts).map(([topic, weeks]) => {
+    const total = Object.values(weeks).reduce((a,b) => a+b, 0);
+    const recentCount = (weeks[0]||0) + (weeks[1]||0);
+    const priorEntries = Object.entries(weeks).filter(([w]) => parseInt(w) > 1);
+    const priorAvg = priorEntries.length > 0 ? priorEntries.reduce((s,[,c])=>s+c,0)/priorEntries.length : 0;
+    const children = parentChildren[topic] || [];
+    return { topic, weeks, total, recentCount, priorAvg, children };
+  }).sort((a,b) => b.total - a.total).slice(0,25);
+
+  const maxCount = Math.max(...topicsWithCounts.map(t => Math.max(...Object.values(t.weeks))), 1);
+  const getWeekLabel = w => w===0 ? 'This week' : w===1 ? '1w ago' : `${w}w ago`;
+  const getTrend = t => { if (t.priorAvg===0 && t.recentCount > 0) return 'HOT'; if (t.recentCount > t.priorAvg*1.2) return 'HOT'; if (t.recentCount < t.priorAvg*0.8 && t.priorAvg > 0) return 'COLD'; return null; };
+
+  // Sub-topic drill data
+  const drillData = drillTopic ? (parentChildren[drillTopic] || []).map(child => {
+    const weeks = topicWeekCounts[child] || {};
+    const total = Object.values(weeks).reduce((a,b)=>a+b,0);
+    const recentCount = (weeks[0]||0)+(weeks[1]||0);
+    const priorEntries = Object.entries(weeks).filter(([w])=>parseInt(w)>1);
+    const priorAvg = priorEntries.length>0 ? priorEntries.reduce((s,[,c])=>s+c,0)/priorEntries.length : 0;
+    return { topic: child, weeks, total, recentCount, priorAvg, children: [] };
+  }).sort((a,b) => b.total - a.total) : [];
+
+  const drillMax = drillData.length > 0 ? Math.max(...drillData.map(t => Math.max(...Object.values(t.weeks),0)),1) : 1;
+
+  function TopicRow({ t, mxCount, indent }) {
+    const trend = getTrend(t);
+    const isExp = expandedTopic === t.topic;
+    const hasSubs = t.children.length > 0;
+    return (
+      <div>
+        <div className="tm-row" style={{cursor:'pointer',paddingLeft:indent?'20px':undefined}} onClick={()=>setExpandedTopic(isExp?null:t.topic)}>
+          <div style={{width:'140px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontSize:'13px',fontWeight:'500',color:'var(--text-1)',display:'flex',alignItems:'center',gap:'6px'}}>
+            {t.topic}
+            {hasSubs && <span onClick={e=>{e.stopPropagation();setDrillTopic(drillTopic===t.topic?null:t.topic);}} style={{fontSize:'10px',color:'#06b6d4',background:'#06b6d415',border:'1px solid #06b6d440',borderRadius:'4px',padding:'1px 5px',cursor:'pointer',whiteSpace:'nowrap'}} title="Drill into sub-topics">
+              {t.children.length} sub ▸
+            </span>}
+          </div>
+          <div style={{width:'32px',textAlign:'center',fontSize:'12px',color:'var(--text-3)',background:'var(--bg-hover)',borderRadius:'4px',padding:'1px 4px'}}>{t.total}</div>
+          <div className="tm-bars" style={{flex:1}}>
+            {Array.from({length:Math.min(timeframe,8)}).map((_,wk) => {
+              const c = t.weeks[wk]||0;
+              const h = Math.max(2, (c/mxCount)*28);
+              return (
+                <div key={wk} className="tm-bar" style={{flex:1,height:`${h}px`,background:indent?'#8b5cf6':'#06b6d4',opacity:Math.max(0.2,c/mxCount),position:'relative'}}
+                  onMouseEnter={()=>setHoveredBar(`${t.topic}-${wk}`)} onMouseLeave={()=>setHoveredBar(null)}>
+                  {hoveredBar===`${t.topic}-${wk}` && (
+                    <div style={{position:'absolute',bottom:'100%',left:'50%',transform:'translateX(-50%)',background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:'4px',padding:'3px 8px',fontSize:'10px',color:'var(--text-2)',whiteSpace:'nowrap',marginBottom:'4px',zIndex:10}}>
+                      {getWeekLabel(wk)}: {c}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div style={{width:'45px',textAlign:'center'}}>
+            {trend === 'HOT' && <span className="tm-trend-hot">🔥 HOT</span>}
+            {trend === 'COLD' && <span className="tm-trend-cold">↓ COLD</span>}
+          </div>
+        </div>
+        {isExp && (
+          <div style={{marginLeft:'20px',marginBottom:'12px',paddingLeft:'12px',borderLeft:'2px solid var(--border-med)'}}>
+            {Array.from({length:Math.min(timeframe,8)}).map((_,wk) => {
+              const wkVids = (weekBuckets[wk]||[]).filter(v=>(v.topics||[]).includes(t.topic));
+              if (wkVids.length===0) return null;
+              return (
+                <div key={wk} style={{marginBottom:'10px'}}>
+                  <div style={{fontSize:'11px',color:'var(--text-4)',fontWeight:'600',marginBottom:'6px'}}>{getWeekLabel(wk)}</div>
+                  {wkVids.map(v => {const ch=getChannel(data,v.channel_id);return(
+                    <div key={v.id} onClick={()=>onVideo(v)} style={{padding:'6px 10px',background:'var(--bg-hover)',borderRadius:'4px',marginBottom:'4px',cursor:'pointer',fontSize:'12px'}}>
+                      <span style={{color:'var(--text-2)'}}>{v.title}</span>
+                      <span style={{color:'var(--text-4)',marginLeft:'8px'}}>{ch?.name} · {timeAgo(v)}</span>
+                    </div>
+                  )})}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{padding:'28px',maxWidth:'900px'}}>
+      <div style={{marginBottom:'24px'}}>
+        <div style={{fontSize:'22px',fontWeight:'600',color:'var(--text-1)',marginBottom:'4px'}}>⏰ Time Machine</div>
+        <div style={{fontSize:'13px',color:'var(--text-3)'}}>How topics evolve across your network — click "sub" to drill into specifics</div>
+      </div>
+      <div style={{display:'flex',gap:'8px',marginBottom:'24px'}}>
+        {[4,8,12].map(w => (
+          <button key={w} className={`filter-pill ${timeframe===w?'active':''}`} onClick={()=>setTimeframe(w)}>{w} weeks</button>
+        ))}
+      </div>
+      {topicsWithCounts.length === 0 ? (
+        <div className="card" style={{padding:'48px',textAlign:'center',color:'var(--text-4)'}}>
+          <div style={{fontSize:'32px',marginBottom:'12px'}}>⏰</div>
+          <div>No topic data yet. Run ingest.py to load videos.</div>
+        </div>
+      ) : (
+        <div>
+          <div style={{display:'flex',gap:'12px',marginBottom:'8px',paddingLeft:'190px'}}>
+            {Array.from({length:Math.min(timeframe,8)}).map((_,i) => (
+              <div key={i} style={{flex:1,textAlign:'center',fontSize:'10px',color:'var(--text-5)',minWidth:'16px'}}>{getWeekLabel(i)}</div>
+            ))}
+            <div style={{width:'45px'}}></div>
+          </div>
+          {topicsWithCounts.map(t => (
+            <div key={t.topic}>
+              <TopicRow t={t} mxCount={maxCount} />
+              {drillTopic === t.topic && drillData.length > 0 && (
+                <div style={{marginLeft:'10px',marginBottom:'12px',paddingLeft:'10px',borderLeft:'3px solid #06b6d440'}}>
+                  <div style={{fontSize:'11px',fontWeight:'600',color:'#06b6d4',textTransform:'uppercase',letterSpacing:'0.06em',padding:'6px 0 4px'}}>Sub-topics of "{t.topic}"</div>
+                  {drillData.map(sub => <TopicRow key={sub.topic} t={sub} mxCount={drillMax} indent />)}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── SEARCH VIEW ──────────────────────────────────────────────────────────────
+function SearchView({ query, data, onVideo }) {
+  const results = data.videos.filter(v => {
+    const q = query.toLowerCase();
+    return v.title.toLowerCase().includes(q) ||
+      v.summary.toLowerCase().includes(q) ||
+      (v.topics || []).some(t => t.toLowerCase().includes(q)) ||
+      (v.key_insights || []).some(i => i.toLowerCase().includes(q));
+  });
+
+  return (
+    <div style={{padding:'28px'}}>
+      <div style={{marginBottom:'20px'}}>
+        <div style={{fontSize:'20px',fontWeight:'600',color:'var(--text-1)',marginBottom:'4px'}}>
+          {results.length} result{results.length !== 1 ? 's' : ''} for "{query}"
+        </div>
+        <div style={{fontSize:'13px',color:'var(--text-3)'}}>Searched across titles, summaries, topics, and insights</div>
+      </div>
+      {results.length > 0 ? (
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:'14px'}}>
+          {results.map(v => <VideoCard key={v.id} video={v} data={data} onClick={onVideo} />)}
+        </div>
+      ) : (
+        <div style={{textAlign:'center',padding:'60px 20px',color:'var(--text-4)'}}>
+          <div style={{fontSize:'32px',marginBottom:'12px'}}>🔍</div>
+          <div>No videos match "{query}"</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── SIDEBAR ──────────────────────────────────────────────────────────────────
+function Sidebar({ data, selected, onSelect, searchQuery, onSearch, isOpen, onClose, darkMode, onToggleDark }) {
+  const [collapsed, setCollapsed] = useState({});
+  const newCount = data.videos.filter(v => isNew(v)).length;
+
+  function toggleCat(id) {
+    setCollapsed(prev => ({ ...prev, [id]: !prev[id] }));
+  }
+
+  function countNew(channelId) {
+    return data.videos.filter(v => v.channel_id === channelId && isNew(v)).length;
+  }
+
+  return (
+    <nav className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <div style={{padding:'18px 14px 10px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div>
+          <div style={{fontSize:'18px',fontWeight:'700',color:'var(--text-1)',marginBottom:'2px'}}>📡 Signal</div>
+          <div style={{fontSize:'11px',color:'var(--text-4)'}}>by ck</div>
+        </div>
+        <button className="theme-toggle" onClick={onToggleDark} title="Toggle light/dark mode">
+          {darkMode ? '☀' : '🌙'}
+        </button>
+      </div>
+
+      <div style={{padding:'0 10px 10px',position:'relative'}}>
+        <span style={{position:'absolute',left:'20px',top:'9px',color:'var(--text-5)',fontSize:'13px'}}>⌕</span>
+        <input className="search-input" type="text" placeholder="Search…"
+          value={searchQuery} onChange={e => onSearch(e.target.value)} />
+      </div>
+
+      <div style={{padding:'0 10px',marginBottom:'4px'}}>
+        <div className={`nav-item ${selected === 'new' ? 'active' : ''}`}
+          onClick={() => { onSelect('new'); onClose(); }}>
+          <span>✦</span>
+          <span style={{flex:1}}>What's New</span>
+          {newCount > 0 && <span className="badge-count">{newCount}</span>}
+        </div>
+        <div className={`nav-item ${selected === 'weekly' ? 'active' : ''}`}
+          onClick={() => { onSelect('weekly'); onClose(); }}>
+          <span>📰</span>
+          <span style={{flex:1}}>Weekly Wrap</span>
+        </div>
+      </div>
+
+      <div style={{padding:'0 10px',marginBottom:'4px'}}>
+        <div style={{fontSize:'11px',fontWeight:'600',color:'var(--text-5)',textTransform:'uppercase',letterSpacing:'0.08em',padding:'8px 12px 4px'}}>Intelligence</div>
+        <div className={`nav-item ${selected === 'graph' ? 'active' : ''}`}
+          onClick={() => { onSelect('graph'); onClose(); }}>
+          <span>🧠</span>
+          <span style={{flex:1}}>Topic Intelligence</span>
+        </div>
+        <div className={`nav-item ${selected === 'disagree' ? 'active' : ''}`}
+          onClick={() => { onSelect('disagree'); onClose(); }}>
+          <span>⚡</span>
+          <span style={{flex:1}}>Topic Connections</span>
+        </div>
+        <div className={`nav-item ${selected === 'quotes' ? 'active' : ''}`}
+          onClick={() => { onSelect('quotes'); onClose(); }}>
+          <span>📊</span>
+          <span style={{flex:1}}>Data Vault</span>
+        </div>
+        <div className={`nav-item ${selected === 'timeline' ? 'active' : ''}`}
+          onClick={() => { onSelect('timeline'); onClose(); }}>
+          <span>⏰</span>
+          <span style={{flex:1}}>Time Machine</span>
+        </div>
+        <div className={`nav-item ${selected === 'contradictions' ? 'active' : ''}`}
+          onClick={() => { onSelect('contradictions'); onClose(); }}>
+          <span>🔥</span>
+          <span style={{flex:1}}>Contradictions</span>
+        </div>
+        <div className={`nav-item ${selected === 'diff' ? 'active' : ''}`}
+          onClick={() => { onSelect('diff'); onClose(); }}>
+          <span>📈</span>
+          <span style={{flex:1}}>Weekly Diff</span>
+        </div>
+        <div className={`nav-item ${selected === 'thesis' ? 'active' : ''}`}
+          onClick={() => { onSelect('thesis'); onClose(); }}>
+          <span>🎯</span>
+          <span style={{flex:1}}>Thesis Builder</span>
+        </div>
+      </div>
+
+      <div className="divider" style={{margin:'8px 0'}} />
+
+      <div style={{flex:1,padding:'0 10px',overflowY:'auto'}}>
+        {data.categories.map(cat => (
+          <div key={cat.id} style={{marginBottom:'4px'}}>
+            <div className="section-header" onClick={() => toggleCat(cat.id)}>
+              <span>{cat.name}</span>
+              <span style={{fontSize:'10px'}}>{collapsed[cat.id] ? '▶' : '▼'}</span>
+            </div>
+            {!collapsed[cat.id] && cat.channels.map(ch => {
+              const n = countNew(ch.id);
+              return (
+                <div key={ch.id} className={`channel-item ${selected === `ch:${ch.id}` ? 'active' : ''}`}
+                  onClick={() => { onSelect(`ch:${ch.id}`); onClose(); }}>
+                  <span className="channel-dot" style={{background:ch.color}}></span>
+                  <span style={{flex:1,color: selected === `ch:${ch.id}` ? ch.color : undefined}}>{ch.name}</span>
+                  {n > 0 && <span className="badge-count" style={{background:'#0d1f14',color:'#3fb950'}}>{n}</span>}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      <div className="divider" />
+      <div style={{padding:'10px 14px',fontSize:'11px',color:'var(--text-5)'}}>
+        <div>{data.videos.length} videos indexed</div>
+        {data.last_updated && (
+          <div>Updated {new Date(data.last_updated).toLocaleDateString()}</div>
+        )}
+      </div>
+    </nav>
+  );
+}
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
+function App() {
+  const [data, setData] = useState(DEMO_DATA);
+  const [selected, setSelected] = useState('new');
+  const [activeVideo, setActiveVideo] = useState(null);
+  const [activeVideoDetail, setActiveVideoDetail] = useState(null); // detail JSON for video chat
+  const [videoChatTarget, setVideoChatTarget] = useState(null);     // { video, detailData }
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [chatInitQuery, setChatInitQuery] = useState(null);
+  const [darkMode, setDarkMode] = useState(() => {
+    try { return localStorage.getItem('signal_dark_mode') !== 'light'; } catch { return true; }
+  });
+
+  // Apply theme to document
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    try { localStorage.setItem('signal_dark_mode', darkMode ? 'dark' : 'light'); } catch {}
+  }, [darkMode]);
+
+  useEffect(() => {
+    fetch('/data/index.json')
+      .then(r => { if (!r.ok) throw new Error('Not found'); return r.json(); })
+      .then(d => { if (d?.videos?.length > 0) setData(d); })
+      .catch(() => {/* silently use DEMO_DATA */});
+  }, []);
+
+  function handleVideoClick(video) {
+    setActiveVideo(video);
+    setActiveVideoDetail(null);
+    setVideoChatTarget(null);
+    setSidebarOpen(false);
+  }
+
+  function handleBackFromVideo() {
+    setActiveVideo(null);
+    setActiveVideoDetail(null);
+    setVideoChatTarget(null);
+  }
+
+  function handleChatFromVideo(topic) {
+    setChatInitQuery(`What are different channels saying about: ${topic}`);
+    setSelected('chat');
+    setActiveVideo(null);
+    setVideoChatTarget(null);
+  }
+
+  function handleVideoChatOpen(video, detailData) {
+    setVideoChatTarget({ video, detailData });
+  }
+
+  function handleBackFromVideoChat() {
+    setVideoChatTarget(null);
+  }
+
+  function handleSelect(sel) {
+    setSelected(sel);
+    setActiveVideo(null);
+    setVideoChatTarget(null);
+    setSearchQuery('');
+    if (sel !== 'chat') setChatInitQuery(null);
+  }
+
+  function toggleDark() {
+    setDarkMode(prev => !prev);
+  }
+
+  const isSearching = searchQuery.trim().length > 2;
+
+  function renderMain() {
+    if (isSearching) return <SearchView query={searchQuery} data={data} onVideo={handleVideoClick} />;
+    if (videoChatTarget) return (
+      <VideoChatView
+        video={videoChatTarget.video}
+        detailData={videoChatTarget.detailData}
+        data={data}
+        onBack={handleBackFromVideoChat}
+      />
+    );
+    if (activeVideo) return (
+      <VideoDetailView
+        video={activeVideo}
+        data={data}
+        onBack={handleBackFromVideo}
+        onChat={handleChatFromVideo}
+        onVideoChat={handleVideoChatOpen}
+      />
+    );
+    if (selected === 'new') return <WhatsNewView data={data} onVideo={handleVideoClick} />;
+    if (selected === 'weekly') return <WeeklyWrapView data={data} />;
+    if (selected === 'chat') return <ChatView data={data} initialQuery={chatInitQuery} key={chatInitQuery} />;
+    if (selected === 'graph') return <KnowledgeGraphView data={data} onVideo={handleVideoClick} onSelectChannel={(chId) => handleSelect(`ch:${chId}`)} />;
+    if (selected === 'disagree') return <TopicConnectionMatrix data={data} onVideo={handleVideoClick} />;
+    if (selected === 'quotes') return <QuoteBankView data={data} onVideo={handleVideoClick} />;
+    if (selected === 'timeline') return <TimeMachineView data={data} onVideo={handleVideoClick} />;
+    if (selected === 'contradictions') return <ContradictionView data={data} onVideo={handleVideoClick} />;
+    if (selected === 'diff') return <WeeklyDiffView data={data} onVideo={handleVideoClick} />;
+    if (selected === 'thesis') return <ThesisBuilderView data={data} onVideo={handleVideoClick} />;
+    if (selected.startsWith('ch:')) return <ChannelView channelId={selected.replace('ch:', '')} data={data} onVideo={handleVideoClick} />;
+    return <WhatsNewView data={data} onVideo={handleVideoClick} />;
+  }
+
+  return (
+    <div>
+      <div className={`overlay ${sidebarOpen ? 'open' : ''}`} onClick={() => setSidebarOpen(false)} />
+
+      <Sidebar
+        data={data}
+        selected={selected}
+        onSelect={handleSelect}
+        searchQuery={searchQuery}
+        onSearch={q => { setSearchQuery(q); if (q.length > 0) { setActiveVideo(null); setVideoChatTarget(null); } }}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        darkMode={darkMode}
+        onToggleDark={toggleDark}
+      />
+
+      <div className="main-content">
+        <div className="mobile-header">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)}
+            style={{background:'none',border:'none',color:'var(--text-1)',fontSize:'20px',cursor:'pointer',padding:'4px'}}>
+            ☰
+          </button>
+          <span style={{fontSize:'16px',fontWeight:'600',color:'var(--text-1)'}}>📡 Signal</span>
+        </div>
+        {renderMain()}
+      </div>
+
+      <a href="../HOME.html" className="home-btn" title="Back to Cowork OS Home">
+        ← Home
+      </a>
+    </div>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));
+</script>
+</body>
+</html>
