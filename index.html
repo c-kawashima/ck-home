@@ -7,907 +7,1274 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Theme variables ── */
+    :root {
+      --bg-body: #1e1e24;
+      --bg-sidebar: #171720;
+      --bg-card: #252530;
+      --bg-card-hover: #2a2a38;
+      --bg-folder: #222230;
+      --bg-folder-sub: #202030;
+      --bg-sched: #1e2820;
+      --border-main: #2a2a32;
+      --border-card: #323240;
+      --border-folder: #2e2e3a;
+      --border-sched: #283828;
+      --text-primary: #e0e0e8;
+      --text-body: #c8c8d0;
+      --text-title: #d0d0dc;
+      --text-card-title: #d8d8e4;
+      --text-muted: #6a6a78;
+      --text-dim: #4a4a58;
+      --text-faint: #3e3e4a;
+      --nav-inactive: #6a6a78;
+      --nav-hover-bg: #1e1e28;
+      --nav-active-bg: #222230;
+      --nav-active-accent: #8b8b9e;
+      --label-color: #8b8b9e;
+      --section-color: #4a4a5a;
+      --drag-over-bg: #2a2a38;
+      --drag-over-outline: #4a4a5a;
+      --checkbox-border: #4a4a5a;
+      --checkbox-hover: #7a7a8a;
+      --checkbox-checked-bg: #4a4a5a;
+      --checkbox-checked-border: #6a6a7a;
+      --checkbox-check-color: #1e1e24;
+      --hr-color: #2a2a32;
+      --badge-gray-bg: #1e1e26;
+      --badge-gray-text: #555564;
+      --badge-gray-border: #2a2a34;
+      --badge-green-bg: #102a18;
+      --badge-green-border: #1a3a22;
+      --badge-amber-bg: #2a2010;
+      --badge-amber-border: #3a2818;
+      --badge-blue-bg: #151e2e;
+      --badge-blue-border: #1e2a40;
+      --btn-yes-bg: #1a2e1a;
+      --btn-yes-border: #244024;
+      --btn-yes-hover: #223822;
+      --btn-no-bg: #2a2020;
+      --btn-no-border: #3a2e2e;
+      --btn-no-hover: #322828;
+      --sched-text: #5a6a5a;
+      --sched-time: #2a5a2a;
+    }
+
+    body.light {
+      --bg-body: #f2f2f5;
+      --bg-sidebar: #e8e8ec;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8f8fa;
+      --bg-folder: #f5f5f8;
+      --bg-folder-sub: #efeff2;
+      --bg-sched: #f0f8f0;
+      --border-main: #d8d8de;
+      --border-card: #e0e0e6;
+      --border-folder: #dcdce2;
+      --border-sched: #c8dcc8;
+      --text-primary: #1a1a24;
+      --text-body: #2e2e3a;
+      --text-title: #1e1e2a;
+      --text-card-title: #1a1a28;
+      --text-muted: #6a6a78;
+      --text-dim: #8a8a98;
+      --text-faint: #a0a0aa;
+      --nav-inactive: #6a6a78;
+      --nav-hover-bg: #dcdce2;
+      --nav-active-bg: #d4d4da;
+      --nav-active-accent: #555568;
+      --label-color: #555568;
+      --section-color: #6a6a78;
+      --drag-over-bg: #e8e8f0;
+      --drag-over-outline: #b0b0be;
+      --checkbox-border: #b0b0be;
+      --checkbox-hover: #888898;
+      --checkbox-checked-bg: #555568;
+      --checkbox-checked-border: #444458;
+      --checkbox-check-color: #ffffff;
+      --hr-color: #d8d8de;
+      --badge-gray-bg: #ececf0;
+      --badge-gray-text: #6a6a78;
+      --badge-gray-border: #d8d8e0;
+      --badge-green-bg: #e8f5e8;
+      --badge-green-border: #b8dab8;
+      --badge-amber-bg: #fef3e0;
+      --badge-amber-border: #f0d8a0;
+      --badge-blue-bg: #e8f0fe;
+      --badge-blue-border: #b8d0f0;
+      --btn-yes-bg: #e8f5e8;
+      --btn-yes-border: #a8d8a8;
+      --btn-yes-hover: #d8f0d8;
+      --btn-no-bg: #f5e8e8;
+      --btn-no-border: #e0c0c0;
+      --btn-no-hover: #f0d8d8;
+      --sched-text: #4a6a4a;
+      --sched-time: #2a6a2a;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #0d0d0f;
-      color: #e8e8e8;
+      background: var(--bg-body);
+      color: var(--text-body);
       min-height: 100vh;
-      padding: 40px 36px 100px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    /* ── Header ── */
-    .header {
       display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      margin-bottom: 44px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid #1c1c24;
-    }
-    .header h1 {
-      font-size: 30px;
-      font-weight: 700;
-      letter-spacing: -0.6px;
-      color: #fff;
-    }
-    .header p {
-      margin-top: 5px;
-      font-size: 13px;
-      color: #555;
-    }
-    .header-date {
-      font-size: 12px;
-      color: #444;
-      padding-bottom: 2px;
+      transition: background 0.25s, color 0.25s;
     }
 
-    /* ── Section label ── */
-    .section-label {
-      font-size: 10.5px;
-      font-weight: 700;
-      letter-spacing: 1.4px;
-      text-transform: uppercase;
-      color: #3a3a52;
-      margin-bottom: 12px;
-      margin-top: 36px;
-    }
-    .section-label:first-of-type { margin-top: 0; }
-
-    /* ── Active projects — large cards ── */
-    .active-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 12px;
-    }
-
-    .active-card {
-      background: #10101a;
-      border: 1px solid #26264a;
-      border-radius: 12px;
-      padding: 20px 22px 18px;
-      text-decoration: none;
-      color: inherit;
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 180px;
+      min-width: 180px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-main);
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      transition: border-color 0.15s, background 0.15s, transform 0.1s;
-    }
-    .active-card:hover {
-      border-color: #4a4a99;
-      background: #13131f;
-      transform: translateY(-1px);
-    }
-    .active-card:active { transform: translateY(0); }
-
-    .active-card-icon { font-size: 20px; }
-    .active-card-label {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: #5566cc;
-      margin-top: 2px;
-    }
-    .active-card-title {
-      font-size: 15px;
-      font-weight: 650;
-      color: #dde;
-      line-height: 1.3;
-    }
-    .active-card-desc {
-      font-size: 12px;
-      color: #666;
-      line-height: 1.5;
-      margin-top: 2px;
-    }
-    .active-card-footer {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 6px;
-    }
-    .dot-active {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #44cc88;
-      flex-shrink: 0;
-    }
-    .dot-watch {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #ddaa44;
-      flex-shrink: 0;
-    }
-    .active-card-status {
-      font-size: 11px;
-      color: #556;
+      padding: 20px 0;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 10;
+      transition: background 0.25s, border-color 0.25s;
     }
 
-    /* ── Workspace map — two columns ── */
-    .workspace-cols {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+    .sidebar-brand {
+      padding: 0 18px 18px;
+      border-bottom: 1px solid var(--border-main);
+      margin-bottom: 8px;
     }
-    @media (max-width: 700px) {
-      .workspace-cols { grid-template-columns: 1fr; }
-      .active-grid { grid-template-columns: 1fr; }
+    .sidebar-brand h1 {
+      font-size: 17px; font-weight: 700;
+      color: var(--text-primary); letter-spacing: -0.3px;
     }
-
-    .workspace-col-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: #2a2a3a;
-      margin-bottom: 10px;
+    .sidebar-brand p {
+      font-size: 11px; color: var(--text-muted); margin-top: 3px;
     }
 
-    /* ── Folder rows ── */
-    .folder-list {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .folder-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      background: #0f0f14;
-      border: 1px solid #181820;
-      border-radius: 8px;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color 0.12s, background 0.12s;
-      cursor: default;
-    }
-    .folder-row.link {
-      cursor: pointer;
-    }
-    .folder-row.link:hover {
-      border-color: #2a2a44;
-      background: #111118;
-    }
-
-    .folder-row-icon { font-size: 14px; flex-shrink: 0; }
-    .folder-row-body { flex: 1; min-width: 0; }
-    .folder-row-name {
-      font-size: 13px;
-      font-weight: 500;
-      color: #bbb;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .folder-row.link .folder-row-name { color: #ccd; }
-    .folder-row-sub {
-      font-size: 11px;
-      color: #444;
-      margin-top: 1px;
-    }
-
-    .badge {
-      flex-shrink: 0;
-      display: inline-block;
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: 0.4px;
-      padding: 2px 7px;
-      border-radius: 4px;
-      text-transform: uppercase;
-    }
-    .badge-blue   { background: #151d38; color: #5577ee; border: 1px solid #222a50; }
-    .badge-gray   { background: #141418; color: #444; border: 1px solid #1e1e24; }
-    .badge-green  { background: #0c1e14; color: #44bb77; border: 1px solid #183028; }
-    .badge-amber  { background: #201808; color: #cc9933; border: 1px solid #302010; }
-
-    /* ── Sub-folder indent ── */
-    .folder-sub {
-      padding-left: 14px;
-    }
-    .folder-sub .folder-row {
-      border-color: #141418;
-      background: #0c0c11;
-    }
-    .folder-sub .folder-row.link:hover {
-      border-color: #22223a;
-    }
-    .folder-sub .folder-row-name { font-size: 12px; color: #999; }
-    .folder-sub .folder-row.link .folder-row-name { color: #aab; }
-
-    hr {
-      border: none;
-      border-top: 1px solid #141420;
-      margin: 10px 0 0;
-    }
-
-    /* ── College Apps individual files ── */
-    .file-indent {
-      padding-left: 26px;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      margin-top: 3px;
-    }
-    .file-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 12px;
-      background: #0a0a0f;
-      border: 1px solid #131318;
-      border-radius: 6px;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color 0.12s;
-    }
-    .file-row:hover { border-color: #1e1e30; }
-    .file-row-name { font-size: 11.5px; color: #777; }
-
-    /* ── Task list ── */
-    .task-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
-    .task-group-label { font-size: 9.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #3a3a52; margin: 4px 0 6px 2px; }
-    .task-row {
+    .nav-item {
       display: flex; align-items: center; gap: 10px;
-      padding: 10px 14px; border-radius: 8px;
-      background: #0f0f14; border: 1px solid #181820;
+      padding: 10px 18px; cursor: pointer;
+      border: none; background: none;
+      color: var(--nav-inactive); font-size: 13.5px; font-weight: 500;
+      font-family: inherit; width: 100%; text-align: left;
+      transition: color 0.12s, background 0.12s;
+      border-left: 3px solid transparent;
     }
-    .task-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .task-row.high .task-dot { background: #cc4444; }
-    .task-row.med .task-dot { background: #cc9933; }
-    .task-body { flex: 1; min-width: 0; }
-    .task-title { font-size: 12.5px; color: #ccd; font-weight: 500; }
-    .task-meta { font-size: 11px; color: #444; margin-top: 2px; }
-    .task-badge { flex-shrink: 0; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
-    .task-badge.high { background: #2a0f0f; color: #cc4444; border: 1px solid #3a1414; }
-    .task-badge.med  { background: #201808; color: #cc9933; border: 1px solid #302010; }
+    .nav-item:hover { color: var(--text-primary); background: var(--nav-hover-bg); }
+    .nav-item.active {
+      color: var(--text-primary); background: var(--nav-active-bg);
+      border-left-color: var(--nav-active-accent);
+    }
+    .nav-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+    .nav-label { white-space: nowrap; }
+    .nav-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      background: #ef4444; color: #fff; border-radius: 8px;
+      padding: 1px 6px; min-width: 16px; text-align: center;
+      line-height: 1.4;
+    }
 
-    /* ── Reminders ── */
-    .reminder-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
-    .reminder-row {
+    .sidebar-footer {
+      margin-top: auto; padding: 16px 18px 0;
+      border-top: 1px solid var(--border-main);
+      font-size: 10px; color: var(--text-faint); line-height: 1.6;
+    }
+
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 18px; margin-top: 10px;
+      cursor: pointer; border: none; background: none;
+      color: var(--text-muted); font-size: 12px; font-weight: 500;
+      font-family: inherit; width: 100%; text-align: left;
+      transition: color 0.12s;
+    }
+    .theme-toggle:hover { color: var(--text-primary); }
+
+    /* ── Main Area ── */
+    .main {
+      margin-left: 180px;
+      padding: 32px 36px 60px;
+      flex: 1; min-width: 0;
+    }
+
+    .main-header { margin-bottom: 28px; }
+    .main-title {
+      font-size: 22px; font-weight: 700;
+      color: var(--text-primary); letter-spacing: -0.4px;
+    }
+    .main-date { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+
+    /* ── Panels ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── Section Headers ── */
+    .section-label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 1.4px; text-transform: uppercase;
+      color: var(--section-color); margin-bottom: 12px; margin-top: 32px;
+    }
+    .section-label:first-child { margin-top: 0; }
+
+    /* ── Alert rows ── */
+    .alert-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+    .alert-row {
       display: flex; align-items: flex-start; gap: 12px;
-      padding: 12px 16px; border-radius: 8px;
-      background: #110d0d; border: 1px solid #2a1818;
+      padding: 14px 18px; border-radius: 8px;
+      background: var(--bg-card); border: 1px solid var(--border-card);
+      transition: background 0.25s, border-color 0.25s;
     }
-    .reminder-row.warn {
-      background: #110d0d; border-color: #2a1818;
-    }
-    .reminder-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
-    .reminder-body { flex: 1; }
-    .reminder-title { font-size: 13px; color: #ddaa88; font-weight: 500; line-height: 1.3; }
-    .reminder-meta { font-size: 11px; color: #554; margin-top: 3px; }
-    .reminder-badge {
-      flex-shrink: 0; font-size: 9px; font-weight: 700;
-      letter-spacing: 0.5px; padding: 2px 7px; border-radius: 4px;
+    .alert-row.critical { border-left: 3px solid #ef4444; }
+    .alert-row.warning  { border-left: 3px solid #f59e0b; }
+    .alert-row.info     { border-left: 3px solid #60a5fa; }
+    .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .alert-body { flex: 1; }
+    .alert-title { font-size: 14px; color: var(--text-title); font-weight: 500; line-height: 1.4; }
+    .alert-meta  { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .alert-badge {
+      flex-shrink: 0; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.5px; padding: 3px 9px; border-radius: 5px;
       text-transform: uppercase; align-self: flex-start;
     }
-    .reminder-badge.urgent { background: #2a0a0a; color: #ee4444; border: 1px solid #3a1010; }
-    .reminder-badge.soon   { background: #201808; color: #cc9933; border: 1px solid #302010; }
+    .alert-badge.critical { background: #2a1018; color: #ef4444; border: 1px solid #3a1828; }
+    .alert-badge.warning  { background: #2a2010; color: #f59e0b; border: 1px solid #3a2818; }
+    .alert-badge.info     { background: var(--badge-blue-bg); color: #60a5fa; border: 1px solid var(--badge-blue-border); }
+    body.light .alert-badge.critical { background: #fee2e2; border-color: #fca5a5; }
+    body.light .alert-badge.warning  { background: #fef3c7; border-color: #fcd34d; }
 
-    /* ── Scheduled Automation ── */
+    .alert-checkbox {
+      width: 20px; height: 20px; border-radius: 4px;
+      border: 2px solid var(--checkbox-border); background: transparent;
+      cursor: pointer; flex-shrink: 0; align-self: flex-start; margin-top: 1px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+      color: transparent; font-size: 13px;
+    }
+    .alert-checkbox:hover { border-color: var(--checkbox-hover); }
+    .alert-checkbox.checked {
+      background: var(--checkbox-checked-bg); border-color: var(--checkbox-checked-border);
+      color: var(--checkbox-check-color);
+    }
+    .alert-row.done { opacity: 0.3; }
+    .alert-row.done .alert-title { text-decoration: line-through; }
+
+    /* ── Task rows with checkboxes ── */
+    .task-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+    .task-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 18px; border-radius: 8px;
+      background: var(--bg-card); border: 1px solid var(--border-card);
+      transition: opacity 0.4s, background 0.25s, border-color 0.25s;
+    }
+    .task-row.done { opacity: 0.35; }
+    .task-row.done .task-title { text-decoration: line-through; }
+
+    .task-checkbox {
+      width: 20px; height: 20px; border-radius: 4px;
+      border: 2px solid var(--checkbox-border); background: transparent;
+      cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+      color: transparent; font-size: 13px;
+    }
+    .task-checkbox:hover { border-color: var(--checkbox-hover); }
+    .task-checkbox.checked {
+      background: var(--checkbox-checked-bg); border-color: var(--checkbox-checked-border);
+      color: var(--checkbox-check-color);
+    }
+
+    .task-body { flex: 1; min-width: 0; }
+    .task-title { font-size: 14px; color: var(--text-title); font-weight: 500; transition: color 0.3s; }
+    .task-meta  { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+    .task-badge {
+      flex-shrink: 0; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.5px; padding: 3px 9px; border-radius: 5px;
+      text-transform: uppercase;
+    }
+    .task-badge.high { background: #2a1018; color: #ef4444; border: 1px solid #3a1828; }
+    .task-badge.med  { background: #2a2010; color: #f59e0b; border: 1px solid #3a2818; }
+    .task-badge.low  { background: #1a2020; color: #6a8a78; border: 1px solid #283838; }
+    body.light .task-badge.high { background: #fee2e2; border-color: #fca5a5; }
+    body.light .task-badge.med  { background: #fef3c7; border-color: #fcd34d; }
+    body.light .task-badge.low  { background: #e8f5e8; color: #3a7a50; border-color: #b8dab8; }
+
+    /* ── Drag and drop ── */
+    .task-row[draggable="true"] { cursor: grab; }
+    .task-row.dragging { opacity: 0.3; cursor: grabbing; }
+    .task-drag-handle {
+      flex-shrink: 0; color: var(--text-faint); font-size: 15px;
+      cursor: grab; user-select: none; padding: 0 2px;
+      transition: color 0.15s;
+    }
+    .task-row:hover .task-drag-handle { color: var(--text-muted); }
+    .task-bucket { transition: background 0.15s, border-color 0.15s; border-radius: 8px; padding: 2px; margin: -2px; }
+    .task-bucket.drag-over {
+      background: var(--drag-over-bg); outline: 2px dashed var(--drag-over-outline);
+      outline-offset: 2px; border-radius: 8px;
+    }
+
+    /* ── DSTY panel ── */
+    .dsty-card {
+      background: var(--bg-card); border: 1px solid var(--border-card);
+      border-radius: 10px; padding: 16px 18px; margin-bottom: 10px;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .dsty-card-title {
+      font-size: 14.5px; font-weight: 600; color: var(--text-title); margin-bottom: 4px;
+    }
+    .dsty-card-detail { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
+    .dsty-badge {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.5px; padding: 2px 7px; border-radius: 4px;
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .dsty-badge.action  { background: #2a1018; color: #ef4444; border: 1px solid #3a1828; }
+    .dsty-badge.event   { background: var(--badge-blue-bg); color: #60a5fa; border: 1px solid var(--badge-blue-border); }
+    .dsty-badge.general { background: var(--badge-green-bg); color: #34d399; border: 1px solid var(--badge-green-border); }
+    body.light .dsty-badge.action { background: #fee2e2; border-color: #fca5a5; }
+    body.light .dsty-badge.general { color: #3a7a50; }
+
+    /* ── Card grid (Projects) ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 12px;
+    }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border-card);
+      border-radius: 10px; padding: 18px 20px 16px;
+      text-decoration: none; color: inherit;
+      display: flex; flex-direction: column; gap: 5px;
+      transition: border-color 0.15s, background 0.25s, transform 0.1s;
+    }
+    a.card:hover, .card.clickable:hover {
+      border-color: var(--drag-over-outline); background: var(--bg-card-hover);
+      transform: translateY(-1px);
+    }
+    .card-icon  { font-size: 20px; }
+    .card-label {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.8px; text-transform: uppercase;
+      color: var(--label-color); margin-top: 2px;
+    }
+    .card-title {
+      font-size: 15px; font-weight: 650;
+      color: var(--text-card-title); line-height: 1.3;
+    }
+    .card-desc {
+      font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-top: 1px;
+    }
+    .card-footer {
+      display: flex; align-items: center; gap: 6px; margin-top: 6px;
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot-green { background: #34d399; }
+    .dot-amber { background: #f59e0b; }
+    .dot-red   { background: #ef4444; }
+    .card-status { font-size: 11.5px; color: var(--text-muted); }
+
+    /* ── Workspace map ── */
+    .workspace-cols {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    }
+    .workspace-col-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+      text-transform: uppercase; color: var(--section-color); margin-bottom: 10px;
+    }
+    .folder-list { display: flex; flex-direction: column; gap: 4px; }
+    .folder-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 14px; background: var(--bg-folder); border: 1px solid var(--border-folder);
+      border-radius: 8px; text-decoration: none; color: inherit;
+      transition: border-color 0.12s, background 0.25s; cursor: default;
+    }
+    .folder-row.link { cursor: pointer; }
+    .folder-row.link:hover { border-color: var(--drag-over-outline); background: var(--bg-card-hover); }
+    .folder-row-icon { font-size: 15px; flex-shrink: 0; }
+    .folder-row-body { flex: 1; min-width: 0; }
+    .folder-row-name {
+      font-size: 13.5px; font-weight: 500; color: var(--text-muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .folder-row.link .folder-row-name { color: var(--text-title); }
+    .folder-row-sub { font-size: 11.5px; color: var(--text-dim); margin-top: 1px; }
+    .badge {
+      flex-shrink: 0; display: inline-block;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.4px;
+      padding: 2px 8px; border-radius: 4px; text-transform: uppercase;
+    }
+    .badge-green { background: var(--badge-green-bg); color: #34d399; border: 1px solid var(--badge-green-border); }
+    .badge-gray  { background: var(--badge-gray-bg); color: var(--badge-gray-text); border: 1px solid var(--badge-gray-border); }
+    .badge-amber { background: var(--badge-amber-bg); color: #f59e0b; border: 1px solid var(--badge-amber-border); }
+    .badge-blue  { background: var(--badge-blue-bg); color: #60a5fa; border: 1px solid var(--badge-blue-border); }
+    body.light .badge-green { color: #3a7a50; }
+
+    .folder-sub { padding-left: 14px; }
+    .folder-sub .folder-row { border-color: var(--border-main); background: var(--bg-folder-sub); }
+    .folder-sub .folder-row.link:hover { border-color: var(--drag-over-outline); }
+    .folder-sub .folder-row-name { font-size: 13px; color: var(--text-dim); }
+    .folder-sub .folder-row.link .folder-row-name { color: var(--text-muted); }
+
+    /* ── Automation (schedule cards) ── */
     .sched-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 10px;
-      margin-bottom: 8px;
     }
     .sched-card {
-      background: #0c0f0c; border: 1px solid #1a2a1a;
+      background: var(--bg-sched); border: 1px solid var(--border-sched);
       border-radius: 10px; padding: 14px 16px;
       display: flex; flex-direction: column; gap: 5px;
+      transition: background 0.25s, border-color 0.25s;
     }
     .sched-card-top { display: flex; align-items: center; gap: 8px; }
-    .sched-dot { width: 7px; height: 7px; border-radius: 50%; background: #44bb77; flex-shrink: 0; }
-    .sched-machine { font-size: 9.5px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #44bb77; }
-    .sched-title { font-size: 13px; font-weight: 600; color: #ccd; }
-    .sched-desc { font-size: 11px; color: #556; line-height: 1.4; }
-    .sched-time { font-size: 10.5px; color: #335533; font-weight: 600; margin-top: 2px; }
+    .sched-dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; flex-shrink: 0; }
+    .sched-machine {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+      text-transform: uppercase; color: #34d399;
+    }
+    .sched-title { font-size: 14px; font-weight: 600; color: var(--text-title); }
+    .sched-desc  { font-size: 12px; color: var(--sched-text); line-height: 1.4; }
+    .sched-time  { font-size: 11px; color: var(--sched-time); font-weight: 600; margin-top: 2px; }
 
-    /* ── Published Dashboards grid ── */
-    .dash-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 14px;
-      margin-bottom: 8px;
+    /* ── Remember panel ── */
+    .remember-list { display: flex; flex-direction: column; gap: 6px; }
+    .remember-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 18px; border-radius: 8px;
+      background: var(--bg-card); border: 1px solid var(--border-card);
+      transition: opacity 0.4s, background 0.25s, border-color 0.25s;
     }
-    .dash-group {
-      background: #0f0f14;
-      border: 1px solid #181820;
-      border-radius: 10px;
-      padding: 14px 16px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .remember-row.done { opacity: 0.3; }
+    .remember-row.done .remember-title { text-decoration: line-through; }
+    .remember-body { flex: 1; min-width: 0; }
+    .remember-title { font-size: 14px; color: var(--text-title); font-weight: 500; }
+    .remember-meta  { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+    .remember-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn-yes, .btn-no {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.4px;
+      padding: 5px 14px; border-radius: 5px; border: 1px solid;
+      cursor: pointer; font-family: inherit;
+      transition: background 0.15s, opacity 0.15s;
     }
-    .dash-group-label {
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: #3a3a52;
-      margin-bottom: 8px;
+    .btn-yes {
+      background: var(--btn-yes-bg); color: #34d399; border-color: var(--btn-yes-border);
     }
-    .dash-row {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 5px 6px;
-      border-radius: 6px;
-      text-decoration: none;
-      color: inherit;
-      transition: background 0.12s;
+    .btn-yes:hover { background: var(--btn-yes-hover); }
+    .btn-no {
+      background: var(--btn-no-bg); color: #888890; border-color: var(--btn-no-border);
     }
-    .dash-row:hover { background: #13131e; }
-    .dash-icon { font-size: 12px; flex-shrink: 0; }
-    .dash-name { font-size: 11.5px; color: #889; line-height: 1.3; }
-    .dash-row:hover .dash-name { color: #aab; }
+    .btn-no:hover { background: var(--btn-no-hover); }
+
+    /* ── Golf Calendar embed ── */
+    .golf-frame {
+      width: 100%; height: calc(100vh - 120px);
+      border: 1px solid var(--border-card); border-radius: 10px;
+      background: var(--bg-body);
+    }
+
+    hr { border: none; border-top: 1px solid var(--hr-color); margin: 8px 0 0; }
+
+    /* ── Responsive ── */
+    @media (max-width: 800px) {
+      .sidebar { width: 56px; min-width: 56px; }
+      .sidebar .nav-label, .sidebar-brand p, .sidebar-footer, .theme-toggle span { display: none; }
+      .sidebar-brand h1 { font-size: 12px; }
+      .sidebar-brand { padding: 0 10px 14px; }
+      .nav-item { padding: 10px 0; justify-content: center; gap: 0; }
+      .theme-toggle { justify-content: center; }
+      .main { margin-left: 56px; padding: 24px 18px 60px; }
+      .workspace-cols { grid-template-columns: 1fr; }
+      .card-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- ── Header ── -->
-  <div class="header">
-    <div>
+  <!-- ── Sidebar ── -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">
       <h1>Cowork OS</h1>
-      <p>ck's workspace — all projects and folders</p>
-    </div>
-    <div class="header-date">Updated March 16, 2026 · Mac Mini active</div>
-  </div>
-
-  <!-- ── Open Tasks ── -->
-  <div class="section-label">Open Tasks</div>
-  <div class="task-list">
-
-    <div class="task-group-label">This Week</div>
-    <div class="task-row med">
-      <span class="task-dot"></span>
-      <div class="task-body">
-        <div class="task-title">MacBook Air — install Claude Code, set up sync (same as Mac Mini)</div>
-        <div class="task-meta">Cowork OS</div>
-      </div>
-      <span class="task-badge med">Med</span>
-    </div>
-    <div class="task-row high">
-      <span class="task-dot"></span>
-      <div class="task-body">
-        <div class="task-title">All-In social graph feed — decide Lobstr.io vs PhantomBuster and start build</div>
-        <div class="task-meta">Signal</div>
-      </div>
-      <span class="task-badge high">High</span>
-    </div>
-    <div class="task-row high">
-      <span class="task-dot"></span>
-      <div class="task-body">
-        <div class="task-title">Call TPC Craig Ranch — verify A2 membership tier pricing</div>
-        <div class="task-meta">Dallas Move</div>
-      </div>
-      <span class="task-badge high">High</span>
+      <p>ck's workspace</p>
     </div>
 
-    <div class="task-group-label" style="margin-top:14px;">Upcoming</div>
-    <div class="task-row med">
-      <span class="task-dot"></span>
-      <div class="task-body">
-        <div class="task-title">Signal — Mac Mini setup: clone repo, set API key, run ingest, push data</div>
-        <div class="task-meta">Signal · see MEMORY.md for exact commands</div>
-      </div>
-      <span class="task-badge med">Med</span>
-    </div>
-    <div class="task-row med">
-      <span class="task-dot"></span>
-      <div class="task-body">
-        <div class="task-title">CIO application — next steps on Renesas opportunity</div>
-        <div class="task-meta">Career</div>
-      </div>
-      <span class="task-badge med">Med</span>
-    </div>
-    <div class="task-row med">
-      <span class="task-dot"></span>
-      <div class="task-body">
-        <div class="task-title">SAL sales role — next steps</div>
-        <div class="task-meta">Career</div>
-      </div>
-      <span class="task-badge med">Med</span>
-    </div>
+    <button class="nav-item active" onclick="showPanel('alerts')" id="nav-alerts">
+      <span class="nav-icon">&#9888;&#65039;</span><span class="nav-label">Alerts</span><span class="nav-badge" id="alert-count">4</span>
+    </button>
+    <button class="nav-item" onclick="showPanel('dsty')" id="nav-dsty">
+      <span class="nav-icon">&#127979;</span><span class="nav-label">DSTY</span>
+    </button>
+    <button class="nav-item" onclick="showPanel('tasks')" id="nav-tasks">
+      <span class="nav-icon">&#9745;</span><span class="nav-label">Tasks</span>
+    </button>
+    <button class="nav-item" onclick="showPanel('projects')" id="nav-projects">
+      <span class="nav-icon">&#128194;</span><span class="nav-label">Projects</span>
+    </button>
+    <button class="nav-item" onclick="showPanel('golf')" id="nav-golf">
+      <span class="nav-icon">&#9971;</span><span class="nav-label">Golf Cal</span>
+    </button>
+    <button class="nav-item" onclick="showPanel('automation')" id="nav-automation">
+      <span class="nav-icon">&#9881;</span><span class="nav-label">Automation</span>
+    </button>
+    <button class="nav-item" onclick="showPanel('remember')" id="nav-remember">
+      <span class="nav-icon">&#128161;</span><span class="nav-label">Remember</span>
+    </button>
 
-  </div>
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
+      <span class="nav-icon" id="theme-icon">&#9788;</span><span>Light mode</span>
+    </button>
 
-  <!-- ── Reminders ── -->
-  <div class="section-label">Reminders</div>
-  <div class="reminder-list">
+    <div class="sidebar-footer">
+      Updated Mar 16, 2026<br />Mac Mini active
+    </div>
+  </nav>
 
-    <div class="reminder-row warn">
-      <span class="reminder-icon">⚠️</span>
-      <div class="reminder-body">
-        <div class="reminder-title">KPMG FBAR Authorization — sign and return via KPMG LINK</div>
-        <div class="reminder-meta">Deadline: Apr 12</div>
-      </div>
-      <span class="reminder-badge soon">Apr 12</span>
+  <!-- ── Main Content ── -->
+  <div class="main">
+
+    <div class="main-header">
+      <div class="main-title" id="panel-title">Alerts</div>
+      <div class="main-date">Monday, March 16, 2026 · <span id="last-updated" style="color:#555564;"></span></div>
     </div>
 
-    <div class="reminder-row warn">
-      <span class="reminder-icon">⚠️</span>
-      <div class="reminder-body">
-        <div class="reminder-title">DSTY Projektwoche — choose Christine-Ami's project topic</div>
-        <div class="reminder-meta">Deadline: Wed Mar 18, 8pm</div>
-      </div>
-      <span class="reminder-badge urgent">Mar 18</span>
+    <!-- ═══ ALERTS PANEL (dynamically rendered) ═══ -->
+    <div class="panel active" id="panel-alerts">
+      <div id="alerts-container"></div>
     </div>
 
-    <div class="reminder-row warn">
-      <span class="reminder-icon">🔔</span>
-      <div class="reminder-body">
-        <div class="reminder-title">A1:8 Youth Group — small groups tomorrow</div>
-        <div class="reminder-meta">Mar 17 · 7:15pm</div>
+    <!-- ═══ DSTY PANEL ═══ -->
+    <div class="panel" id="panel-dsty">
+
+      <div class="section-label">Action Required</div>
+      <div class="dsty-card">
+        <span class="dsty-badge action">Action</span>
+        <div class="dsty-card-title">Projektwoche — choose Christine-Ami's project topic</div>
+        <div class="dsty-card-detail">Deadline: Wed Mar 18, 8pm. Selection required for Deutsche Schule Tokyo Yokohama project week.</div>
       </div>
-      <span class="reminder-badge soon">Tomorrow</span>
-    </div>
 
-    <div class="reminder-row warn">
-      <span class="reminder-icon">🔴</span>
-      <div class="reminder-body">
-        <div class="reminder-title">Signal Repo — Nightly Ingest failing consecutively</div>
-        <div class="reminder-meta">Needs investigation · check Mac Mini logs</div>
+      <div class="section-label">Upcoming Events</div>
+      <div class="dsty-card">
+        <span class="dsty-badge event">Event</span>
+        <div class="dsty-card-title">A1:8 Youth Group — Small Groups</div>
+        <div class="dsty-card-detail">Tomorrow, Mar 17 · 7:15pm</div>
       </div>
-      <span class="reminder-badge urgent">Failing</span>
-    </div>
 
-  </div>
-
-  <!-- ── Scheduled Automation ── -->
-  <div class="section-label">Scheduled Automation — Mac Mini</div>
-  <div class="sched-grid">
-
-    <div class="sched-card">
-      <div class="sched-card-top"><span class="sched-dot"></span><span class="sched-machine">Mac Mini</span></div>
-      <div class="sched-title">Workspace Sync</div>
-      <div class="sched-desc">Pulls latest from GitHub. Keeps all files current across machines.</div>
-      <div class="sched-time">Every 6 hours</div>
-    </div>
-
-    <div class="sched-card">
-      <div class="sched-card-top"><span class="sched-dot"></span><span class="sched-machine">Mac Mini</span></div>
-      <div class="sched-title">Daily Dashboard Update</div>
-      <div class="sched-desc">Claude reads MEMORY.md + TASKS.md, updates HOME.html, pushes to GitHub Pages.</div>
-      <div class="sched-time">Every 6 hours</div>
-    </div>
-
-    <div class="sched-card">
-      <div class="sched-card-top"><span class="sched-dot"></span><span class="sched-machine">Mac Mini</span></div>
-      <div class="sched-title">Weekly Email Digest</div>
-      <div class="sched-desc">Gmail summary of the past 7 days — key threads, action items, decisions. Draft to inbox.</div>
-      <div class="sched-time">Every Sunday · 7am</div>
-    </div>
-
-    <div class="sched-card">
-      <div class="sched-card-top"><span class="sched-dot"></span><span class="sched-machine">Mac Mini</span></div>
-      <div class="sched-title">HOME.html Push</div>
-      <div class="sched-desc">Pushes updated HOME.html to GitHub Pages at c-kawashima.github.io/ck-home.</div>
-      <div class="sched-time">Nightly · 11pm</div>
-    </div>
-
-  </div>
-
-  <!-- ── Active Projects ── -->
-  <div class="section-label">Active Projects</div>
-  <div class="active-grid">
-
-    <a class="active-card" href="Professional/Career/CIO/CIO_Dashboard.html">
-      <div class="active-card-icon">🏢</div>
-      <div class="active-card-label">Career · CIO</div>
-      <div class="active-card-title">Renesas CIO Application</div>
-      <div class="active-card-desc">Vision deck, companion report, interactive HTML, full research library.</div>
-      <div class="active-card-footer">
-        <div class="dot-active"></div>
-        <div class="active-card-status">Project Files Dashboard</div>
+      <div class="section-label">Automation Active</div>
+      <div class="dsty-card">
+        <span class="dsty-badge general">Active</span>
+        <div class="dsty-card-title">DSTY Daily Digest</div>
+        <div class="dsty-card-detail">Runs 7am daily on Google servers. Scans last 24hrs of DSTY emails, flags action items/events. Sends to all 3 email addresses.</div>
       </div>
-    </a>
-
-    <a class="active-card" href="Professional/Career/SAL/INDEX.md">
-      <div class="active-card-icon">💼</div>
-      <div class="active-card-label">Career · SAL</div>
-      <div class="active-card-title">Sales Role</div>
-      <div class="active-card-desc">Active opportunity — research and materials in progress.</div>
-      <div class="active-card-footer">
-        <div class="dot-active"></div>
-        <div class="active-card-status">Index</div>
-      </div>
-    </a>
-
-    <a class="active-card" href="Personal/Projects/Housing%20%26%20Moving/Dallas%2C%20TX/dallas_relocation_v1.html">
-      <div class="active-card-icon">🏠</div>
-      <div class="active-card-label">Personal · Housing</div>
-      <div class="active-card-title">Dallas Move</div>
-      <div class="active-card-desc">Relocation analysis complete. 5 scenarios, 13 sections, 10 research briefs. Recommendation: Craig Ranch + TPC.</div>
-      <div class="active-card-footer">
-        <div class="dot-active"></div>
-        <div class="active-card-status">Analysis complete — v1</div>
-      </div>
-    </a>
-
-    <a class="active-card" href="Personal/Projects/College%20Apps/INDEX.md">
-      <div class="active-card-icon">🎓</div>
-      <div class="active-card-label">Personal · College Apps</div>
-      <div class="active-card-title">College Applications</div>
-      <div class="active-card-desc">School selection, essays, gap year planning, financial aid.</div>
-      <div class="active-card-footer">
-        <div class="dot-watch"></div>
-        <div class="active-card-status">In progress</div>
-      </div>
-    </a>
-
-    <a class="active-card" href="https://cksignal.vercel.app" target="_blank">
-      <div class="active-card-icon">📡</div>
-      <div class="active-card-label">Projects · Signal</div>
-      <div class="active-card-title">Signal — YouTube Intelligence Hub</div>
-      <div class="active-card-desc">13 channels across Tech, Business, Finance & AI Tools. Nightly auto-ingest at 6pm PST. Data flowing — Mac Mini ingesting.</div>
-      <div class="active-card-footer">
-        <div class="dot-active"></div>
-        <div class="active-card-status">Live · cksignal.vercel.app</div>
-      </div>
-    </a>
-
-    <div class="active-card">
-      <div class="active-card-icon">📧</div>
-      <div class="active-card-label">Automation · Gmail</div>
-      <div class="active-card-title">Gmail Cleanup & Automation</div>
-      <div class="active-card-desc">14 labels, auto-filters, DSTY daily digest (7am), DSTY weekly summary (Sat 7am), weekly executive overview (Sun 7am via Mac Mini).</div>
-      <div class="active-card-footer">
-        <div class="dot-active"></div>
-        <div class="active-card-status">Live — Google Apps Script + Cowork task</div>
+      <div class="dsty-card">
+        <span class="dsty-badge general">Active</span>
+        <div class="dsty-card-title">DSTY Weekly Summary</div>
+        <div class="dsty-card-detail">Runs Saturday 7am on Google servers. Groups week's DSTY emails by priority (action / events / general). Sends to all 3 email addresses.</div>
       </div>
     </div>
 
-    <div class="active-card">
-      <div class="active-card-icon">🔄</div>
-      <div class="active-card-label">Infrastructure · Sync</div>
-      <div class="active-card-title">Cowork OS Multi-Machine Sync</div>
-      <div class="active-card-desc">MacBook Pro is source of truth. Private GitHub repo syncs to Mac Mini (daily 7am pull). Scheduled tasks running on Mac Mini.</div>
-      <div class="active-card-footer">
-        <div class="dot-active"></div>
-        <div class="active-card-status">Live — Mac Mini connected</div>
-      </div>
+    <!-- ═══ TASKS PANEL (dynamically rendered) ═══ -->
+    <div class="panel" id="panel-tasks">
+      <div id="tasks-container"></div>
     </div>
 
-    <a class="active-card" href="japan_golf_calendar_v1.html">
-      <div class="active-card-icon">⛳</div>
-      <div class="active-card-label">Personal · Sports</div>
-      <div class="active-card-title">Japan Golf Master Calendar</div>
-      <div class="active-card-desc">Apr–Dec 2026. Nagano Kokusai, Asagiri, Madaraokogen, Kanagawa recs, LDJapan JLDC, Prodracon, 21 junior/girls events. HTML + Excel.</div>
-      <div class="active-card-footer">
-        <div class="dot-active"></div>
-        <div class="active-card-status">Complete — v1</div>
-      </div>
-    </a>
+    <!-- ═══ PROJECTS PANEL ═══ -->
+    <div class="panel" id="panel-projects">
 
-    <a class="active-card" href="https://c-kawashima.github.io/cv-resume/" target="_blank">
-      <div class="active-card-icon">🗂️</div>
-      <div class="active-card-label">Published · CV Dashboards</div>
-      <div class="active-card-title">Interactive CV &amp; Dashboards</div>
-      <div class="active-card-desc">20 published dashboards — Finance, SDV, OSAT, Carbon Neutral, Anduril, and more.</div>
-      <div class="active-card-footer">
-        <div class="dot-active"></div>
-        <div class="active-card-status">Live · github.io/cv-resume</div>
-      </div>
-    </a>
+      <div class="section-label">Active Projects</div>
+      <div class="card-grid">
 
-  </div>
+        <a class="card" href="Professional/Career/CIO/CIO_Dashboard.html">
+          <div class="card-icon">&#127970;</div>
+          <div class="card-label">Career · CIO</div>
+          <div class="card-title">Renesas CIO Application</div>
+          <div class="card-desc">Vision deck, companion report, interactive HTML, full research library.</div>
+          <div class="card-footer"><div class="dot dot-green"></div><div class="card-status">Project Files Dashboard</div></div>
+        </a>
 
-  <!-- ── Published Dashboards ── -->
-  <div class="section-label">Published Dashboards</div>
-  <div style="margin-bottom: 14px; font-size: 11px; color: #444;">
-    Live at <a href="https://c-kawashima.github.io/cv-resume/" target="_blank" style="color: #5566cc; text-decoration: none;">c-kawashima.github.io/cv-resume</a>
-  </div>
-  <div class="dash-grid">
+        <a class="card" href="Professional/Career/SAL/INDEX.md">
+          <div class="card-icon">&#128188;</div>
+          <div class="card-label">Career · SAL</div>
+          <div class="card-title">Sales Role</div>
+          <div class="card-desc">Active opportunity — research and materials in progress.</div>
+          <div class="card-footer"><div class="dot dot-green"></div><div class="card-status">Index</div></div>
+        </a>
 
-    <!-- Finance -->
-    <div class="dash-group">
-      <div class="dash-group-label">Finance</div>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/0_1_Finance_Dash_Board.html" target="_blank">
-        <span class="dash-icon">📊</span><span class="dash-name">Finance Dashboard</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/0_2_Finance_Narative.html" target="_blank">
-        <span class="dash-icon">📝</span><span class="dash-name">Finance Narrative</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/0_3_Finance_Q_A.html" target="_blank">
-        <span class="dash-icon">❓</span><span class="dash-name">Finance Q&amp;A</span>
-      </a>
-    </div>
+        <a class="card" href="Personal/Projects/Housing%20%26%20Moving/Dallas%2C%20TX/dallas_relocation_v1.html">
+          <div class="card-icon">&#127968;</div>
+          <div class="card-label">Personal · Housing</div>
+          <div class="card-title">Dallas Move</div>
+          <div class="card-desc">Relocation analysis complete. 5 scenarios, 13 sections. Recommendation: Craig Ranch + TPC.</div>
+          <div class="card-footer"><div class="dot dot-green"></div><div class="card-status">Analysis complete — v1</div></div>
+        </a>
 
-    <!-- Sustainability -->
-    <div class="dash-group">
-      <div class="dash-group-label">Sustainability</div>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/2_1_Carbon_Neutral_Dashboard.html" target="_blank">
-        <span class="dash-icon">🌱</span><span class="dash-name">Carbon Neutral Dashboard</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/2_2_SU_Interview_Qs.html" target="_blank">
-        <span class="dash-icon">❓</span><span class="dash-name">Sustainability Interview Q&amp;A</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/2_3_SU_story.html" target="_blank">
-        <span class="dash-icon">📖</span><span class="dash-name">Sustainability Story</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/2_4_gov.html" target="_blank">
-        <span class="dash-icon">🏛️</span><span class="dash-name">Governance</span>
-      </a>
-    </div>
+        <a class="card" href="https://cksignal.vercel.app" target="_blank">
+          <div class="card-icon">&#128225;</div>
+          <div class="card-label">Projects · Signal</div>
+          <div class="card-title">Signal — YouTube Intelligence Hub</div>
+          <div class="card-desc">13 channels across Tech, Business, Finance & AI. Nightly auto-ingest at 6pm PST.</div>
+          <div class="card-footer"><div class="dot dot-red"></div><div class="card-status">Ingest failing · cksignal.vercel.app</div></div>
+        </a>
 
-    <!-- OSAT / Deal Structure -->
-    <div class="dash-group">
-      <div class="dash-group-label">OSAT &amp; Deal Structure</div>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/3_1_Deal_Structure_w_context.html" target="_blank">
-        <span class="dash-icon">🤝</span><span class="dash-name">Deal Structure w/ Context</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/3_2_osat_deal_structure.html" target="_blank">
-        <span class="dash-icon">🏭</span><span class="dash-name">OSAT Deal Structure</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/3_3_OSAT_Narrative___CP.html" target="_blank">
-        <span class="dash-icon">📋</span><span class="dash-name">OSAT Narrative &amp; CP</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/3_4_osat_Q_A.html" target="_blank">
-        <span class="dash-icon">❓</span><span class="dash-name">OSAT Q&amp;A</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/3_5_OSAT_Context.html" target="_blank">
-        <span class="dash-icon">🔍</span><span class="dash-name">OSAT Context</span>
-      </a>
-    </div>
+        <a class="card" href="Personal/Projects/College%20Apps/INDEX.md">
+          <div class="card-icon">&#127891;</div>
+          <div class="card-label">Personal · College Apps</div>
+          <div class="card-title">College Applications</div>
+          <div class="card-desc">School selection, essays, gap year planning, financial aid.</div>
+          <div class="card-footer"><div class="dot dot-amber"></div><div class="card-status">In progress</div></div>
+        </a>
 
-    <!-- SDV -->
-    <div class="dash-group">
-      <div class="dash-group-label">SDV</div>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/5_1_sdv_Q_A.html" target="_blank">
-        <span class="dash-icon">❓</span><span class="dash-name">SDV Q&amp;A</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/5_2_sdv3_ROI.html" target="_blank">
-        <span class="dash-icon">📈</span><span class="dash-name">SDV3 ROI</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/5_3_sdv_2_ROI.html" target="_blank">
-        <span class="dash-icon">📈</span><span class="dash-name">SDV2 ROI</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/5_4_sdv_investments_ROI.html" target="_blank">
-        <span class="dash-icon">💰</span><span class="dash-name">SDV Investments ROI</span>
-      </a>
-    </div>
-
-    <!-- i4i -->
-    <div class="dash-group">
-      <div class="dash-group-label">i4i</div>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/4_1_i4i_data_3.html" target="_blank">
-        <span class="dash-icon">📊</span><span class="dash-name">i4i Data</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/4_2_I4I_G.html" target="_blank">
-        <span class="dash-icon">📈</span><span class="dash-name">i4i Growth</span>
-      </a>
-    </div>
-
-    <!-- Other -->
-    <div class="dash-group">
-      <div class="dash-group-label">Other</div>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/1_1_Buffer_Interview.html" target="_blank">
-        <span class="dash-icon">🎯</span><span class="dash-name">Buffer Interview Prep</span>
-      </a>
-      <a class="dash-row" href="https://c-kawashima.github.io/cv-resume/modules/6_1_Anduril_with_Accronym.html" target="_blank">
-        <span class="dash-icon">🛡️</span><span class="dash-name">Anduril</span>
-      </a>
-    </div>
-
-  </div>
-
-  <!-- ── Workspace Map ── -->
-  <div class="section-label">Workspace Map</div>
-  <div class="workspace-cols">
-
-    <!-- Professional -->
-    <div>
-      <div class="workspace-col-label">Professional</div>
-      <div class="folder-list">
-
-        <div class="folder-row">
-          <span class="folder-row-icon">💼</span>
-          <div class="folder-row-body">
-            <div class="folder-row-name">Career</div>
-          </div>
+        <div class="card">
+          <div class="card-icon">&#128231;</div>
+          <div class="card-label">Automation · Gmail</div>
+          <div class="card-title">Gmail Cleanup & Automation</div>
+          <div class="card-desc">14 labels, auto-filters, DSTY daily digest (7am), weekly summary (Sat), executive overview (Sun).</div>
+          <div class="card-footer"><div class="dot dot-green"></div><div class="card-status">Live — Google Apps Script + Cowork</div></div>
         </div>
-        <div class="folder-sub">
+
+        <div class="card">
+          <div class="card-icon">&#128260;</div>
+          <div class="card-label">Infrastructure · Sync</div>
+          <div class="card-title">Cowork OS Multi-Machine Sync</div>
+          <div class="card-desc">MacBook Pro is source of truth. Private GitHub repo syncs to Mac Mini (daily 7am pull).</div>
+          <div class="card-footer"><div class="dot dot-green"></div><div class="card-status">Live — Mac Mini connected</div></div>
+        </div>
+
+        <a class="card" href="japan_golf_calendar_v1.html">
+          <div class="card-icon">&#9971;</div>
+          <div class="card-label">Personal · Sports</div>
+          <div class="card-title">Japan Golf Master Calendar</div>
+          <div class="card-desc">Apr–Dec 2026. Nagano Kokusai, Asagiri, Madaraokogen, 21 junior/girls events. HTML + Excel.</div>
+          <div class="card-footer"><div class="dot dot-green"></div><div class="card-status">Complete — v1</div></div>
+        </a>
+
+        <a class="card" href="https://c-kawashima.github.io/cv-resume/" target="_blank">
+          <div class="card-icon">&#128450;</div>
+          <div class="card-label">Published · CV Dashboards</div>
+          <div class="card-title">Interactive CV & Dashboards</div>
+          <div class="card-desc">20 published dashboards — Finance, SDV, OSAT, Carbon Neutral, Anduril, and more.</div>
+          <div class="card-footer"><div class="dot dot-green"></div><div class="card-status">Live · github.io/cv-resume</div></div>
+        </a>
+
+      </div>
+
+      <div class="section-label" style="margin-top:36px">Workspace Map</div>
+      <div class="workspace-cols">
+        <!-- Professional -->
+        <div>
+          <div class="workspace-col-label">Professional</div>
           <div class="folder-list">
-            <a class="folder-row link" href="Professional/Career/CIO/CIO_Dashboard.html">
-              <span class="folder-row-icon">🏢</span>
+            <div class="folder-row">
+              <span class="folder-row-icon">&#128188;</span>
+              <div class="folder-row-body"><div class="folder-row-name">Career</div></div>
+            </div>
+            <div class="folder-sub"><div class="folder-list">
+              <a class="folder-row link" href="Professional/Career/CIO/CIO_Dashboard.html">
+                <span class="folder-row-icon">&#127970;</span>
+                <div class="folder-row-body">
+                  <div class="folder-row-name">CIO — Project Files</div>
+                  <div class="folder-row-sub">Renesas application</div>
+                </div>
+                <span class="badge badge-blue">Dashboard</span>
+              </a>
+              <a class="folder-row link" href="Professional/Career/SAL/INDEX.md">
+                <span class="folder-row-icon">&#128200;</span>
+                <div class="folder-row-body">
+                  <div class="folder-row-name">SAL — Sales Role</div>
+                  <div class="folder-row-sub">Active opportunity</div>
+                </div>
+                <span class="badge badge-gray">Index</span>
+              </a>
+            </div></div>
+            <hr />
+            <a class="folder-row link" href="Professional/Research%20%26%20Analysis/INDEX.md">
+              <span class="folder-row-icon">&#128300;</span>
               <div class="folder-row-body">
-                <div class="folder-row-name">CIO — Project Files</div>
-                <div class="folder-row-sub">Renesas application</div>
+                <div class="folder-row-name">Research & Analysis</div>
+                <div class="folder-row-sub">Professional deep-dives</div>
               </div>
-              <span class="badge badge-blue">Dashboard</span>
+              <span class="badge badge-gray">Index</span>
             </a>
-            <a class="folder-row link" href="Professional/Career/SAL/INDEX.md">
-              <span class="folder-row-icon">📈</span>
+            <a class="folder-row link" href="Professional/Thought%20Leadership/INDEX.md">
+              <span class="folder-row-icon">&#127897;</span>
               <div class="folder-row-body">
-                <div class="folder-row-name">SAL — Sales Role</div>
-                <div class="folder-row-sub">Active opportunity</div>
+                <div class="folder-row-name">Thought Leadership</div>
+                <div class="folder-row-sub">Podcast & content synthesis</div>
+              </div>
+              <span class="badge badge-gray">Index</span>
+            </a>
+            <a class="folder-row link" href="Professional/Work%20%F0%9F%87%AF%F0%9F%87%B5/INDEX.md">
+              <span class="folder-row-icon">&#127471;&#127477;</span>
+              <div class="folder-row-body">
+                <div class="folder-row-name">Work JP</div>
+                <div class="folder-row-sub">Japan-related professional work</div>
               </div>
               <span class="badge badge-gray">Index</span>
             </a>
           </div>
         </div>
 
-        <hr />
-
-        <a class="folder-row link" href="Professional/Research%20%26%20Analysis/INDEX.md">
-          <span class="folder-row-icon">🔬</span>
-          <div class="folder-row-body">
-            <div class="folder-row-name">Research &amp; Analysis</div>
-            <div class="folder-row-sub">Professional deep-dives, market research</div>
-          </div>
-        </a>
-
-        <a class="folder-row link" href="Professional/Thought%20Leadership/INDEX.md">
-          <span class="folder-row-icon">🎙️</span>
-          <div class="folder-row-body">
-            <div class="folder-row-name">Thought Leadership</div>
-            <div class="folder-row-sub">Podcast synthesis, content, decks</div>
-          </div>
-        </a>
-
-        <a class="folder-row link" href="Professional/Work%20%F0%9F%87%AF%F0%9F%87%B5/INDEX.md">
-          <span class="folder-row-icon">🇯🇵</span>
-          <div class="folder-row-body">
-            <div class="folder-row-name">Work Japan</div>
-            <div class="folder-row-sub">Japan projects, stakeholders, decisions</div>
-          </div>
-        </a>
-
-      </div>
-    </div>
-
-    <!-- Personal -->
-    <div>
-      <div class="workspace-col-label">Personal</div>
-      <div class="folder-list">
-
-        <div class="folder-row">
-          <span class="folder-row-icon">📁</span>
-          <div class="folder-row-body">
-            <div class="folder-row-name">Projects</div>
-          </div>
-        </div>
-        <div class="folder-sub">
+        <!-- Personal -->
+        <div>
+          <div class="workspace-col-label">Personal</div>
           <div class="folder-list">
-
-            <a class="folder-row link" href="Personal/Projects/Housing%20%26%20Moving/INDEX.md">
-              <span class="folder-row-icon">🏠</span>
+            <a class="folder-row link" href="Personal/Projects/Housing%20%26%20Moving/Dallas%2C%20TX/dallas_relocation_v1.html">
+              <span class="folder-row-icon">&#127968;</span>
               <div class="folder-row-body">
-                <div class="folder-row-name">Housing &amp; Moving</div>
-                <div class="folder-row-sub">Dallas relocation</div>
+                <div class="folder-row-name">Housing & Moving</div>
+                <div class="folder-row-sub">Dallas relocation — v1 complete</div>
               </div>
               <span class="badge badge-green">Done</span>
             </a>
-
-            <!-- Dallas deliverables sub-files -->
-            <div class="file-indent">
-              <a class="file-row" href="Personal/Projects/Housing%20%26%20Moving/Dallas%2C%20TX/dallas_relocation_v1.html">
-                <span style="font-size:12px">🌐</span>
-                <span class="file-row-name">Dallas Relocation Analysis v1 — Interactive HTML</span>
-              </a>
-              <a class="file-row" href="Personal/Projects/Housing%20%26%20Moving/Dallas%2C%20TX/dallas_relocation_report_v1.docx">
-                <span style="font-size:12px">📄</span>
-                <span class="file-row-name">Dallas Relocation Report v1 — Word</span>
-              </a>
-              <a class="file-row" href="Personal/Projects/Housing%20%26%20Moving/Dallas%2C%20TX/tournament_calendar_v1.html">
-                <span style="font-size:12px">⛳</span>
-                <span class="file-row-name">Junior Golf Tournament Calendar v1 — Interactive HTML</span>
-              </a>
-            </div>
-
-            <a class="folder-row link" href="Personal/Projects/Taxes/INDEX.md">
-              <span class="folder-row-icon">🧾</span>
-              <div class="folder-row-body">
-                <div class="folder-row-name">Taxes</div>
-                <div class="folder-row-sub">Tax research, planning</div>
-              </div>
-            </a>
-
-            <a class="folder-row link" href="Personal/Projects/Kids/INDEX.md">
-              <span class="folder-row-icon">👨‍👧‍👦</span>
-              <div class="folder-row-body">
-                <div class="folder-row-name">Kids</div>
-                <div class="folder-row-sub">School, activities, parenting decisions</div>
-              </div>
-            </a>
-
             <a class="folder-row link" href="Personal/Projects/College%20Apps/INDEX.md">
-              <span class="folder-row-icon">🎓</span>
+              <span class="folder-row-icon">&#127891;</span>
               <div class="folder-row-body">
                 <div class="folder-row-name">College Apps</div>
-                <div class="folder-row-sub">Essays, schools, gap year</div>
+                <div class="folder-row-sub">School selection, essays, timelines</div>
               </div>
               <span class="badge badge-amber">Active</span>
             </a>
-
-            <a class="folder-row link" href="https://cksignal.vercel.app" target="_blank">
-              <span class="folder-row-icon">📡</span>
+            <a class="folder-row link" href="Personal/Projects/Taxes/INDEX.md">
+              <span class="folder-row-icon">&#128176;</span>
               <div class="folder-row-body">
-                <div class="folder-row-name">Signal</div>
-                <div class="folder-row-sub">13 channels · nightly ingest · cksignal.vercel.app</div>
+                <div class="folder-row-name">Taxes</div>
+                <div class="folder-row-sub">FBAR pending · KPMG authorization</div>
               </div>
-              <span class="badge badge-green">Live</span>
+              <span class="badge badge-amber">Active</span>
             </a>
-
-            <!-- College Apps sub-files -->
-            <div class="file-indent">
-              <a class="file-row" href="Personal/Projects/College%20Apps/aki_gap_year_plan_v2.html">
-                <span style="font-size:12px">📄</span>
-                <span class="file-row-name">Gap Year Plan v2</span>
-              </a>
-              <a class="file-row" href="Personal/Projects/College%20Apps/aki_language_schools_v1.html">
-                <span style="font-size:12px">📄</span>
-                <span class="file-row-name">Language Schools v1</span>
-              </a>
-            </div>
-
+            <a class="folder-row link" href="Personal/Projects/Kids/INDEX.md">
+              <span class="folder-row-icon">&#128118;</span>
+              <div class="folder-row-body">
+                <div class="folder-row-name">Kids</div>
+                <div class="folder-row-sub">School, activities, parenting</div>
+              </div>
+              <span class="badge badge-gray">Index</span>
+            </a>
+            <hr />
+            <a class="folder-row link" href="Personal/Sports/INDEX.md">
+              <span class="folder-row-icon">&#9971;</span>
+              <div class="folder-row-body">
+                <div class="folder-row-name">Sports</div>
+                <div class="folder-row-sub">Golf calendar, analysis, stats</div>
+              </div>
+              <span class="badge badge-gray">Index</span>
+            </a>
+            <a class="folder-row link" href="Personal/Technology/INDEX.md">
+              <span class="folder-row-icon">&#128187;</span>
+              <div class="folder-row-body">
+                <div class="folder-row-name">Technology</div>
+                <div class="folder-row-sub">Tech research, tool evaluation</div>
+              </div>
+              <span class="badge badge-gray">Index</span>
+            </a>
+            <a class="folder-row link" href="Personal/Curiosity/INDEX.md">
+              <span class="folder-row-icon">&#128173;</span>
+              <div class="folder-row-body">
+                <div class="folder-row-name">Curiosity</div>
+                <div class="folder-row-sub">Open questions, rabbit holes</div>
+              </div>
+              <span class="badge badge-gray">Index</span>
+            </a>
+            <a class="folder-row link" href="Personal/Research%20%26%20Analysis/INDEX.md">
+              <span class="folder-row-icon">&#128300;</span>
+              <div class="folder-row-body">
+                <div class="folder-row-name">Research & Analysis</div>
+                <div class="folder-row-sub">Personal deep-dives</div>
+              </div>
+              <span class="badge badge-gray">Index</span>
+            </a>
+            <a class="folder-row link" href="Personal/Thought%20Leadership/INDEX.md">
+              <span class="folder-row-icon">&#127897;</span>
+              <div class="folder-row-body">
+                <div class="folder-row-name">Thought Leadership</div>
+                <div class="folder-row-sub">Podcast & content synthesis</div>
+              </div>
+              <span class="badge badge-gray">Index</span>
+            </a>
           </div>
         </div>
-
-        <hr />
-
-        <a class="folder-row link" href="Personal/Research%20%26%20Analysis/INDEX.md">
-          <span class="folder-row-icon">🔬</span>
-          <div class="folder-row-body">
-            <div class="folder-row-name">Research &amp; Analysis</div>
-            <div class="folder-row-sub">Personal deep-dives, decisions</div>
-          </div>
-        </a>
-
-        <a class="folder-row link" href="Personal/Thought%20Leadership/INDEX.md">
-          <span class="folder-row-icon">🎙️</span>
-          <div class="folder-row-body">
-            <div class="folder-row-name">Thought Leadership</div>
-            <div class="folder-row-sub">Personal content synthesis</div>
-          </div>
-        </a>
-
-        <a class="folder-row link" href="Personal/Sports/INDEX.md">
-          <span class="folder-row-icon">🏆</span>
-          <div class="folder-row-body">
-            <div class="folder-row-name">Sports</div>
-            <div class="folder-row-sub">Analysis, stats, research</div>
-          </div>
-          <span class="badge badge-blue">Active</span>
-        </a>
-        <div class="file-indent">
-          <a class="file-row" href="japan_golf_calendar_v1.html">
-            <span style="font-size:12px">🌐</span>
-            <span class="file-row-name">Japan Golf Master Calendar v1 — Interactive HTML</span>
-          </a>
-          <a class="file-row" href="japan_golf_calendar_v1.xlsx">
-            <span style="font-size:12px">📊</span>
-            <span class="file-row-name">Japan Golf Master Calendar v1 — Excel</span>
-          </a>
-        </div>
-
-        <a class="folder-row link" href="Personal/Technology/INDEX.md">
-          <span class="folder-row-icon">💻</span>
-          <div class="folder-row-body">
-            <div class="folder-row-name">Technology</div>
-            <div class="folder-row-sub">Tech research, tool evals, trend analysis</div>
-          </div>
-        </a>
-
-        <a class="folder-row link" href="Personal/Curiosity/INDEX.md">
-          <span class="folder-row-icon">🐇</span>
-          <div class="folder-row-body">
-            <div class="folder-row-name">Curiosity</div>
-            <div class="folder-row-sub">Rabbit holes, open questions</div>
-          </div>
-        </a>
-
       </div>
     </div>
 
-  </div>
+    <!-- ═══ GOLF CALENDAR PANEL ═══ -->
+    <div class="panel" id="panel-golf">
+      <p style="font-size:12px;color:#6a6a78;margin-bottom:14px;">
+        Japan Golf Master Calendar — Apr–Dec 2026. Nagano Kokusai, Asagiri, Madaraokogen, 21 junior/girls events.
+        <a href="japan_golf_calendar_v1.html" style="color:#8b8b9e;text-decoration:underline;margin-left:8px;" target="_blank">Open full page &#8599;</a>
+      </p>
+      <iframe class="golf-frame" src="japan_golf_calendar_v1.html" title="Japan Golf Master Calendar" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"></iframe>
+    </div>
 
+    <!-- ═══ AUTOMATION PANEL ═══ -->
+    <div class="panel" id="panel-automation">
+
+      <div class="section-label">Scheduled Tasks — Mac Mini</div>
+      <div class="sched-grid">
+        <div class="sched-card">
+          <div class="sched-card-top"><div class="sched-dot"></div><span class="sched-machine">Mac Mini</span></div>
+          <div class="sched-title">Signal Nightly Ingest</div>
+          <div class="sched-desc">Runs ingest.py across 13 YouTube channels. Commits data/ and pushes to GitHub.</div>
+          <div class="sched-time">Daily · 6:00 PM PST (GitHub Action)</div>
+        </div>
+        <div class="sched-card">
+          <div class="sched-card-top"><div class="sched-dot"></div><span class="sched-machine">Mac Mini</span></div>
+          <div class="sched-title">Cowork OS Sync Pull</div>
+          <div class="sched-desc">Pulls latest from ck-cowork-sync private repo. MacBook Pro is source of truth.</div>
+          <div class="sched-time">Daily · 7:00 AM</div>
+        </div>
+        <div class="sched-card">
+          <div class="sched-card-top"><div class="sched-dot"></div><span class="sched-machine">Mac Mini</span></div>
+          <div class="sched-title">Weekly Gmail Executive Overview</div>
+          <div class="sched-desc">Claude reads ALL Gmail from past week, categorizes (DSTY/Work/Accounts/Swiss-Closeout/Personal), translates German, flags action items, creates draft email.</div>
+          <div class="sched-time">Sundays · 7:00 AM</div>
+        </div>
+      </div>
+
+      <div class="section-label">Scheduled Tasks — Google Servers</div>
+      <div class="sched-grid">
+        <div class="sched-card">
+          <div class="sched-card-top"><div class="sched-dot"></div><span class="sched-machine">Google Apps Script</span></div>
+          <div class="sched-title">DSTY Daily Digest</div>
+          <div class="sched-desc">Scans last 24hrs of DSTY emails, flags action items/events. Sends to all 3 addresses.</div>
+          <div class="sched-time">Daily · 7:00 AM</div>
+        </div>
+        <div class="sched-card">
+          <div class="sched-card-top"><div class="sched-dot"></div><span class="sched-machine">Google Apps Script</span></div>
+          <div class="sched-title">DSTY Weekly Summary</div>
+          <div class="sched-desc">Groups week's DSTY emails by priority (action / events / general). Sends to all 3 addresses.</div>
+          <div class="sched-time">Saturdays · 7:00 AM</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ REMEMBER PANEL ═══ -->
+    <div class="panel" id="panel-remember">
+      <p style="font-size:12px;color:#6a6a78;margin-bottom:18px;">Things you've started. Did you finish them?</p>
+
+      <div class="remember-list">
+        <div class="remember-row" id="rem-1">
+          <div class="remember-body">
+            <div class="remember-title">HOME.html dashboard redesign v2</div>
+            <div class="remember-meta">Cowork OS · Started Mar 16</div>
+          </div>
+          <div class="remember-actions">
+            <button class="btn-yes" onclick="rememberDone('rem-1')">Yes</button>
+            <button class="btn-no" onclick="rememberNo('rem-1')">No</button>
+          </div>
+        </div>
+        <div class="remember-row" id="rem-2">
+          <div class="remember-body">
+            <div class="remember-title">Signal repo — nightly ingest fix</div>
+            <div class="remember-meta">Signal · Failing consecutively</div>
+          </div>
+          <div class="remember-actions">
+            <button class="btn-yes" onclick="rememberDone('rem-2')">Yes</button>
+            <button class="btn-no" onclick="rememberNo('rem-2')">No</button>
+          </div>
+        </div>
+        <div class="remember-row" id="rem-3">
+          <div class="remember-body">
+            <div class="remember-title">MacBook Air Claude Code setup</div>
+            <div class="remember-meta">Cowork OS · new-machine-setup.md ready</div>
+          </div>
+          <div class="remember-actions">
+            <button class="btn-yes" onclick="rememberDone('rem-3')">Yes</button>
+            <button class="btn-no" onclick="rememberNo('rem-3')">No</button>
+          </div>
+        </div>
+        <div class="remember-row" id="rem-4">
+          <div class="remember-body">
+            <div class="remember-title">All-In social graph feed (Lobstr vs PhantomBuster)</div>
+            <div class="remember-meta">Signal · Decide on tool and start build</div>
+          </div>
+          <div class="remember-actions">
+            <button class="btn-yes" onclick="rememberDone('rem-4')">Yes</button>
+            <button class="btn-no" onclick="rememberNo('rem-4')">No</button>
+          </div>
+        </div>
+        <div class="remember-row" id="rem-5">
+          <div class="remember-body">
+            <div class="remember-title">TPC Craig Ranch membership pricing call</div>
+            <div class="remember-meta">Dallas Move · #1 action item</div>
+          </div>
+          <div class="remember-actions">
+            <button class="btn-yes" onclick="rememberDone('rem-5')">Yes</button>
+            <button class="btn-no" onclick="rememberNo('rem-5')">No</button>
+          </div>
+        </div>
+        <div class="remember-row" id="rem-6">
+          <div class="remember-body">
+            <div class="remember-title">CIO Renesas next steps</div>
+            <div class="remember-meta">Career</div>
+          </div>
+          <div class="remember-actions">
+            <button class="btn-yes" onclick="rememberDone('rem-6')">Yes</button>
+            <button class="btn-no" onclick="rememberNo('rem-6')">No</button>
+          </div>
+        </div>
+        <div class="remember-row" id="rem-7">
+          <div class="remember-body">
+            <div class="remember-title">SAL sales role next steps</div>
+            <div class="remember-meta">Career</div>
+          </div>
+          <div class="remember-actions">
+            <button class="btn-yes" onclick="rememberDone('rem-7')">Yes</button>
+            <button class="btn-no" onclick="rememberNo('rem-7')">No</button>
+          </div>
+        </div>
+        <div class="remember-row" id="rem-8">
+          <div class="remember-body">
+            <div class="remember-title">KPMG FBAR authorization</div>
+            <div class="remember-meta">Taxes · Deadline Apr 12</div>
+          </div>
+          <div class="remember-actions">
+            <button class="btn-yes" onclick="rememberDone('rem-8')">Yes</button>
+            <button class="btn-no" onclick="rememberNo('rem-8')">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+  <script>
+    // ── State persistence ──
+    const STORAGE_KEY = 'coworkos-home-state';
+    function loadState() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
+    }
+    function saveState(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    // ── Panel switching ──
+    const panels = ['alerts','dsty','tasks','projects','golf','automation','remember'];
+    const titles = {
+      alerts: 'Alerts',
+      dsty: 'DSTY',
+      tasks: 'Tasks',
+      projects: 'Projects',
+      golf: 'Golf Calendar',
+      automation: 'Automation',
+      remember: 'Remember'
+    };
+
+    function showPanel(id) {
+      panels.forEach(p => {
+        document.getElementById('panel-' + p).classList.remove('active');
+        document.getElementById('nav-' + p).classList.remove('active');
+      });
+      document.getElementById('panel-' + id).classList.add('active');
+      document.getElementById('nav-' + id).classList.add('active');
+      document.getElementById('panel-title').textContent = titles[id];
+    }
+
+    // ═══ DATA-DRIVEN TASKS ═══
+    const BUCKETS = ['near','upcoming','forget'];
+    const BUCKET_LABELS = {
+      near: 'Near Term \u2014 This Week',
+      upcoming: 'Upcoming \u2014 Next Actions',
+      forget: "Don\u2019t Forget"
+    };
+    const BUCKET_SHORT = { near: 'Near Term', upcoming: 'Upcoming', forget: "Don\u2019t Forget" };
+
+    // Default task data (used on first load or if storage is cleared)
+    const DEFAULT_TASKS = [
+      { id:'task-1', title:'All-In social graph feed \u2014 decide Lobstr.io vs PhantomBuster, start build', meta:'Signal \u00b7 Flagged for this week', priority:'high', bucket:'near', done:false },
+      { id:'task-2', title:'MacBook Air \u2014 install Claude Code, set up Cowork OS sync', meta:'Cowork OS \u00b7 new-machine-setup.md ready', priority:'med', bucket:'near', done:false },
+      { id:'task-3', title:'Mac Mini \u2014 clone Signal repo, set API key, run full ingest, push data', meta:'Signal \u00b7 see MEMORY.md for exact commands', priority:'med', bucket:'near', done:false },
+      { id:'task-4', title:'CIO application \u2014 next steps on Renesas opportunity', meta:'Career', priority:'med', bucket:'upcoming', done:false },
+      { id:'task-5', title:'SAL sales role \u2014 next steps', meta:'Career', priority:'med', bucket:'upcoming', done:false },
+      { id:'task-6', title:'Set up Cowork OS sync on Mac Minis (vacation homes) + MacBook Air', meta:'Infrastructure \u00b7 pull script schedules at 7am daily', priority:'low', bucket:'upcoming', done:false },
+      { id:'task-7', title:'Mac Mini needs to be running Sundays 7am for Gmail executive overview task', meta:'Automation \u00b7 Gmail MCP connector must be authorized', priority:'low', bucket:'forget', done:false },
+      { id:'task-8', title:'Connectors must be re-authorized manually on each new machine', meta:'Cowork OS Sync \u00b7 can\u2019t be automated', priority:'low', bucket:'forget', done:false },
+    ];
+
+    function getTaskData() {
+      const state = loadState();
+      if (state.taskData && state.taskData.length > 0) return state.taskData;
+      return JSON.parse(JSON.stringify(DEFAULT_TASKS));
+    }
+
+    function saveTaskData(tasks) {
+      const state = loadState();
+      state.taskData = tasks;
+      saveState(state);
+    }
+
+    let draggedTaskId = null;
+
+    function renderTasks() {
+      const tasks = getTaskData();
+      const container = document.getElementById('tasks-container');
+      if (!container) return;
+      let html = '';
+
+      BUCKETS.forEach(bucket => {
+        const bucketTasks = tasks.filter(t => t.bucket === bucket);
+        html += '<div class="section-label">' + BUCKET_LABELS[bucket] + '</div>';
+        html += '<div class="task-list task-bucket" data-bucket="' + bucket + '"';
+        html += ' ondragover="onBucketDragOver(event)" ondragleave="onBucketDragLeave(event)" ondrop="onBucketDrop(event, \'' + bucket + '\')">';
+
+        if (bucketTasks.length === 0) {
+          html += '<div class="task-drop-placeholder" style="padding:16px;font-size:11.5px;color:#3e3e4a;font-style:italic;text-align:center;">Drop tasks here</div>';
+        }
+
+        bucketTasks.forEach(t => {
+          const doneClass = t.done ? ' done' : '';
+          const cbClass = t.done ? ' checked' : '';
+          html += '<div class="task-row' + doneClass + '" id="' + t.id + '" draggable="true"';
+          html += ' ondragstart="onTaskDragStart(event, \'' + t.id + '\')" ondragend="onTaskDragEnd(event)">';
+          html += '  <span class="task-drag-handle">&#8942;&#8942;</span>';
+          html += '  <div class="task-checkbox' + cbClass + '" onclick="toggleTask(\'' + t.id + '\')">&#10003;</div>';
+          html += '  <div class="task-body">';
+          html += '    <div class="task-title">' + t.title + '</div>';
+          html += '    <div class="task-meta">' + t.meta + '</div>';
+          html += '  </div>';
+          html += '  <span class="task-badge ' + t.priority + '">' + t.priority.charAt(0).toUpperCase() + t.priority.slice(1) + '</span>';
+          html += '</div>';
+        });
+
+        html += '</div>';
+      });
+
+      container.innerHTML = html;
+    }
+
+    function onTaskDragStart(e, id) {
+      draggedTaskId = id;
+      e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', id);
+    }
+
+    function onTaskDragEnd(e) {
+      e.target.classList.remove('dragging');
+      draggedTaskId = null;
+      document.querySelectorAll('.task-bucket').forEach(b => b.classList.remove('drag-over'));
+    }
+
+    function onBucketDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const bucket = e.currentTarget;
+      bucket.classList.add('drag-over');
+    }
+
+    function onBucketDragLeave(e) {
+      const bucket = e.currentTarget;
+      if (!bucket.contains(e.relatedTarget)) {
+        bucket.classList.remove('drag-over');
+      }
+    }
+
+    function onBucketDrop(e, newBucket) {
+      e.preventDefault();
+      const bucket = e.currentTarget;
+      bucket.classList.remove('drag-over');
+      const id = e.dataTransfer.getData('text/plain') || draggedTaskId;
+      if (!id) return;
+      const tasks = getTaskData();
+      const task = tasks.find(t => t.id === id);
+      if (task && BUCKETS.includes(newBucket)) {
+        task.bucket = newBucket;
+        saveTaskData(tasks);
+        renderTasks();
+      }
+    }
+
+    function toggleTask(id) {
+      const tasks = getTaskData();
+      const task = tasks.find(t => t.id === id);
+      if (task) {
+        task.done = !task.done;
+        saveTaskData(tasks);
+        renderTasks();
+      }
+    }
+
+    // ═══ DATA-DRIVEN ALERTS ═══
+    const ALERT_SECTIONS = ['response','upcoming'];
+    const ALERT_SECTION_LABELS = { response: 'Needs Response', upcoming: 'Upcoming' };
+
+    const DEFAULT_ALERTS = [
+      { id:'alert-1', icon:'\ud83d\udd34', title:'Signal Repo \u2014 Nightly Ingest failing consecutively', meta:'Needs investigation \u00b7 check Mac Mini logs \u00b7 cksignal.vercel.app', level:'critical', badge:'System', section:'response', done:false },
+      { id:'alert-2', icon:'\u26a0\ufe0f', title:'DSTY Projektwoche \u2014 choose Christine-Ami\u2019s project topic', meta:'Deadline: Wed Mar 18, 8pm', level:'critical', badge:'Mar 18', section:'response', done:false },
+      { id:'alert-3', icon:'\ud83d\udce7', title:'KPMG FBAR Authorization \u2014 sign and return via KPMG LINK', meta:'Deadline: Apr 12 \u00b7 Taxes', level:'warning', badge:'Apr 12', section:'response', done:false },
+      { id:'alert-4', icon:'\ud83d\udcde', title:'Call TPC Craig Ranch \u2014 verify A2 membership tier pricing', meta:'Dallas Move \u00b7 #1 action item from relocation analysis', level:'warning', badge:'This Week', section:'response', done:false },
+      { id:'alert-5', icon:'\ud83d\udd14', title:'A1:8 Youth Group \u2014 small groups tomorrow', meta:'Mar 17 \u00b7 7:15pm', level:'info', badge:'Tomorrow', section:'upcoming', done:false },
+      { id:'alert-6', icon:'\ud83d\udce7', title:'Mac Mini \u2014 Gmail executive overview task needs Mac Mini running Sundays 7am', meta:'Ensure Gmail MCP connector authorized', level:'info', badge:'Setup', section:'upcoming', done:false },
+    ];
+
+    function getAlertData() {
+      const state = loadState();
+      if (state.alertData && state.alertData.length > 0) return state.alertData;
+      return JSON.parse(JSON.stringify(DEFAULT_ALERTS));
+    }
+
+    function saveAlertData(alerts) {
+      const state = loadState();
+      state.alertData = alerts;
+      saveState(state);
+    }
+
+    function renderAlerts() {
+      const alerts = getAlertData();
+      const container = document.getElementById('alerts-container');
+      if (!container) return;
+      let html = '';
+
+      ALERT_SECTIONS.forEach(section => {
+        const sectionAlerts = alerts.filter(a => a.section === section);
+        if (sectionAlerts.length === 0) return;
+
+        html += '<div class="section-label">' + ALERT_SECTION_LABELS[section] + '</div>';
+        html += '<div class="alert-list">';
+
+        sectionAlerts.forEach(a => {
+          const doneClass = a.done ? ' done' : '';
+          const cbClass = a.done ? ' checked' : '';
+          html += '<div class="alert-row ' + a.level + doneClass + '" id="' + a.id + '">';
+          html += '  <div class="alert-checkbox' + cbClass + '" onclick="toggleAlert(\'' + a.id + '\')">&#10003;</div>';
+          html += '  <span class="alert-icon">' + a.icon + '</span>';
+          html += '  <div class="alert-body">';
+          html += '    <div class="alert-title">' + a.title + '</div>';
+          html += '    <div class="alert-meta">' + a.meta + '</div>';
+          html += '  </div>';
+          html += '  <span class="alert-badge ' + a.level + '">' + a.badge + '</span>';
+          html += '</div>';
+        });
+
+        html += '</div>';
+      });
+
+      // Show empty state if all dismissed
+      const activeCount = alerts.filter(a => !a.done).length;
+      if (activeCount === 0) {
+        html += '<div style="padding:24px;text-align:center;font-size:13px;color:var(--text-faint);">All clear. No active alerts.</div>';
+      }
+
+      container.innerHTML = html;
+      updateAlertCount();
+    }
+
+    function toggleAlert(id) {
+      const alerts = getAlertData();
+      const alert = alerts.find(a => a.id === id);
+      if (alert) {
+        alert.done = !alert.done;
+        saveAlertData(alerts);
+        renderAlerts();
+      }
+    }
+
+    // ── Remember buttons (persisted) ──
+    function rememberDone(id) {
+      const row = document.getElementById(id);
+      row.classList.add('done');
+      row.querySelector('.remember-title').style.textDecoration = 'line-through';
+      const actions = row.querySelector('.remember-actions');
+      actions.innerHTML = '<span style="font-size:10px;color:#34d399;font-weight:600;">DONE</span>';
+      const state = loadState();
+      if (!state.remember) state.remember = {};
+      state.remember[id] = 'done';
+      saveState(state);
+    }
+
+    function rememberNo(id) {
+      const row = document.getElementById(id);
+      const btn = row.querySelector('.btn-no');
+      btn.style.background = '#3a2020';
+      btn.textContent = 'Still open';
+      btn.style.color = '#ef4444';
+      btn.style.cursor = 'default';
+      btn.onclick = null;
+      const state = loadState();
+      if (!state.remember) state.remember = {};
+      state.remember[id] = 'open';
+      saveState(state);
+    }
+
+    // ── Restore Remember state on load ──
+    function restoreRemember() {
+      const state = loadState();
+      if (state.remember) {
+        Object.entries(state.remember).forEach(([id, status]) => {
+          const row = document.getElementById(id);
+          if (!row) return;
+          if (status === 'done') {
+            row.classList.add('done');
+            row.querySelector('.remember-title').style.textDecoration = 'line-through';
+            const actions = row.querySelector('.remember-actions');
+            actions.innerHTML = '<span style="font-size:10px;color:#34d399;font-weight:600;">DONE</span>';
+          } else if (status === 'open') {
+            const btn = row.querySelector('.btn-no');
+            if (btn) {
+              btn.style.background = '#3a2020';
+              btn.textContent = 'Still open';
+              btn.style.color = '#ef4444';
+              btn.style.cursor = 'default';
+              btn.onclick = null;
+            }
+          }
+        });
+      }
+    }
+
+    // ── Alert count badge (counts undismissed only) ──
+    function updateAlertCount() {
+      const alerts = getAlertData();
+      const active = alerts.filter(a => !a.done).length;
+      const badge = document.getElementById('alert-count');
+      if (badge) {
+        badge.textContent = active;
+        badge.style.display = active > 0 ? 'inline-block' : 'none';
+      }
+    }
+
+    // ── Last updated timestamp ──
+    function setLastUpdated() {
+      const el = document.getElementById('last-updated');
+      if (el) {
+        const now = new Date();
+        const opts = { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' };
+        el.textContent = 'Dashboard loaded ' + now.toLocaleString('en-US', opts);
+      }
+    }
+
+    // ── Theme toggle (persisted) ──
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light');
+      localStorage.setItem('coworkos-theme', isLight ? 'light' : 'dark');
+      updateThemeButton(isLight);
+    }
+
+    function updateThemeButton(isLight) {
+      const icon = document.getElementById('theme-icon');
+      const btn = document.getElementById('theme-toggle');
+      if (isLight) {
+        icon.innerHTML = '&#9790;';
+        btn.querySelector('span:last-child').textContent = 'Dark mode';
+      } else {
+        icon.innerHTML = '&#9788;';
+        btn.querySelector('span:last-child').textContent = 'Light mode';
+      }
+    }
+
+    function restoreTheme() {
+      const saved = localStorage.getItem('coworkos-theme');
+      if (saved === 'light') {
+        document.body.classList.add('light');
+        updateThemeButton(true);
+      }
+    }
+
+    // ── Init ──
+    document.addEventListener('DOMContentLoaded', () => {
+      restoreTheme();
+      renderAlerts();
+      renderTasks();
+      restoreRemember();
+      setLastUpdated();
+    });
+  </script>
 </body>
 </html>
