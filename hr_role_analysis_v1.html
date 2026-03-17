@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Role — Structural Analysis</title>
+<style>
+  :root {
+    --navy: #06418C;
+    --dark-navy: #042D5E;
+    --blue: #4471A9;
+    --light-blue: #E8F0F8;
+    --med-blue: #D5E8F0;
+    --teal: #0891B2;
+    --light-gray: #F7F8FA;
+    --border: #D8DDE6;
+    --text: #2a2a2a;
+    --text-secondary: #555;
+    --white: #fff;
+    --accent-red: #C53030;
+    --accent-amber: #B7791F;
+    --accent-green: #276749;
+    --section-bg: #F0F4F8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--text); background: var(--white); line-height: 1.7;
+  }
+
+  /* ── BACK BUTTON ── */
+  .back-link {
+    position: fixed; top: 12px; left: 16px; z-index: 1001;
+    color: var(--blue); text-decoration: none; font-size: 0.8rem;
+    font-weight: 600; opacity: 0.7; transition: opacity 0.2s;
+  }
+  .back-link:hover { opacity: 1; }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: linear-gradient(135deg, var(--light-blue) 0%, var(--med-blue) 100%);
+    padding: 3rem 2rem 2rem;
+    border-bottom: 3px solid var(--navy);
+    text-align: center;
+  }
+  .page-header h1 {
+    font-size: 1.8rem; font-weight: 700; color: var(--dark-navy);
+    margin-bottom: 0.4rem;
+  }
+  .page-header .subtitle {
+    font-size: 0.85rem; color: var(--blue); font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── TOGGLE ── */
+  .toggle-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: center; align-items: center;
+    gap: 0; padding: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .toggle-btn {
+    flex: 0 0 auto;
+    padding: 0.85rem 2rem;
+    font-size: 0.82rem; font-weight: 600;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    border: none; background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer; transition: all 0.25s;
+    border-bottom: 3px solid transparent;
+    position: relative;
+  }
+  .toggle-btn:hover { color: var(--navy); background: var(--light-blue); }
+  .toggle-btn.active {
+    color: var(--dark-navy);
+    border-bottom-color: var(--teal);
+    background: var(--light-blue);
+  }
+  .toggle-divider {
+    width: 1px; height: 24px; background: var(--border);
+  }
+
+  /* ── VIEW INDICATOR ── */
+  .view-indicator {
+    text-align: center; padding: 1rem 2rem 0;
+    font-size: 0.72rem; letter-spacing: 2px;
+    text-transform: uppercase; font-weight: 600;
+  }
+  .view-1st .view-indicator { color: var(--teal); }
+  .view-3rd .view-indicator { color: var(--blue); }
+
+  /* ── CONTENT CONTAINER ── */
+  .content { max-width: 820px; margin: 0 auto; padding: 1.5rem 2rem 4rem; }
+
+  /* ── SECTION BLOCKS ── */
+  .section-block {
+    margin-bottom: 2.5rem;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .section-block .section-header {
+    background: var(--light-blue);
+    padding: 0.9rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .section-block .section-num {
+    background: var(--navy);
+    color: var(--white);
+    font-size: 0.7rem; font-weight: 700;
+    width: 26px; height: 26px;
+    border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-block .section-title {
+    font-size: 1rem; font-weight: 700;
+    color: var(--dark-navy);
+  }
+  .section-block .section-body {
+    padding: 1.4rem;
+  }
+  .section-block .section-body p {
+    margin-bottom: 0.9rem; color: var(--text);
+    font-size: 0.92rem; line-height: 1.75;
+  }
+  .section-block .section-body p:last-child { margin-bottom: 0; }
+
+  /* ── SUB-SECTIONS ── */
+  .sub-heading {
+    font-size: 0.88rem; font-weight: 700;
+    color: var(--navy); margin: 1.4rem 0 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--light-blue);
+  }
+  .sub-heading:first-child { margin-top: 0; }
+
+  .sub-label {
+    font-size: 0.78rem; font-weight: 600;
+    color: var(--teal); margin: 1rem 0 0.3rem;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  /* ── LISTS ── */
+  .section-body ul {
+    list-style: none; padding: 0; margin: 0.5rem 0 1rem;
+  }
+  .section-body ul li {
+    padding: 0.35rem 0 0.35rem 1.2rem;
+    position: relative; font-size: 0.9rem;
+    color: var(--text); line-height: 1.65;
+  }
+  .section-body ul li::before {
+    content: '';
+    position: absolute; left: 0; top: 0.7rem;
+    width: 6px; height: 6px;
+    background: var(--teal);
+    border-radius: 50%;
+  }
+
+  /* ── TALKING POINTS ── */
+  .talking-point {
+    background: var(--section-bg);
+    border-left: 3px solid var(--teal);
+    padding: 0.9rem 1.2rem;
+    margin: 0.8rem 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .talking-point .tp-label {
+    font-size: 0.7rem; font-weight: 700;
+    color: var(--teal); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 0.3rem;
+  }
+  .talking-point p {
+    font-size: 0.9rem; color: var(--text);
+    margin-bottom: 0 !important;
+  }
+
+  /* ── ONE-LINERS / QUOTES ── */
+  .one-liner {
+    padding: 0.6rem 1rem;
+    margin: 0.4rem 0;
+    background: var(--light-gray);
+    border-radius: 6px;
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── METAPHOR CARDS ── */
+  .metaphor-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 1rem 0;
+    overflow: hidden;
+  }
+  .metaphor-card .mc-title {
+    background: var(--dark-navy);
+    color: var(--white);
+    padding: 0.6rem 1rem;
+    font-size: 0.82rem; font-weight: 700;
+  }
+  .metaphor-card .mc-quote {
+    background: var(--light-blue);
+    padding: 0.8rem 1rem;
+    font-size: 0.92rem; font-weight: 600;
+    color: var(--dark-navy);
+    font-style: italic;
+    border-bottom: 1px solid var(--border);
+  }
+  .metaphor-card .mc-body {
+    padding: 0.8rem 1rem;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+  }
+  .metaphor-card .mc-tags {
+    padding: 0.5rem 1rem 0.8rem;
+    display: flex; gap: 0.4rem; flex-wrap: wrap;
+  }
+  .metaphor-card .mc-tag {
+    background: var(--med-blue);
+    color: var(--dark-navy);
+    font-size: 0.7rem; font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+  }
+
+  /* ── SOLUTIONS ── */
+  .solution-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 1rem 0;
+    overflow: hidden;
+  }
+  .solution-card .sc-title {
+    background: var(--section-bg);
+    padding: 0.7rem 1rem;
+    font-size: 0.88rem; font-weight: 700;
+    color: var(--navy);
+    border-bottom: 1px solid var(--border);
+  }
+  .solution-card .sc-body {
+    padding: 0.8rem 1rem;
+  }
+  .solution-card .sc-body p {
+    font-size: 0.88rem; margin-bottom: 0.5rem;
+  }
+
+  /* ── CALLOUT BOX ── */
+  .callout {
+    background: linear-gradient(135deg, var(--light-blue), var(--med-blue));
+    border: 1px solid var(--blue);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    margin: 1.2rem 0;
+  }
+  .callout p {
+    font-size: 0.92rem; font-weight: 600;
+    color: var(--dark-navy); margin-bottom: 0 !important;
+  }
+
+  /* ── SCENARIO CARDS (3rd party) ── */
+  .scenario {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 0.8rem 0;
+    overflow: hidden;
+  }
+  .scenario .sc-head {
+    padding: 0.6rem 1rem;
+    font-size: 0.82rem; font-weight: 700;
+    border-bottom: 1px solid var(--border);
+  }
+  .scenario.good .sc-head { background: #F0FFF4; color: var(--accent-green); }
+  .scenario.neutral .sc-head { background: #FFFFF0; color: var(--accent-amber); }
+  .scenario.bad .sc-head { background: #FFF5F5; color: var(--accent-red); }
+  .scenario .sc-text {
+    padding: 0.7rem 1rem;
+    font-size: 0.88rem; color: var(--text);
+  }
+
+  /* ── CONTRAST BOX ── */
+  .contrast-box {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden;
+    margin: 1rem 0;
+  }
+  .contrast-side {
+    padding: 1rem 1.2rem;
+  }
+  .contrast-side.left {
+    background: var(--section-bg);
+    border-right: 1px solid var(--border);
+  }
+  .contrast-side .cs-label {
+    font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 0.4rem;
+  }
+  .contrast-side.left .cs-label { color: var(--blue); }
+  .contrast-side.right .cs-label { color: var(--teal); }
+  .contrast-side p {
+    font-size: 0.86rem; margin-bottom: 0 !important;
+    color: var(--text);
+  }
+
+  /* ── FRAMEWORK TABLE ── */
+  .fw-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.8rem 0;
+    font-size: 0.85rem;
+  }
+  .fw-table th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 0.5rem 0.8rem;
+    text-align: left;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .fw-table td {
+    padding: 0.45rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .fw-table tr:nth-child(even) td { background: var(--light-gray); }
+
+  /* ── "IT'S NOT X, IT'S Y" ── */
+  .notx-row {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: 0.8rem;
+    margin: 0.4rem 0;
+    font-size: 0.88rem;
+  }
+  .notx-left {
+    text-align: right; color: var(--text-secondary);
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+  .notx-arrow { color: var(--teal); font-weight: 700; font-size: 1rem; }
+  .notx-right { color: var(--dark-navy); font-weight: 600; }
+
+  /* ── VISIBILITY TOGGLE ── */
+  .view-1st .third-party { display: none; }
+  .view-3rd .first-party { display: none; }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    text-align: center; padding: 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .page-header h1 { font-size: 1.4rem; }
+    .content { padding: 1rem 1rem 3rem; }
+    .toggle-btn { padding: 0.75rem 1.2rem; font-size: 0.75rem; }
+    .contrast-box { grid-template-columns: 1fr; }
+    .contrast-side.left { border-right: none; border-bottom: 1px solid var(--border); }
+    .notx-row { grid-template-columns: 1fr; gap: 0.2rem; text-align: left; }
+    .notx-left { text-align: left; }
+  }
+</style>
+</head>
+<body class="view-1st">
+
+<a href="HOME.html" class="back-link">← Home</a>
+
+<div class="page-header">
+  <h1>HR Role — Structural Analysis</h1>
+  <div class="subtitle">Chief of Staff lens — 1st person & 3rd party framing</div>
+</div>
+
+<div class="toggle-bar">
+  <button class="toggle-btn active" onclick="setView('1st')" id="btn-1st">1st Person View</button>
+  <div class="toggle-divider"></div>
+  <button class="toggle-btn" onclick="setView('3rd')" id="btn-3rd">3rd Party View</button>
+</div>
+
+<div class="view-indicator" id="view-label">Viewing: 1st Person — Chief of Staff lens</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 1st PARTY CONTENT                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="first-party">
+
+  <!-- Section 1: Short Narrative -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">1</span>
+      <span class="section-title">Short Narrative</span>
+    </div>
+    <div class="section-body">
+      <p>I can see why this role might make sense on paper, and I believe I could add value in it. My concern is less about willingness or effort and more about whether the setup would be structurally winnable. If I am expected to help drive outcomes, raise quality, and improve execution, but the formal authority, organizational control, and pace of execution all still sit elsewhere, then there is a real risk that I become responsible for progress without fully controlling the mechanism required to create it.</p>
+      <p>What worries me most is not hard work. Hard work is fine. What worries me is being placed into a role where a great deal of energy is required just to compensate for structural ambiguity. In that kind of setup, it becomes difficult to create visible, sustainable traction. The risk is not only frustration in the short term. The risk is that over time the role becomes more about absorbing pressure, smoothing over contradictions, and supporting a constrained system than about building clear impact. That is why, from my perspective, the question is not whether I can work hard enough. The question is whether the setup allows my effort to convert into meaningful and legible progress.</p>
+    </div>
+  </div>
+
+  <!-- Section 2: CEO-ready version -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">2</span>
+      <span class="section-title">CEO-Ready Version</span>
+    </div>
+    <div class="section-body">
+      <p>I believe I can contribute in this role. My concern is not the workload itself, but whether the setup is designed in a way that is truly winnable. If I am expected to help drive outcomes while authority, pace, and practical control remain elsewhere, then there is a risk that I spend a great deal of energy improving the system at the margin without being able to create clear, sustainable traction.</p>
+      <p>What I want to avoid is a role where accountability rises faster than control. In that kind of structure, a lot of effort can go into making things somewhat better, but not enough into making the role clearly successful.</p>
+    </div>
+  </div>
+
+  <!-- Section 3: Framing Points -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">3</span>
+      <span class="section-title">Framing Points</span>
+    </div>
+    <div class="section-body">
+      <p>What the chief of staff is really saying:</p>
+      <ul>
+        <li>I am not resisting responsibility.</li>
+        <li>I am not afraid of hard work.</li>
+        <li>I am not questioning the importance of the role.</li>
+        <li>I am trying to understand whether the setup allows success to be real, visible, and sustainable.</li>
+        <li>I want to help solve the problem, not become the buffer that hides it.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Section 4: One-Liners -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">4</span>
+      <span class="section-title">One-Liners</span>
+    </div>
+    <div class="section-body">
+      <div class="one-liner">My concern is not the size of the role. It is whether the structure makes the role winnable.</div>
+      <div class="one-liner">I am comfortable carrying weight. I just want to be sure the structure puts the weight in the right place.</div>
+      <div class="one-liner">I do not mind pressure. I want to avoid a setup where pressure is high but control is limited.</div>
+      <div class="one-liner">I can add energy to the system. The question is whether the system can convert that energy into visible progress.</div>
+      <div class="one-liner">What I want to avoid is becoming a compensating mechanism for structural ambiguity.</div>
+      <div class="one-liner">If I am expected to influence outcomes, I need enough clarity on where decision rights and ownership actually sit.</div>
+      <div class="one-liner">A role like this can be meaningful, but only if it creates traction and not just additional support load.</div>
+      <div class="one-liner">I want to help solve the problem, not just make the problem more tolerable for longer.</div>
+      <div class="one-liner">The middle ground is the real risk: a lot of effort, some improvement, but not enough clarity to make the role truly successful.</div>
+      <div class="one-liner">For this to work, impact needs to be visible early rather than absorbed into the background.</div>
+    </div>
+  </div>
+
+  <!-- Section 5: Talking Points -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">5</span>
+      <span class="section-title">1–2 Sentence Talking Points</span>
+    </div>
+    <div class="section-body">
+      <div class="talking-point">
+        <div class="tp-label">Point 1</div>
+        <p>I believe I could contribute meaningfully here. My concern is whether the setup gives me enough real operating leverage to do that, rather than placing me in a position where I am working around constraints I do not control.</p>
+      </div>
+      <div class="talking-point">
+        <div class="tp-label">Point 2</div>
+        <p>I am less worried about workload than about structural ambiguity. If expectations are high but the actual mechanism for driving change remains elsewhere, then the risk is that I spend a lot of effort without being able to create enough clear traction.</p>
+      </div>
+      <div class="talking-point">
+        <div class="tp-label">Point 3</div>
+        <p>What I would want to avoid is a role that becomes primarily compensatory. If too much of the work is absorbing pressure, managing around bottlenecks, or smoothing over contradictions, then the contribution can become hard to sustain and hard to measure.</p>
+      </div>
+      <div class="talking-point">
+        <div class="tp-label">Point 4</div>
+        <p>I think the key issue is whether the role comes with visible ownership and clear decision rights. Without that, it becomes easy to contribute a lot and still remain in an ambiguous position.</p>
+      </div>
+      <div class="talking-point">
+        <div class="tp-label">Point 5</div>
+        <p>The biggest risk to me is not that the role is hard. The biggest risk is the middle ground: enough progress to keep the structure going, but not enough clarity or authority to make success fully legible.</p>
+      </div>
+      <div class="talking-point">
+        <div class="tp-label">Point 6</div>
+        <p>If this is going to work, I think it would help to make the areas of ownership explicit early and to review the setup quickly rather than letting ambiguity run too long.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Concerns Laid Out Clearly -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">6</span>
+      <span class="section-title">Concerns, Laid Out Clearly</span>
+    </div>
+    <div class="section-body">
+      <div class="sub-heading">A. Why the role could be attractive</div>
+      <p>So this is not a rejection of the role itself.</p>
+      <ul>
+        <li>it is meaningful</li>
+        <li>it touches important organizational issues</li>
+        <li>it offers visibility</li>
+        <li>it creates a chance to contribute at a high level</li>
+      </ul>
+
+      <div class="sub-heading">B. What creates hesitation</div>
+      <p>The hesitation is that the role may be meaningful in theory while still being hard to win in practice.</p>
+      <ul>
+        <li>expectations are high</li>
+        <li>ownership is blurred</li>
+        <li>hierarchy defaults elsewhere</li>
+        <li>the role improves quality but does not control pace</li>
+        <li>effort becomes support-heavy rather than outcome-heavy</li>
+      </ul>
+
+      <div class="sub-heading">C. What the individual would fear</div>
+      <p>That is a much more sophisticated fear than simple reluctance.</p>
+      <ul>
+        <li>I may become responsible for progress without controlling enough of the system.</li>
+        <li>I may spend my time making a flawed structure perform slightly better rather than actually fixing it.</li>
+        <li>My effort may become hard to see because it gets absorbed into someone else's lane.</li>
+        <li>If the ambiguity runs too long, the role may become frustrating before it becomes effective.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Section 7: Solutions -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">7</span>
+      <span class="section-title">Solutions the Chief of Staff Might Reasonably Ask For</span>
+    </div>
+    <div class="section-body">
+      <div class="solution-card">
+        <div class="sc-title">Clear areas of ownership</div>
+        <div class="sc-body"><p>I would want a few areas where ownership is explicitly mine, not borrowed through someone else.</p></div>
+      </div>
+      <div class="solution-card">
+        <div class="sc-title">Defined decision rights</div>
+        <div class="sc-body"><p>I would want clarity on what I can decide directly, what requires alignment, and what should be escalated.</p></div>
+      </div>
+      <div class="solution-card">
+        <div class="sc-title">Early review points</div>
+        <div class="sc-body"><p>I would want the setup reviewed quickly — for example at 30, 60, and 90 days — so that if the structure is not working, it does not drift for too long.</p></div>
+      </div>
+      <div class="solution-card">
+        <div class="sc-title">Visible attribution of impact</div>
+        <div class="sc-body"><p>If I am helping improve things, it would be important that those improvements are visible and tied to clear ownership rather than disappearing into the general system.</p></div>
+      </div>
+      <div class="solution-card">
+        <div class="sc-title">Protection from pure support work</div>
+        <div class="sc-body"><p>I would want to avoid the role becoming primarily about preparation, compensation, and carrying the friction of the structure.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 8: Metaphors -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">8</span>
+      <span class="section-title">Metaphor Versions</span>
+    </div>
+    <div class="section-body">
+      <div class="metaphor-card">
+        <div class="mc-title">Great conductor, poor orchestra structure</div>
+        <div class="mc-quote">From inside the role, it can feel like being asked to conduct well when not everyone is following the same score or the same baton.</div>
+        <div class="mc-body">In that situation, even strong effort does not automatically create a clean performance.</div>
+      </div>
+      <div class="metaphor-card">
+        <div class="mc-title">Water through a kinked hose</div>
+        <div class="mc-quote">I may be able to add energy and pressure to the system, but if the channel itself is constrained, that effort can create back-pressure without enough real flow.</div>
+      </div>
+      <div class="metaphor-card">
+        <div class="mc-title">Slipping transmission</div>
+        <div class="mc-quote">I may be able to generate a lot of forward effort, but if the mechanism between effort and outcome is slipping, then that effort will not fully reach the road.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 9: Side-by-side difference -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">9</span>
+      <span class="section-title">Clean Side-by-Side Difference</span>
+    </div>
+    <div class="section-body">
+      <div class="contrast-box">
+        <div class="contrast-side left">
+          <div class="cs-label">3rd Party version says</div>
+          <p>This role may be structurally hard to win.</p>
+        </div>
+        <div class="contrast-side right">
+          <div class="cs-label">1st Party version says</div>
+          <p>I believe I can do meaningful work here, but I want to be careful not to step into a role where the structure makes success harder to convert into visible progress.</p>
+        </div>
+      </div>
+      <p style="margin-top: 1rem;">That's the difference: 3rd party is structural diagnosis, and 1st party is thoughtful self-protection without sounding defensive.</p>
+    </div>
+  </div>
+
+  <!-- Section 10: Best Final Narrative -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <span class="section-title">Best Final 1st Party Narrative</span>
+    </div>
+    <div class="section-body">
+      <div class="callout">
+        <p>I can see the importance of the role and I believe I could contribute meaningfully in it. My concern is not the workload or the challenge itself, but whether the setup is structured in a way that is truly winnable. If I am expected to help drive outcomes while authority, pace, and practical control still sit elsewhere, then there is a risk that I spend a great deal of energy improving the system at the margin without being able to create clear, sustainable traction. What I would want to avoid is becoming a compensating mechanism for structural ambiguity rather than operating in a role with visible ownership, clear decision rights, and a fair path to impact.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 11: Two Narratives -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <span class="section-title">Two Narratives</span>
+    </div>
+    <div class="section-body">
+      <div class="contrast-box">
+        <div class="contrast-side left">
+          <div class="cs-label">3rd party manager lens</div>
+          <p>This role may be structurally hard to win and could create risk for the individual if setup, timing, and ownership are not handled carefully.</p>
+        </div>
+        <div class="contrast-side right">
+          <div class="cs-label">1st party chief of staff lens</div>
+          <p>I can contribute, but I want to be thoughtful about whether the setup gives me a fair path to create visible, sustainable impact rather than placing me in a compensating role.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 3rd PARTY CONTENT                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="third-party">
+
+  <!-- Section 1: Short Narrative -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">1</span>
+      <span class="section-title">Short Narrative: Issue, Concern, What to Do</span>
+    </div>
+    <div class="section-body">
+      <p>The central concern is not whether the individual has capability or potential. The central concern is whether someone who could contribute meaningfully to both near-term and potentially longer-term organizational solutions is being placed into a setup that is structurally winnable. If the role is positioned in a way where expectations are high, but formal authority, organizational control, and pace of execution remain elsewhere, then even a strong person may struggle to convert effort into visible progress.</p>
+      <p>What makes this especially sensitive is the timing and the operating window. If too much time passes inside an ambiguous or partially constrained structure, the role can become frustrating and energy-consuming before any larger organizational decision is made. That creates a real risk that the individual becomes a compensating mechanism inside the system rather than someone whose impact is clearly recognized. The practical answer is to treat this as an operating-design question from the start: define visible ownership, clarify decision rights and escalation paths early, create short-interval review points, and make early impact legible so the system does not absorb effort without producing enough clarity for the next decision.</p>
+    </div>
+  </div>
+
+  <!-- Section 2: Best Final Recommendation -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">2</span>
+      <span class="section-title">Best Final Recommendation</span>
+    </div>
+    <div class="section-body">
+      <div class="callout">
+        <p>My concern is less about the person and more about the setup. If this role is expected to help solve both near-term and broader organizational issues, then it has to be structurally winnable. If expectations rise quickly but authority, hierarchy, and day-to-day control remain elsewhere, the role may absorb significant pressure without creating enough traction or clarity. That is why I see this less as a support question and more as an operating-design question.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Strong Closing Formulations -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">3</span>
+      <span class="section-title">Strong Closing Formulations</span>
+    </div>
+    <div class="section-body">
+      <div class="talking-point">
+        <div class="tp-label">Option 2</div>
+        <p>The concern is not whether she can add value. The concern is whether the setup allows that value to become visible, sustainable, and legible.</p>
+      </div>
+      <div class="talking-point">
+        <div class="tp-label">Option 3</div>
+        <p>A role that should create leverage can instead become a mechanism for absorbing friction if the design is wrong.</p>
+      </div>
+      <div class="talking-point">
+        <div class="tp-label">Option 4</div>
+        <p>If this arrangement is meant to solve real problems, it should create visible ownership early rather than prolonged ambiguity.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Top Metaphors -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">4</span>
+      <span class="section-title">Top Metaphors to Keep</span>
+    </div>
+    <div class="section-body">
+      <div class="metaphor-card">
+        <div class="mc-title">Great conductor, poor orchestra structure</div>
+        <div class="mc-quote">A strong conductor cannot produce a clean performance if half the orchestra is following one score and the other half is watching a different baton.</div>
+        <div class="mc-tags">
+          <span class="mc-tag">mixed authority</span>
+          <span class="mc-tag">divided loyalties</span>
+          <span class="mc-tag">coordination failure</span>
+        </div>
+      </div>
+      <div class="metaphor-card">
+        <div class="mc-title">Water through a kinked hose</div>
+        <div class="mc-quote">The water may be clean and the pressure may be high, but if the hose is kinked, you do not get better flow. You get back-pressure.</div>
+        <div class="mc-tags">
+          <span class="mc-tag">bottlenecks</span>
+          <span class="mc-tag">blocked execution</span>
+          <span class="mc-tag">pressure without throughput</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: CEO-ready points -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">5</span>
+      <span class="section-title">CEO-Ready Points: Short, Sharp, Usable</span>
+    </div>
+    <div class="section-body">
+      <div class="sub-heading">One-liners / short messages</div>
+      <div class="one-liner">A strong person in a constrained structure often becomes a compensating mechanism, not a clear success.</div>
+      <div class="one-liner">If accountability rises faster than control, the role becomes difficult to win.</div>
+      <div class="one-liner">This looks less like a support gap and more like an operating-design gap.</div>
+      <div class="one-liner">More energy inside a bottleneck does not necessarily create more output. It often creates more pressure.</div>
+      <div class="one-liner">A partially improved system can be more dangerous than a clearly broken one if it preserves ambiguity without resolving structure.</div>
+      <div class="one-liner">The question is not whether she can add value. The question is whether the system will make that value legible and sustainable.</div>
+
+      <div class="sub-heading" style="margin-top: 2rem;">Ready 1–2 sentence CEO points</div>
+      <div class="talking-point">
+        <div class="tp-label">Point 1</div>
+        <p>My concern is less about individual capability and more about whether the setup is structurally winnable. If expectations sit in one place while authority, hierarchy, and pace still sit elsewhere, the role may absorb pressure without gaining enough traction.</p>
+      </div>
+      <div class="talking-point">
+        <div class="tp-label">Point 3</div>
+        <p>The biggest risk may not be outright failure. The bigger risk may be the middle ground: some improvement, a lot of effort, but not enough structural clarity for the role to be clearly winnable.</p>
+      </div>
+      <div class="talking-point">
+        <div class="tp-label">Point 4</div>
+        <p>If the arrangement runs too long without clean decision rights or visible ownership, frustration can build before larger organizational decisions are made. That would be an avoidable outcome in a role that should be set up for impact.</p>
+      </div>
+      <div class="talking-point">
+        <div class="tp-label">Point 5</div>
+        <p>I think the question is whether this person will have true operating leverage or simply be asked to compensate for weaknesses in the existing structure. Those are very different roles, and only one of them is sustainable.</p>
+      </div>
+      <div class="talking-point">
+        <div class="tp-label">Point 6</div>
+        <p>If this move is intended to help solve both immediate and broader organizational issues, then the setup needs to create visible wins early. Otherwise the system may absorb the effort without producing enough clarity for the next decision.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Priority Solutions -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">6</span>
+      <span class="section-title">Priority Solutions to Surface Near the Top</span>
+    </div>
+    <div class="section-body">
+      <div class="solution-card">
+        <div class="sc-title">Define specific areas of direct ownership</div>
+        <div class="sc-body">
+          <p><strong>Why:</strong></p>
+          <ul>
+            <li>visible ownership makes contribution legible</li>
+            <li>clear wins reduce the middle-ground trap</li>
+            <li>it prevents the person from becoming merely an amplifier for someone else's authority</li>
+          </ul>
+        </div>
+      </div>
+      <div class="solution-card">
+        <div class="sc-title">Clarify escalation and decision rights early</div>
+        <div class="sc-body">
+          <p><strong>Why:</strong></p>
+          <ul>
+            <li>unresolved split-control is where frustration breeds</li>
+            <li>unclear rules force politics into every decision</li>
+          </ul>
+        </div>
+      </div>
+      <div class="solution-card">
+        <div class="sc-title">Create short-interval review points</div>
+        <div class="sc-body">
+          <p><strong>Why:</strong></p>
+          <ul>
+            <li>it reduces the risk of drift</li>
+            <li>it surfaces structural problems before fatigue hardens</li>
+            <li>it gives the CEO clean points to reassess without waiting for a crisis</li>
+          </ul>
+        </div>
+      </div>
+      <div class="solution-card">
+        <div class="sc-title">Make early wins visible and attributable</div>
+        <div class="sc-body">
+          <p><strong>Why:</strong></p>
+          <ul>
+            <li>otherwise the middle ground wins</li>
+            <li>the structure gets tolerated because things are 'a bit better'</li>
+            <li>the person spends energy but does not accumulate enough recognized traction</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 7: Appendix — Structured Walkthrough -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">7</span>
+      <span class="section-title">Appendix: Structured Walkthrough</span>
+    </div>
+    <div class="section-body">
+
+      <div class="sub-heading">A. Core message</div>
+      <p>The central concern is how an individual with real capability and potential to contribute to both near-term and potentially longer-term organizational solutions is placed into the right setup.</p>
+      <p>The issue is not mainly whether the individual is capable. The issue is whether the role is designed in a way that is structurally winnable.</p>
+      <p>If the setup separates expectations from control, or places the person inside a system with constrained authority and unclear decision rights, then even a strong individual may struggle to convert effort into visible and sustainable progress.</p>
+
+      <div class="sub-heading">B. Context: the question is setup, not motive</div>
+      <p>This should not be framed as a question of motive or intent.</p>
+      <p>The more useful framing is:</p>
+      <ul>
+        <li>there is a near-term organizational problem to solve</li>
+        <li>this role may also carry broader significance over time</li>
+        <li>the person being placed into it may be capable of contributing materially</li>
+        <li>but the design of the initial arrangement matters greatly</li>
+      </ul>
+      <p>The concern is that if the role is introduced too quickly, with too much ambiguity, or inside a partially constrained structure, the person may spend a long period compensating for the system rather than building clear, visible traction.</p>
+      <p>So the question is not 'why is this being done.' The question is whether the setup gives the role a fair chance to succeed.</p>
+
+      <div class="sub-heading">C. The pattern underneath</div>
+      <p>A recurring risk in these situations is that roles can make conceptual sense from the top but prove much harder to execute in the actual organization.</p>
+      <p>That tends to happen when:</p>
+      <ul>
+        <li>formal reporting lines are assumed to solve practical control issues</li>
+        <li>the informal authority structure is underweighted</li>
+        <li>strong people are expected to work through unresolved contradictions</li>
+        <li>structures are changed quickly without enough protected transition time</li>
+        <li>ambiguity is tolerated longer than the role can healthily sustain</li>
+      </ul>
+      <p>The result is that visible effort increases, but clear ownership and durable output do not increase at the same rate.</p>
+
+      <div class="sub-heading">D. Why this specific situation is risky</div>
+      <p>The likely risk is not simply that the person fails. The more subtle risk is that the person works hard, improves things somewhat, but does so inside a structure that remains ambiguous.</p>
+      <p>That creates three possible scenarios:</p>
+
+      <div class="scenario good">
+        <div class="sc-head">Scenario 1: current leader fails clearly</div>
+        <div class="sc-text">If the current HR leader performs poorly and the contrast becomes obvious, the individual in the role may benefit because her capability becomes visible.</div>
+      </div>
+      <div class="scenario good">
+        <div class="sc-head">Scenario 2: current leader performs extremely well</div>
+        <div class="sc-text">If the current HR leader becomes highly successful with her support, the individual may also benefit because her contribution is legible and associated with the improvement.</div>
+      </div>
+      <div class="scenario bad">
+        <div class="sc-head">Scenario 3: the middle ground</div>
+        <div class="sc-text">This is the dangerous one. If the person adds enough energy to improve outcomes somewhat, but not enough to resolve the structural issue, then the organization may tolerate the current arrangement longer. The system improves just enough to delay decisions. The structural contradictions remain. The person expends large amounts of effort. But the result is neither clear failure nor clear success. That is the lose-lose zone. This middle-ground outcome is the most dangerous because it can consume energy, blur credit, prolong uncertainty, and create burnout without producing enough clarity for action.</div>
+      </div>
+
+      <div class="sub-heading">E. The timing risk</div>
+      <p>Timing is a major part of the concern.</p>
+      <p>If the role begins around early April and meaningful organizational decisions are not likely until October or November, that leaves a long period in which the person could be operating inside uncertainty.</p>
+      <p>That creates several risks:</p>
+      <ul>
+        <li>too long a runway of structural ambiguity</li>
+        <li>too much time absorbing pressure without clean authority</li>
+        <li>fatigue building before larger decisions are made</li>
+        <li>frustration from seeing the issue clearly but not being able to resolve it cleanly</li>
+        <li>a risk that the role becomes emotionally expensive before it becomes organizationally rewarding</li>
+      </ul>
+      <p>In other words: the duration of ambiguity matters almost as much as the design itself.</p>
+      <p>A role that is tolerable for eight weeks can become corrosive over six or seven months.</p>
+
+      <div class="sub-heading">F. The structural contradiction</div>
+      <p>The individual may be expected to improve outcomes, raise quality, and add rigor.</p>
+      <p>But the existing HR leader may still hold:</p>
+      <ul>
+        <li>formal authority</li>
+        <li>organizational hierarchy</li>
+        <li>practical resource control</li>
+        <li>day-to-day legitimacy with the team</li>
+        <li>influence over pace and process</li>
+      </ul>
+      <p>That means:</p>
+      <ul>
+        <li>expectations may rise quickly</li>
+        <li>visible control may not</li>
+        <li>credit may blur</li>
+        <li>friction may increase</li>
+        <li>escalation may become difficult to manage</li>
+      </ul>
+      <p>When accountability rises faster than control, the person in the middle becomes the absorber of pressure.</p>
+
+      <div class="sub-heading">G. Likely practical failure modes</div>
+      <p>If the role remains underdefined or structurally constrained, likely issues include:</p>
+      <ul>
+        <li>the person being pulled into preparation and support work rather than direct impact</li>
+        <li>the existing leader using the role to increase output without changing control</li>
+        <li>repeated disagreements on priorities, pace, or quality</li>
+        <li>the broader team defaulting to formal hierarchy</li>
+        <li>visible effort not converting into visible ownership</li>
+        <li>too much energy being spent to produce only modest systemic movement</li>
+        <li>prolonged uncertainty leading to fatigue and resentment</li>
+      </ul>
+      <p>This is how a strong person becomes trapped in system compensation rather than system leadership.</p>
+
+      <div class="sub-heading">H. The real question</div>
+      <p>The real question is not: 'Can she handle it?'</p>
+      <div class="callout">
+        <p>The real question is: 'Is the setup designed so that her contribution becomes visible, sustainable, and structurally winnable?'</p>
+      </div>
+      <p>That is the right question.</p>
+    </div>
+  </div>
+
+  <!-- Section 8: Full Solutions Appendix -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">8</span>
+      <span class="section-title">Full Solutions Appendix</span>
+    </div>
+    <div class="section-body">
+
+      <div class="solution-card">
+        <div class="sc-title">1. Define specific areas of direct ownership</div>
+        <div class="sc-body">
+          <p>Give the individual a few visible domains where ownership is explicit, not borrowed.</p>
+          <p>Examples could include:</p>
+          <ul>
+            <li>specific strategic HR initiatives</li>
+            <li>direct presentation responsibility on selected topics</li>
+            <li>defined decision rights on certain operating items</li>
+            <li>ownership of synthesis and recommendations in specified forums</li>
+          </ul>
+          <p><strong>Why:</strong></p>
+          <ul>
+            <li>visible ownership makes contribution legible</li>
+            <li>clear wins reduce the middle-ground trap</li>
+            <li>it prevents the person from becoming merely an amplifier for someone else's authority</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="solution-card">
+        <div class="sc-title">2. Clarify escalation and decision rights early</div>
+        <div class="sc-body">
+          <p>Do not leave the conflict-resolution mechanism vague.</p>
+          <p>Questions to answer upfront:</p>
+          <ul>
+            <li>what happens when she and the HR leader disagree?</li>
+            <li>what decisions can she make directly?</li>
+            <li>what requires alignment?</li>
+            <li>when should issues be escalated?</li>
+            <li>what should not require escalation?</li>
+          </ul>
+          <p><strong>Why:</strong></p>
+          <ul>
+            <li>unresolved split-control is where frustration breeds</li>
+            <li>unclear rules force politics into every decision</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="solution-card">
+        <div class="sc-title">3. Create short-interval review points</div>
+        <div class="sc-body">
+          <p>Instead of waiting until autumn to assess whether the setup is working, create explicit check-ins much earlier.</p>
+          <p>For example: 30 days, 60 days, 90 days.</p>
+          <p><strong>Why:</strong></p>
+          <ul>
+            <li>it reduces the risk of drift</li>
+            <li>it surfaces structural problems before fatigue hardens</li>
+            <li>it gives the CEO clean points to reassess without waiting for a crisis</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="solution-card">
+        <div class="sc-title">4. Make early wins visible and attributable</div>
+        <div class="sc-body">
+          <p>This is critical.</p>
+          <p>If the person improves the system, that improvement must be visible enough that it does not just disappear into the background and preserve the status quo.</p>
+          <p><strong>Why:</strong></p>
+          <ul>
+            <li>otherwise the middle ground wins</li>
+            <li>the structure gets tolerated because things are 'a bit better'</li>
+            <li>the person spends energy but does not accumulate enough recognized traction</li>
+          </ul>
+          <p>Useful framing: If impact is real, it should be legible early.</p>
+        </div>
+      </div>
+
+      <div class="solution-card">
+        <div class="sc-title">5. Shorten the ambiguity window</div>
+        <div class="sc-body">
+          <p>If the role is going to be created quickly, then the period of unclear structure should be deliberately shortened.</p>
+          <p><strong>Why:</strong></p>
+          <ul>
+            <li>ambiguity compounds fatigue</li>
+            <li>long transition periods trap people in compensation mode</li>
+            <li>uncertainty from April through October or November is a long time in a politically constrained role</li>
+          </ul>
+          <p>Useful framing: If the structure cannot be fully resolved now, the duration of ambiguity should still be contained.</p>
+        </div>
+      </div>
+
+      <div class="solution-card">
+        <div class="sc-title">6. Protect the role from becoming pure support labor</div>
+        <div class="sc-body">
+          <p>If the role becomes mostly preparation, coordination, or compensation for the existing leader's weaknesses, the setup will drain the person quickly.</p>
+          <p><strong>Why:</strong></p>
+          <ul>
+            <li>support work can be endless</li>
+            <li>it creates dependence without authority</li>
+            <li>it makes the contribution less visible</li>
+            <li>it erodes the strategic value of the role</li>
+          </ul>
+          <p>Useful line: The role should not become a buffer for structural inefficiency.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 9: Frameworks -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">9</span>
+      <span class="section-title">Frameworks: How to Talk About It</span>
+    </div>
+    <div class="section-body">
+
+      <div class="sub-heading">Framework A: Flow framework</div>
+      <p>Core idea: This is a flow problem, not just a people problem.</p>
+      <table class="fw-table">
+        <tr><th>Term</th><th>Analogy</th></tr>
+        <tr><td>flow</td><td>throughput</td></tr>
+        <tr><td>bottleneck</td><td>blockage</td></tr>
+        <tr><td>resistance</td><td>pressure build-up</td></tr>
+        <tr><td>constrained channel</td><td>downstream effect</td></tr>
+      </table>
+      <p><strong>Clean line:</strong> This looks more like a flow problem than a talent problem.</p>
+      <p>Expanded line: If decisions, information, and execution all have to move through a constricted point, adding a stronger person into the system may increase pressure, but it will not necessarily improve throughput.</p>
+
+      <div class="sub-heading">Framework B: Thermal energy / entropy framework</div>
+      <p>Core idea: This is not a simple case where more effort produces more output.</p>
+      <table class="fw-table">
+        <tr><th>Term</th><th>Analogy</th></tr>
+        <tr><td>energy</td><td>useful work</td></tr>
+        <tr><td>friction</td><td>dissipation</td></tr>
+        <tr><td>heat loss</td><td>inefficiency</td></tr>
+        <tr><td>entropy</td><td>energy drain</td></tr>
+        <tr><td>conversion loss</td><td></td></tr>
+      </table>
+      <p><strong>Clean line:</strong> This is not a simple energy problem where more input creates more output.</p>
+      <p>Expanded line: In a badly designed system, additional effort gets dissipated through friction, rework, and escalation. The organization consumes energy, but does not convert it efficiently into useful work.</p>
+      <p><em>Strong entropy line: What looks like activity may actually be entropy.</em></p>
+
+      <div class="sub-heading">Framework C: Split-control / control systems framework</div>
+      <p>Core idea: This is a control problem with mixed signals.</p>
+      <table class="fw-table">
+        <tr><th>Term</th><th>Analogy</th></tr>
+        <tr><td>split control</td><td>control loop</td></tr>
+        <tr><td>conflicting inputs</td><td>unstable feedback</td></tr>
+        <tr><td>oscillation</td><td>delayed correction</td></tr>
+        <tr><td>misaligned signals</td><td>system instability</td></tr>
+      </table>
+      <p><strong>Clean line:</strong> This creates a split-control problem.</p>
+      <p>Expanded line: If expectations come from one source but authority and resources remain with another, the system tends to produce delay, instability, and repeated escalation.</p>
+    </div>
+  </div>
+
+  <!-- Section 10: Best Metaphors (expanded) -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <span class="section-title">Best Metaphors to Keep</span>
+    </div>
+    <div class="section-body">
+      <div class="metaphor-card">
+        <div class="mc-title">1. Great conductor, poor orchestra structure</div>
+        <div class="mc-quote">A strong conductor cannot produce a clean performance if half the orchestra is following one score and the other half is watching a different baton.</div>
+        <div class="mc-tags">
+          <span class="mc-tag">mixed authority</span>
+          <span class="mc-tag">divided loyalties</span>
+          <span class="mc-tag">coordination failure</span>
+        </div>
+      </div>
+      <div class="metaphor-card">
+        <div class="mc-title">2. Slipping transmission</div>
+        <div class="mc-quote">You can put a strong engine in the car, but if the transmission is slipping, the power does not reach the wheels.</div>
+        <div class="mc-tags">
+          <span class="mc-tag">effort not converting into output</span>
+          <span class="mc-tag">operating drag</span>
+          <span class="mc-tag">system transfer failure</span>
+        </div>
+      </div>
+      <div class="metaphor-card">
+        <div class="mc-title">3. Water through a kinked hose</div>
+        <div class="mc-quote">The water may be clean and the pressure may be high, but if the hose is kinked, you do not get better flow. You get back-pressure.</div>
+        <div class="mc-tags">
+          <span class="mc-tag">bottlenecks</span>
+          <span class="mc-tag">blocked execution</span>
+          <span class="mc-tag">pressure without throughput</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 11: "It's not X, it's Y" contrasts -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <span class="section-title">Best "It's Not X, It's Y" Contrasts</span>
+    </div>
+    <div class="section-body">
+      <div class="notx-row">
+        <span class="notx-left">a talent issue</span>
+        <span class="notx-arrow">→</span>
+        <span class="notx-right">a setup issue</span>
+      </div>
+      <div class="notx-row">
+        <span class="notx-left">a simple support problem</span>
+        <span class="notx-arrow">→</span>
+        <span class="notx-right">an operating-design problem</span>
+      </div>
+      <div class="notx-row">
+        <span class="notx-left">a question of effort alone</span>
+        <span class="notx-arrow">→</span>
+        <span class="notx-right">a question of whether effort can convert into output</span>
+      </div>
+      <div class="notx-row">
+        <span class="notx-left">about horsepower</span>
+        <span class="notx-arrow">→</span>
+        <span class="notx-right">about transmission</span>
+      </div>
+      <div class="notx-row">
+        <span class="notx-left">enough to add energy</span>
+        <span class="notx-arrow">→</span>
+        <span class="notx-right">the bottleneck has to be addressed</span>
+      </div>
+      <div class="notx-row">
+        <span class="notx-left">about whether she can carry weight</span>
+        <span class="notx-arrow">→</span>
+        <span class="notx-right">about whether the structure puts the weight in the right place</span>
+      </div>
+      <div class="notx-row">
+        <span class="notx-left">only the role itself that matters</span>
+        <span class="notx-arrow">→</span>
+        <span class="notx-right">the duration of ambiguity around the role</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<div class="page-footer">
+  HR Role Structural Analysis — Confidential
+</div>
+
+<script>
+function setView(view) {
+  const body = document.body;
+  const btn1 = document.getElementById('btn-1st');
+  const btn3 = document.getElementById('btn-3rd');
+  const label = document.getElementById('view-label');
+
+  if (view === '1st') {
+    body.className = 'view-1st';
+    btn1.classList.add('active');
+    btn3.classList.remove('active');
+    label.textContent = 'Viewing: 1st Person — Chief of Staff lens';
+  } else {
+    body.className = 'view-3rd';
+    btn3.classList.add('active');
+    btn1.classList.remove('active');
+    label.textContent = 'Viewing: 3rd Party — External diagnostic lens';
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
